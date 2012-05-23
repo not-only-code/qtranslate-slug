@@ -1,1 +1,14 @@
-3.0
+= 0.9 =
+* some wordpress qTranslate bug fixes
+* adds a javascript solution for qTranslate Nav Menus
+
+= 0.8 =
+* added support por Categories
+* added support por Tags
+* added support por Taxonomies
+* added support por Custom Post Types
+
+= 0.7 ( enhanced by Zapo (http://www.qianqin.de/qtranslate/forum/viewtopic.php?f=4&t=1049&start=50#p7499) ) =
+* added suport for qTranslate TLD domain mode (en: domain.com | fr: domain.fr) visit 
+
+= 0.5 and 0.6 enhanched by Marco Del Percio =

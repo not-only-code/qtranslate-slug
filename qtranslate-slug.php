@@ -3,22 +3,18 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://wordpress.org/extend/plugins/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.0
+Version: 0.9
 Author: Carlos Sanz Garcia
 Author URI: http://codingsomethig.wordpress.com
 
-this plugin is a complete fork of the original qTranslate slug
-developed by Cimatti Consulting http://www.cimatti.it
+this plugin is a complete fork of the original qTranslate slug developed by Cimatti Consulting http://www.cimatti.it
 
 --------------------------------------------------------------------------------------------------------
 
-version 1.0
-+ code wrapped in a class
-+ install
-+ change table fuctionality
 
 version 0.9
-+ added support 
++ some wordpress qTranslate bug fixes
++ adds a javascript solution for qTranslate Nav Menus
 
 version 0.8
 + added support por Categories
@@ -56,6 +52,9 @@ The full copy of the GNU General Public License is available here: http://www.gn
  * fb() is a function defined by the WP-FirePHP plugin <http://wordpress.org/extend/plugins/wp-firephp/>, that allows debug using Firefox, Firebug and FirePHP.
  * 
  * TODO:
+ 
+ * admin options page for setup the taxonomies names
+ * change the database system ( post meta ), without installing tables 
  * generate translated slug automatically from the translated title
  * check if the slug is already used, and add a progressive number in this case
  * force the use of the translated slug if defined
@@ -89,27 +88,27 @@ $qts_self_url = array();
 /**
  * Function invoked during the installation of the module. It creates or updates the tables
  */
- 
  function qTranslateSlug_install(){
-   global $wpdb;
+	 global $wpdb;
 
-   $table_name = $wpdb->prefix.'qtranslate_slug';
-   //die(); /* echo don't work !! */
-   require_once(ABSPATH.'wp-admin/includes/upgrade.php');
-
-  /* is the table existing? */
-    if( $wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name){
+	 $table_name = $wpdb->prefix.'qtranslate_slug';
+	 require_once(ABSPATH.'wp-admin/includes/upgrade.php');
+		
+	 $collate = '';
+	 if($wpdb->supports_collation()) {
+		 if(!empty($wpdb->charset)) $collate = "DEFAULT CHARACTER SET $wpdb->charset";
+		 if(!empty($wpdb->collate)) $collate .= " COLLATE $wpdb->collate";
+	 }	
   
-      $sql = 'CREATE TABLE '.$table_name.' (
-            qts_type TINYINT(3) UNSIGNED NOT NULL,
-            qts_id BIGINT(20) UNSIGNED NOT NULL,
-            qts_lang VARCHAR(6) NOT NULL,
-            qts_slug VARCHAR(200) NOT NULL,
-            PRIMARY KEY id_lang (qts_type, qts_id, qts_lang),
-            KEY post_name_lang (qts_slug, qts_type, qts_lang)
-      );';
-      dbDelta($sql);
-   }
+	$sql = 'CREATE TABLE IF NOT EXISTS '.$table_name.' (
+	    qts_type TINYINT(3) UNSIGNED NOT NULL,
+	    qts_id BIGINT(20) UNSIGNED NOT NULL,
+	    qts_lang VARCHAR(6) NOT NULL,
+	    qts_slug VARCHAR(200) NOT NULL,
+	    PRIMARY KEY id_lang (qts_type, qts_id, qts_lang),
+	    KEY post_name_lang (qts_slug, qts_type, qts_lang)
+	);' ;
+	$wpdb->query($sql);
 }
 register_activation_hook( __FILE__  , 'qTranslateSlug_install');
 
@@ -271,9 +270,9 @@ function qTranslateSlug_filter_request($q){
 	
 	return $q;
 }
+add_filter('request','qTranslateSlug_filter_request');
 
-//if (defined('TEMPLATENAME') && substr(TEMPLATENAME, 2, 9) == '088b0ea84')
-	add_filter('request','qTranslateSlug_filter_request');
+	
 
 /**
  * Returns the link to the current page in the desired language
@@ -281,8 +280,6 @@ function qTranslateSlug_filter_request($q){
  * @param $lang the code of the desired language
  * @return the link for the current page in that language
  */
-
-
 function qTranslateSlug_getSelfUrl($lang){
   //global $qts_self_url, $wp_query, $wpdb;
   global $q_config, $qts_self_url;
@@ -391,6 +388,8 @@ function qTranslateSlug_convertURL($url='', $lang='', $forceadmin = false) {
 	return qTranslateSlug_urlAddLang($url, $lang, $urlinfo, $home);
 }
 
+
+
 /**
  * Adds home path and language to an already cleaned URL.
  * It doesn't reparse the url, and supposes $url is a clean relative url.
@@ -429,7 +428,6 @@ function qTranslateSlug_urlAddLang($url, $lang='', $urlinfo='', $home='') {
       if ( ($lang!=$q_config['default_language']) || (isset($q_config['hide_default_language']) && (!$q_config['hide_default_language']))) $home = preg_replace("#//#","//".$lang.".",$home,1);
 			break;
 		case QT_URL_TLD:	// tld domain 
-			
 		
 			if($lang !=$q_config['default_language']) {
 				
@@ -474,6 +472,11 @@ function qTranslateSlug_urlAddLang($url, $lang='', $urlinfo='', $home='') {
 	return $complete;
 }
 
+
+
+/**
+ * Hide auttomatically the wordpress slug blog in edit posts page
+ */
 function qTranslateSlug_remove_slug_box() {
 	
 	function qTranslateSlug_remove_slug_block() {
@@ -484,23 +487,26 @@ function qTranslateSlug_remove_slug_box() {
 	}
 	
 	if (is_admin())
-		add_action('admin_head', 'qTranslateSlug_remove_slug_block', 9999);
+		add_action('admin_head', 'qTranslateSlug_remove_slug_block', 900);
 	
 }
 
 
-//Activates filters defined by this module
-// if (defined('TEMPLATENAME') && substr(TEMPLATENAME, 2, 9) == '088b0ea84') {
-	add_filter('post_type_link',				'qTranslateSlug_post_type_link', 0, 4);
-	add_filter('page_link',						'qTranslateSlug_page_link', 0, 2);
-	add_filter('post_link',						'qTranslateSlug_post_link', 0, 3);
-	add_filter('term_link',						'qTranslateSlug_term_link', 600 , 3);
-	add_action('admin_menu', 					'qTranslateSlug_remove_slug_box');
-// }
+
+/**
+ * Activates filters defined by this module
+ */
+add_filter('post_type_link',				'qTranslateSlug_post_type_link', 0, 4);
+add_filter('page_link',						'qTranslateSlug_page_link', 0, 2);
+add_filter('post_link',						'qTranslateSlug_post_link', 0, 3);
+add_filter('term_link',						'qTranslateSlug_term_link', 600 , 3);
+add_action('admin_menu', 					'qTranslateSlug_remove_slug_box');
+
+
 /**
  * Disables qtranslate filter for the link managed by this module
  */
-function qTranslateSlug_remove_qtrans_filters(){
+function qTranslateSlug_remove_qtrans_filters() {
   remove_filter('page_link', 'qtrans_convertURL');
   remove_filter('post_link', 'qtrans_convertURL');
   remove_filter('category_link', 'qtrans_convertURL');
@@ -515,6 +521,8 @@ add_action('plugins_loaded','qTranslateSlug_remove_qtrans_filters');
 //add_filter('post_comments_feed_link',		'qtrans_convertURL');
 //add_filter('tag_feed_link',					'qtrans_convertURL');
 //add_filter('esc_url',						'qtrans_convertURL');
+
+
 
 /**
  * Filter that translates the slug parts in a page link
@@ -1006,22 +1014,20 @@ function qTranslateSlug_get_post_type_by_path($page_path, $lang = '', $post_type
 	return null;
 }
 
-//Actions used to insert and edit the slug translations
+/**
+ * Actions used to insert and edit the slug translations
+ */
+// post / pages
+add_action('admin_menu', 'qTranslateSlug_add_custom_box');
+add_action('save_post', 'qTranslateSlug_save_postdata', 605, 2);
 
-
-//if (defined('TEMPLATENAME') && substr(TEMPLATENAME, 2, 9) == '088b0ea84') {
-	// post / pages
-	add_action('admin_menu', 'qTranslateSlug_add_custom_box');
-	add_action('save_post', 'qTranslateSlug_save_postdata', 605, 2);
-
-	// Categories / Tags /Taxonomies
-	add_action ('edit_category_form_fields', 'qTranslateSlug_tag_fields');
-	add_action ('edit_tag_form_fields', 'qTranslateSlug_tag_fields');
-	add_action ('edited_term', 'save_qTranslateSlug_term_fields', 605, 3);
-//}
+// Categories / Tags /Taxonomies
+add_action ('edit_category_form_fields', 'qTranslateSlug_tag_fields');
+add_action ('edit_tag_form_fields', 'qTranslateSlug_tag_fields');
+add_action ('edited_term', 'save_qTranslateSlug_term_fields', 605, 3);
 
 function qTranslateSlug_add_custom_box() {
-	if ( function_exists( 'add_meta_box' ) /* && defined('TEMPLATENAME') && substr(TEMPLATENAME, 2, 9) == '088b0ea84' */) {
+	if ( function_exists( 'add_meta_box' ) ) {
 		add_meta_box( 'qts_sectionid', 'Slug', 'qTranslateSlug_custom_box', 'post', 'side', 'high');
 		add_meta_box( 'qts_sectionid', 'Slug', 'qTranslateSlug_custom_box', 'page', 'side', 'high' );
 		foreach ( get_post_types( array('_builtin' => false ) ) as $ptype ) {
@@ -1367,7 +1373,7 @@ class qTranslateslugWidget extends WP_Widget {
 /**
  * adds support for qtranslate nav menus
  * @package Qtranslate Slug
- * @version 1.0
+ * @version 0.9
 **/
 function wa_admin_init() {
 	global $pagenow;
@@ -1376,7 +1382,6 @@ function wa_admin_init() {
 	wp_enqueue_script('nav-menu-query',  plugins_url( 'js/qt-nav-menu-min.js' , __FILE__ ) , 'nav-menu', '1.0');
 	add_meta_box( 'qt-languages', __('Languages'), 'qt_languages_meta_box', 'nav-menus', 'side', 'default' );
 }
-add_action('admin_init', 'wa_admin_init');
 
 function qt_languages_meta_box() {
 	global $q_config;
@@ -1391,16 +1396,17 @@ function qt_languages_meta_box() {
 	}
 	echo '</p>';
 }
+add_action('admin_init', 'wa_admin_init');
 
 
 /**
  * adds support for qtranslate in taxonomies
- * @package BC Carpas
- * @version 1.0
+ * @package Qtranslate Slug
+ * @version 0.8
 **/
 function qtranslate_edit_taxonomies(){
 	
-	$has_titlte = array('product-category', 'project-category', 'category', 'post_tag');
+	$has_titlte = array('category', 'post_tag');
 	//$has_slug = array( 'families' );
 	
 	$args = array( 'public' => true, 'show_ui' => true, '_builtin' => true 	); 
@@ -1427,8 +1433,8 @@ add_filter('single_term_title', 'qtrans_useTermLib', 805);
 
 /**
  * adds support for qtranslateSlug in taxonomies
- * @package BC Carpas
- * @version 1.0
+ * @package Qtranslate Slug
+ * @version 0.8
 **/
 /*
 function qtranslateSlug_filter_taxonomies(){
@@ -1449,7 +1455,7 @@ add_action('admin_init', 'qtranslateSlug_filter_taxonomies', 800);
 /**
  * hide quickedit button (functionality not supported by qTranslate)
  * @package Qtranslate Slug
- * @version 1.0
+ * @version 0.8
 **/
 function hide_quick_edit_script() {
 	global $pagenow;
@@ -1464,14 +1470,14 @@ function hide_quick_edit_script() {
 			});
 		</script>";
 }
-add_action('admin_footer','hide_quick_edit_script', 9999);
+add_action('admin_footer','hide_quick_edit_script', 600);
 
 
 
 /**
  * get traduction slug for post type
  * @package Qtranslate Slug
- * @version 1.0
+ * @version 0.8
 **/
 function get_custom_post_type_slug($post_type) {
 	global $custom_post_types_slugs, $q_config, $qts_use_language;
@@ -1501,13 +1507,6 @@ function get_custom_taxonomy_slug($taxonomy) {
 	}
 }
 
-function qtranslateSlug_admin_title($admin_title, $title) {
-	
-	return $admin_title;
-	
-	//return printf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), __($title), __($admin_title) );
-}
-// add_filter('admin_title', 'qtranslateSlug_admin_title', 2);
 
 function qtranslateSlug_blog_names($blogs) {
 	
@@ -1521,7 +1520,6 @@ add_filter( 'get_blogs_of_user', 'qtranslateSlug_blog_names', 1 );
 
 
 function qtranslug_widget_init() {
-	// if (defined('TEMPLATENAME') && substr(TEMPLATENAME, 2, 9) == '088b0ea84')
 		register_widget('qTranslateslugWidget');
 }
-//add_action('widgets_init', 'qtranslug_widget_init');
+add_action('widgets_init', 'qtranslug_widget_init');
