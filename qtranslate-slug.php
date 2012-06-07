@@ -1253,6 +1253,7 @@ function qTranslateSlug_generateLanguageSelectCode($style='', $id='qtrans_langua
 	
 	if($style=='') $style='text';
 	if(is_bool($style)&&$style) $style='image';
+	
 	switch($style) {
 		case 'image':
 		case 'text':
