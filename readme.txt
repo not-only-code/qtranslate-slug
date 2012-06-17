@@ -1,47 +1,100 @@
 === Qtranslate Slug ===
 Contributors: Carlos Sanz García
-Donate link: none
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYC46KSLRC4Q8
 Tags: qtranslate, slug, multilanguage
-Requires at least: 3.0
-Tested up to: 3.3.2
-Stable tag: 0.9
+Requires at least: 3.3
+Tested up to: 3.4
+Version: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Allows to define a slug for each language and some qTranslate bug fixes
+Adds support for permalink translations and fix some QTranslate deficiencies since wordpress 3.0
 
 == Description ==
 
-This plugin allows translated slugs in Qtranslate.
-You need install and activate previously Qtranslate, if not, Qtranslate Slug will not work.
+[Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) is a nice plugin but unfortunately today is **outdated**. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations and fix some QTranslate deficiencies since wordpress 3.0.
 
-Tested with Qtranslate versions 2.5.8 and 2.5.9
+**Version 1.0** has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is better integrated with Wordpress API.
+
+This plugin works with **Qtranslate** since **2.5.8**.
+
+= What is new? =
+
+* **works** with any permalink combination and qtranslate mode.
+* new branch, the plugin has been rewritten: now the code is commented and wrapped inside a class, much code has change and the performance has been increased (use caches).
+* data system changed, no ID for slug type, then it don't needs install `qtrasnlate_slug` table. That means slugs now are stored on meta tables and installation creates a termmeta table with some new *core functions* to access/save data, based on [simple term meta](http://wordpress.org/extend/plugins/simple-term-meta/). Upgrade process when the plugin updates from older versions.
+* the plugin generates translated slug automatically from title in empty cases.
+* the plugin checks if the slug already exists (per each language and `post_type`/`taxonomy`), and adds a progressive number in this case. Works on ajax requests for example when new taxonomies are created in edit post page.
+* possibility to translate the base of permastructs for *post_types* and *taxonomies*, uses [$wp_rewrite](http://codex.wordpress.org/Class_Reference/WP_Rewrite). New admin options page for save the base permastructs.
+* added some filters, see in [other notes](http://wordpress.org/extend/plugins/qtranslate-slug/other_notes/).
+* added plugin language textdomain (.pot file).
+* updated **Language selector Widget**, and some new conventions like accessible functions for templating.
+* some bug fixes.
+* some Qtranslate patches.
+
+
+You can also check the [project website](http://not-only-code.github.com/qtranslate-slug/) hosted on [GitHub](http://not-only-code.github.com).
+Thanks for use this plugin!
 
 == Installation ==
 
-This plugins requires qTranslate installed previously, if not, it will not activate.
+**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) installed previously, if not, it will not activate.**
 
-1. Upload `qtranslate-slug` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Upload `qtranslate-slug` to the `/wp-content/plugins/` directory.
+1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. That's all!
+
+= Changing base permastructs =
+
+1. In admin: navigate to *Settings/Slug options*.
+1. Set the base permastructs for **post types** and **taxonomies** (If you setup a base permastruct for *categories* or *tags* in *Settings/Permalinks*, these will be overwritten by the translated ones).
+1. Save settings and that's all!
 
 == Frequently Asked Questions ==
 
-= It works with posts and pages, but with other content type ? =
+= It works with posts and pages, but with other content type? =
 
 This plugin allows to translate slugs of: posts, pages, custom post types, categories, tags and custom taxonomies.
 
-= How can I insert a language selector in my theme ? =
+= Do I have to configure anything? =
 
-Place `<?php if (function_exists('qTranslateSlug_generateLanguageSelectCode') ) qTranslateSlug_generateLanguageSelectCode('text'); ?>` in your template.
+If you want to translate also the base permastructs (ex. *category*, *tag*, etc). Visit the plugin settings page in the admin *Settings/Slug options*
+
+= How can i insert a language selector in my theme ? =
+
+You can choose to:
+* use **Qtranslate Slug Widget** in your sidebar.
+* place in your template `<?php if (function_exists('qts_language_menu') ) qts_language_menu('text'); ?>`. Options are: `dropdown`, `text`, `image`, and `both`.
+
+= Appears an error 404, what can i do? =
+
+In the admin go to *Settings/Permalinks* or *Settings/Slug options* and save.
+
+= I can't manage translations in Nav Menus. = 
+
+That's because language selector metabox is hidden, if you are in admin *nav menus* screen, press the button **Screen options** (on top and right) and after, check the option *Languages*. It will appear a **Language** meta box on top of the left sidebar.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
-2. This is the second screen shot
+1. Edit page for: post / page / post_type, you can see the meta box for translated slugs on top and right.
+2. Add new taxonomy page
+3. Edit taxonomy page
+4. Qtranslate Slug options page for translate base permastructs of post_types and taxonomies.
 
 == Changelog ==
+
+= 1.0 =
+* **works** with any permalink combination and qtranslate mode.
+* new branch, the plugin has been rewritten: now the code is commented and wrapped inside a class, much code has change and the performance has been increased (use caches).
+* data system changed, no ID for slug type, then it don't needs install `qtrasnlate_slug` table. That means slugs now are stored on meta tables and installation creates a termmeta table with some new *core functions* to access/save data, based on [simple term meta](http://wordpress.org/extend/plugins/simple-term-meta/). Upgrade process when the plugin updates from older versions.
+* the plugin generates translated slug automatically from title in empty cases.
+* the plugin checks if the slug already exists (per each language and `post_type`/`taxonomy`), and adds a progressive number in this case. Works on ajax requests for example when new taxonomies are created in edit post page.
+* possibility to translate the base of permastructs for *post_types* and *taxonomies*, uses [$wp_rewrite](http://codex.wordpress.org/Class_Reference/WP_Rewrite). New admin options page for save the base permastructs.
+* added some filters, see in [other notes](http://wordpress.org/extend/plugins/qtranslate-slug/other_notes/).
+* added plugin language textdomain (.pot file).
+* updated **Language selector Widget**, and some new conventions like accessible functions for templating.
+* some bug fixes.
+* some Qtranslate patches.
 
 = 0.9 =
 * some wordpress qTranslate bug fixes
@@ -53,12 +106,15 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 * added support por Taxonomies
 * added support por Custom Post Types
 
-= 0.7 ( enhanced by Zapo (http://www.qianqin.de/qtranslate/forum/viewtopic.php?f=4&t=1049&start=50#p7499) ) =
+= 0.7 = [Zapo](http://www.qianqin.de/qtranslate/forum/viewtopic.php?f=4&t=1049&start=50#p7499)
 * added suport for qTranslate TLD domain mode (en: domain.com | fr: domain.fr) visit 
 
 = 0.5 and 0.6 enhanched by Marco Del Percio =
 
 == Upgrade Notice ==
+
+= 1.0 =
+Major version, the plugin has been rewritten. Better performance, and some enhancements.
 
 = 0.9 =
 This version fix some bugs and allow multilanguage in nav-menus.
@@ -70,14 +126,35 @@ A lot of slugs content allowed
 This version allows TLD domain option for a different Qtranslate fork maded by Zappo
 
 
-== Todo ==
+== Other notes ==
 
- * admin options page for setup the taxonomies names
- * change the database system ( post meta ), without installing tables
- * generate translated slug automatically from the translated title
- * check if the slug is already used, and add a progressive number in this case
- * force the use of the translated slug if defined
- * force to show a page/post only at the correct URL
- * try to redirect from a wrong URL to a correct URL
- * keep track of renamed slugs, redirecting from old to new slugs 
- * translate categories and tags slugs.
+Plugin filters reference: 
+
+= qts_validate_post_slug =
+
+filter to process the post slug before is saved on the database.  
+`args: $post (object), $slug (string), $lang (string)`
+
+= qts_validate_term_slug =
+
+filter to process the term slug before is saved on the database.  
+`args: $term (object), $slug (string), $lang (string)`
+
+= qts_url_args =
+
+filter to process the entire url after it has been generated.  
+`args: $url (string), $lang (string)`
+ 
+= qts_permastruct =
+
+filter to process the permastruct, used for change the base.  
+`args: $permastruct (string), $name (string)`
+
+
+= Todo =
+
+* detect Slug for each language and redirect accordingly in parse_query.
+* expand qtranslate for translate attachment names and descriptions ( useful for galleries )
+* translate other slugs like attachments.
+* multisite: add suport as network plugin enhancing the request, some qtranslate patches.
+* qtranslate integration with other plugins like Jigoshop, e-commerce, etc. Addapt **$wp_rewrite**.

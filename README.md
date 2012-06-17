@@ -128,7 +128,7 @@ This version allows TLD domain option for a different Qtranslate fork maded by Z
 
 == Other notes ==
 
-Plugin filters reference: 
+Plugin filters reference:
 
 = qts_validate_post_slug =
 

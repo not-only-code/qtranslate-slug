@@ -1,0 +1,36 @@
+/*messages*/
+.error {color:#cc0000;}
+
+.form-table th  {
+	width: 15%;
+	min-width: 15% !important;
+}
+
+.form-table td > span {
+	display: inline-block;
+	min-width: 100px;
+}
+.qts-slug {
+	width: 35%;
+}
+
+#qts-loading {
+	display: none;
+	position: relative;
+	margin-left: 5px;
+	vertical-align: middle;
+}
+
+div.updated.success{
+	border-color: #298e00;
+	background-color: #D4EDC9;
+}
+
+.error a.button-primary {
+	color: white !important;
+	text-decoration: none !important;
+}
+
+.ko {
+	color: #c00;
+}

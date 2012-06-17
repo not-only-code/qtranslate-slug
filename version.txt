@@ -1,3 +1,24 @@
+= 1.0 =
+* new branch, the plugin has been rewrited: now the code is commented and wrapped inside a class, also all code has change and the performance has been increased.
+* structural changes:
+	* no ID for slug type, then don't install qtrasnlate_slug table.
+	* slugs now are stored on meta tables, installation creates a termmeta table with some new 'core functions' to access/save data, based on [simple term meta](http://wordpress.org/extend/plugins/simple-term-meta/).
+* some automation:
+	* the plugin generates translated slug automatically from title in empty cases (like wordpress).
+	* the plugin checks if the slug already exists (per each language and type / taxonomy), and adds a progressive number in this case (like wordpress).
+	* works on ajax requests like creatig new taxonomies on edit post page.
+* possibility to translate the base of permastructs for 'post_types' and 'taxonomies' (uses $wp_rewrite).
+* added some filters:
+	* 'qts_validate_post_slug' : args( $post (object), $slug (string), $lang (string) ) / filter to process the post slug before is saved on the database.
+	* 'qts_validate_term_slug' : args( $term (object), $slug (string), $lang (string) ) / filter to process the term slug before is saved on the database.
+	* 'qts_current_url' : args ( $url (string), $lang (string) ) / filter to process the entire url after it has been generated.
+	* 'qts_permastruct' : args ( $permastruct (string), $name (string) ) / filter to process the permastruct, used for change the base.
+* added plugin language textdomain (.pot file)
+* new admin options page for save the base permastructs.
+* import process when the plugin updates older versions.
+* some bug fixes.
+* some Qtranslate patches.
+
 = 0.9 =
 * some wordpress qTranslate bug fixes
 * adds a javascript solution for qTranslate Nav Menus
