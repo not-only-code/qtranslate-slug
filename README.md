@@ -70,8 +70,7 @@ You can choose to:
 
 In the admin go to *Settings/Permalinks* or *Settings/Slug options* and save.
 
-I can't manage translations in Nav Menus.
------------------------------------------
+**I can't manage translations in Nav Menus.**
 
 That's because language selector metabox is hidden, if you are in admin *nav menus* screen, press the button **Screen options** (on top and right) and after, check the option *Languages*. It will appear a **Language** meta box on top of the left sidebar.
 
