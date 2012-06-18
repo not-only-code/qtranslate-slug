@@ -16,7 +16,12 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 **Version 1.0** has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is better integrated with Wordpress API.
 
-This plugin works with **Qtranslate** since **2.5.8**.
+= Requirments: =
+
+* PHP 5.2
+* MySQL 5
+* Wordpress 3.3
+* Qtranslate 2.5.8
 
 = What is new? =
 
