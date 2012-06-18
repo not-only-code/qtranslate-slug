@@ -18,9 +18,7 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 = Requirments: =
 
-* PHP 5.2
-* MySQL 5
-* Wordpress 3.3
+* Wordpress 3.3 (PHP 5.2 and MySQL 5)
 * Qtranslate 2.5.8
 
 = What is new? =
