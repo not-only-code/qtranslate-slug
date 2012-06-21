@@ -293,9 +293,6 @@ class QtranslateSlug {
 		if (!$new_options || empty($new_options)) return;
 		
 		if (count($this->options) != count($new_options)) return;
-			
-		_debug('SAVINNGGGG');
-		_debug($new_options);
 		
 		update_option(QTS_OPTIONS_NAME, $new_options);
 		$this->options = $new_options;
@@ -328,7 +325,7 @@ class QtranslateSlug {
 	static function block_activate() {
 		global $wp_version;
 		
-		return ( version_compare($wp_version, "3.3", "<" ) && !function_exists('qtrans_init') );
+		return ( version_compare($wp_version, "3.3", "<" ) || !function_exists('qtrans_init') );
 	}
 	
 	
@@ -488,7 +485,6 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	function init() {
-		global $pagenow;
 		
 		load_plugin_textdomain( 'qts', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 		
@@ -527,14 +523,12 @@ class QtranslateSlug {
 			add_action( 'admin_head', array($this, 'hide_quick_edit'), 600 );
 			add_action( 'admin_init', array($this, 'fix_nav_menu') );
 			
-			if ( $pagenow == 'options-permalink.php' )
-				add_filter( 'query_vars', array($this, 'query_vars'));
-			
 		} else {
 			
 			add_filter( 'request', array($this, 'filter_request') );
 		}
 		
+		add_filter( 'query_vars', array($this, 'query_vars'));
 		add_action( 'generate_rewrite_rules', array($this, 'modify_rewrite_rules') );
 			
 		// remove some Qtranslate filters
@@ -710,15 +704,8 @@ class QtranslateSlug {
 	public function query_vars( $query_vars ) {
 		global $wp, $wp_rewrite;
 
-		$wp->$query_vars = array();
+		$wp->query_vars = array();
 		$post_type_query_vars = array();
-
-		if ( is_array($extra_query_vars) )
-			$wp->extra_query_vars = & $extra_query_vars;
-		else if (! empty($extra_query_vars))
-			parse_str($extra_query_vars, $wp->extra_query_vars);
-
-		// Process PATH_INFO, REQUEST_URI, and 404 for permalinks.
 
 		// Fetch the rewrite rules.
 		$rewrite = $wp_rewrite->wp_rewrite_rules();
@@ -739,6 +726,7 @@ class QtranslateSlug {
 			$req_uri = $req_uri_array[0];
 			$self = $_SERVER['PHP_SELF'];
 			$home_path = parse_url(home_url());
+			
 			if ( isset($home_path['path']) )
 				$home_path = $home_path['path'];
 			else
@@ -770,7 +758,7 @@ class QtranslateSlug {
 					$req_uri = '';
 				$request = $req_uri;
 			}
-
+			
 			$wp->request = $request;
 
 			// Look for matches.
@@ -848,7 +836,11 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	function filter_request( $query ) {
-		global $q_config, $wp_query;
+		global $q_config, $wp_query, $wp;
+		
+		// little fix for 404 Errors
+		if ( isset($query['error']) && isset($wp->matched_query) )
+			$query = wp_parse_args($wp->matched_query);
 		
 		// special conditional for /%postname%/ post structure
 		$page_foundit = false;
