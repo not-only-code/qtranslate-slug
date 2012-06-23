@@ -23,13 +23,11 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 = New in version 1.1 = 
 
-* added mulsitie support
+* added multisite support
 * fixed some parse url bugs
 * fixed slug bases validation 
 
-**Advice**
-
-**If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
+**Advice: If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
 
 
 You can also check the [project website](http://not-only-code.github.com/qtranslate-slug/) hosted on [GitHub](http://not-only-code.github.com).
@@ -83,8 +81,7 @@ That's because language selector metabox is hidden, if you are in admin *nav men
 == Changelog ==
 
 = 1.1 = 
-* added mulsitie support
-* validates nav-menus in upgrade process
+* added multisite support
 * fixed some parse url bugs
 * fixed slug bases validation 
 
