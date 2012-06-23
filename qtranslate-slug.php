@@ -6,9 +6,10 @@ Description: Allows to define a slug for each language and some qTranslate bug f
 Version: 1.1
 Author: Carlos Sanz Garcia
 Author URI: http://github.com/not-only-code
+*/
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
 
 if ( !function_exists('_debug') ):
 function _debug( $message ) {
@@ -27,10 +28,7 @@ function _debug( $message ) {
 	 endif;
 }
 endif;
-  
 ////////////////////////////////////////////////////////////////////////////////////////
-
-*/
 
 
 /**
@@ -256,13 +254,9 @@ class QtranslateSlug {
 	static function block_activate() {
 		global $wp_version;
 		
-<<<<<<< HEAD
-		return ( version_compare($wp_version, "3.3", "<" ) || !function_exists('qtrans_init') );
-=======
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); 
 		
 		return ( version_compare($wp_version, "3.3", "<" ) || !is_plugin_active('qtranslate/qtranslate.php') );
->>>>>>> Version 1.1
 	}
 	
 	
@@ -778,17 +772,11 @@ class QtranslateSlug {
 	function filter_request( $query ) {
 		global $q_config, $wp_query, $wp;
 		
-<<<<<<< HEAD
-		// little fix for 404 Errors
-		if ( isset($query['error']) && isset($wp->matched_query) )
-			$query = wp_parse_args($wp->matched_query);
-=======
 		if (isset($wp->matched_query))
 			$query = wp_parse_args($wp->matched_query);
 		
 		foreach (get_post_types() as $post_type) 
 			if ( array_key_exists($post_type, $query) && !in_array($post_type, array('post', 'page')) ) $query['post_type'] = $post_type;
->>>>>>> Version 1.1
 		
 		$page_foundit = false;
 		
