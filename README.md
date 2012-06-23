@@ -20,8 +20,7 @@ Description
 New in version 1.1
 ------------------
 
-* addedd mulsitie support
-* validates nav-menus in upgrade process
+* added mulsitie support
 * fixed some parse url bugs
 * fixed slug bases validation 
 
