@@ -24,6 +24,10 @@ New in version 1.1
 * fixed some parse url bugs
 * fixed slug bases validation 
 
+**Advice**
+
+**If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
+
 You can also check the [project website](http://not-only-code.github.com/qtranslate-slug/) hosted on [GitHub](http://not-only-code.github.com).
 Thanks for use this plugin!
 
