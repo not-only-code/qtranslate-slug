@@ -486,77 +486,24 @@ function qts_sanitize_bases($base_slugs = false) {
 	if ( !$base_slugs || empty($base_slugs) ) return;
 	
 	$base_slugs_processed = array();
-	$post_types = array();
-	$taxonomies = array();
+	$base_founded = array();
 	
 	// changing array structure
-	foreach ($base_slugs as $type => $value) {
-		
-		// matching post types..
-		preg_match('/(\b_qts_post_type_)\w+\b/', $type, $matches);
-		
-		if (!empty($matches)) 
-			foreach ($value as $lang => $base) $post_types[$lang][$type] = $base;
-		
-		// matching taxonomies..
-		preg_match('/(\b_qts_taxonomy_)\w+\b/', $type, $matches);
-		
-		if (!empty($matches))
-			foreach ($value as $lang => $base) $taxonomies[$lang][$type] = $base;
-	}
-
-	// processing post_types
-	if ( count($post_types) > 1 )
-		$post_types = qts_prevent_duplicates($post_types);
-	
-	// processing taxonomies
-	if ( count($taxonomies) > 1 )
-		$taxonomies = qts_prevent_duplicates($taxonomies);
-	
-	foreach ($post_types as $lang => $array_) 
-		foreach ($array_ as $key => $value) $base_slugs_processed[$key][$lang] = $value;
-		
-	foreach ($taxonomies as $lang => $array_) 
-		foreach ($array_ as $key => $value) $base_slugs_processed[$key][$lang] = $value;
-	
-	return $base_slugs_processed;
-}
-
-
-
-/**
- * Helper that prevents duplicates items on an array
- * 
- * @package Qtranslate Slug
- * @subpackage Settings
- * @version 1.0
- *
- * @return array processed
- */
-
-function qts_prevent_duplicates($array) {
-	
-	foreach ($array as $lang_ => $lang):
-		
-		$values = array();
-		$processed = array_unique($lang);
-
-		while ( count($processed) != count($lang) ) {
-			$diff = count($lang) - count($processed);
-			foreach ($lang as $key => $value) {
-				if (!in_array($value, $values)) {
-					$values[] = $value;
-				} else {
-					$lang[$key] = "$value-$diff";
+	foreach ($base_slugs as $type => $base) {
+		foreach ($base as $lang => $value) {
+			if ($value != ""):
+				$base_value = $value;
+				$count = 2;
+				while (in_array($value, $base_founded)) {
+					$value = "$base_value-$count";
+					$count++;
 				}
-			}
-			$processed = array_unique($lang);
+				$base_founded[] = $base_slugs[$type][$lang] = $value;
+			endif;
 		}
-		$array[$lang_] = $lang;
-		
-	endforeach;
+	}
 	
-	return $array;
+	return $base_slugs;
 }
 
 

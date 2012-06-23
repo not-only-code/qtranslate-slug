@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: qtranslate, slug, multilanguage
 Requires at least: 3.3
 Tested up to: 3.4
-Version: 1.0
+Version: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,20 +21,12 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 * Wordpress 3.3 (PHP 5.2 and MySQL 5)
 * Qtranslate 2.5.8
 
-= What is new? =
+= New in version 1.1 = 
 
-* **works** with any permalink combination and qtranslate mode.
-* new branch, the plugin has been rewritten: now the code is commented and wrapped inside a class, much code has change and the performance has been increased (use caches).
-* data system changed, no ID for slug type, then it don't needs install `qtrasnlate_slug` table. That means slugs now are stored on meta tables and installation creates a termmeta table with some new *core functions* to access/save data, based on [simple term meta](http://wordpress.org/extend/plugins/simple-term-meta/). Upgrade process when the plugin updates from older versions.
-* the plugin generates translated slug automatically from title in empty cases.
-* the plugin checks if the slug already exists (per each language and `post_type`/`taxonomy`), and adds a progressive number in this case. Works on ajax requests for example when new taxonomies are created in edit post page.
-* possibility to translate the base of permastructs for *post_types* and *taxonomies*, uses [$wp_rewrite](http://codex.wordpress.org/Class_Reference/WP_Rewrite). New admin options page for save the base permastructs.
-* added some filters, see in [other notes](http://wordpress.org/extend/plugins/qtranslate-slug/other_notes/).
-* added plugin language textdomain (.pot file).
-* updated **Language selector Widget**, and some new conventions like accessible functions for templating.
-* some bug fixes.
-* some Qtranslate patches.
-
+* addedd mulsitie support
+* validates nav-menus in upgrade process
+* fixed some parse url bugs
+* fixed slug bases validation 
 
 You can also check the [project website](http://not-only-code.github.com/qtranslate-slug/) hosted on [GitHub](http://not-only-code.github.com).
 Thanks for use this plugin!
@@ -86,6 +78,12 @@ That's because language selector metabox is hidden, if you are in admin *nav men
 
 == Changelog ==
 
+= 1.1 = 
+* added mulsitie support
+* validates nav-menus in upgrade process
+* fixed some parse url bugs
+* fixed slug bases validation 
+
 = 1.0 =
 * **works** with any permalink combination and qtranslate mode.
 * new branch, the plugin has been rewritten: now the code is commented and wrapped inside a class, much code has change and the performance has been increased (use caches).
@@ -133,23 +131,19 @@ This version allows TLD domain option for a different Qtranslate fork maded by Z
 
 Plugin filters reference:
 
-= qts_validate_post_slug =
-
+= qts_validate_post_slug =  
 filter to process the post slug before is saved on the database.  
 `args: $post (object), $slug (string), $lang (string)`
 
-= qts_validate_term_slug =
-
+= qts_validate_term_slug =  
 filter to process the term slug before is saved on the database.  
 `args: $term (object), $slug (string), $lang (string)`
 
-= qts_url_args =
-
+= qts_url_args =  
 filter to process the entire url after it has been generated.  
 `args: $url (string), $lang (string)`
  
-= qts_permastruct =
-
+= qts_permastruct =  
 filter to process the permastruct, used for change the base.  
 `args: $permastruct (string), $name (string)`
 
@@ -159,5 +153,4 @@ filter to process the permastruct, used for change the base.
 * detect Slug for each language and redirect accordingly in parse_query.
 * expand qtranslate for translate attachment names and descriptions ( useful for galleries )
 * translate other slugs like attachments.
-* multisite: add suport as network plugin enhancing the request, some qtranslate patches.
 * qtranslate integration with other plugins like Jigoshop, e-commerce, etc. Addapt **$wp_rewrite**.

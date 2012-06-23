@@ -3,80 +3,9 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.0
+Version: 1.1
 Author: Carlos Sanz Garcia
 Author URI: http://github.com/not-only-code
-
-
-This plugin (version 1.0) has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is better integrated with Wordpress API. Previous versions of this plugin was based on Qtranslate Slug with Widget plugin (http://wordpress.org/extend/plugins/qtranslate-slug-with-widget/).
-
---------------------------------------------------------------------------------------------------------
-
-version 1.0
-* new branch, the plugin has been rewrited: now the code is commented and wrapped inside a class, much code has change and the performance has been increased. √
-* structural changes:
-	* no ID for slug type, then don't install qtrasnlate_slug table. √
-	* slugs now are stored on meta tables, installation creates a termmeta table with some new 'core functions' to access/save data, based on [simple term meta](http://wordpress.org/extend/plugins/simple-term-meta/) √
-* some automation:
-	* the plugin generates translated slug automatically from title in empty cases (like wordpress) √
-	* the plugin checks if the slug already exists (per each language and type / taxonomy), and adds a progressive number in this case (like wordpress) √
-	* works on ajax requests like creatig new taxonomies on edit post page √
-* possibility to translate the base of permastructs for 'post_types' and 'taxonomies' (uses $wp_rewrite) √
-* added some filters:
-	* 'qts_validate_post_slug' : args( $post (object), $slug (string), $lang (string) ) / filter to process the post slug before is saved on the database.
-	* 'qts_validate_term_slug' : args( $term (object), $slug (string), $lang (string) ) / filter to process the term slug before is saved on the database.
-	* 'qts_current_url' : args ( $url (string), $lang (string) ) / filter to process the entire url after it has been generated.
-	* 'qts_permastruct' : args ( $permastruct (string), $name (string) ) / filter to process the permastruct, used for change the base.
-* added plugin language textdomain (.pot file) √
-* new admin options page for save the base permastructs √
-* import process when the plugin updates older versions
-* updated Language selector Widget
-* some bug fixes √
-* some Qtranslate patches
-
-version 0.9
-* some wordpress qTranslate bug fixes
-* adds a javascript solution for qTranslate Nav Menus
-
-version 0.8
-* added support for Categories
-* added support for Tags
-* added support for Taxonomies
-* added support for Custom Post Types
-
-version 0.7 enhanced by [Zapo](http://www.qianqin.de/qtranslate/forum/viewtopic.php?f=4&t=1049&start=50#p7499)
-* added suport for qTranslate TLD domain mode (en: domain.com | fr: domain.fr) visit 
-
-Version 0.5 and 0.6 enhanched by Marco Del Percio
-
---------------------------------------------------------------------------------------------------------
-
-TODO:
-
-* add support to translate attachment slugs
-* expand qtranslate for translate attachment names and descriptions ( useful for galleries )
-* qtranslate integration with other plugins like Jigoshop, e-commerce, etc.
-
---------------------------------------------------------------------------------------------------------
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-
-The full copy of the GNU General Public License is available here: http://www.gnu.org/licenses/gpl.txt
-*/
-
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -100,6 +29,8 @@ function _debug( $message ) {
 endif;
   
 ////////////////////////////////////////////////////////////////////////////////////////
+
+*/
 
 
 /**
@@ -325,7 +256,13 @@ class QtranslateSlug {
 	static function block_activate() {
 		global $wp_version;
 		
+<<<<<<< HEAD
 		return ( version_compare($wp_version, "3.3", "<" ) || !function_exists('qtrans_init') );
+=======
+		include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); 
+		
+		return ( version_compare($wp_version, "3.3", "<" ) || !is_plugin_active('qtranslate/qtranslate.php') );
+>>>>>>> Version 1.1
 	}
 	
 	
@@ -781,8 +718,11 @@ class QtranslateSlug {
 
 						if ( $wp_rewrite->use_verbose_page_rules && preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch ) ) {
 							// this is a verbose page match, lets check to be sure about it
-							if ( ! $this->get_page_by_path( $matches[ $varmatch[1] ] ) )
-						 		continue;
+							if ( ! $page_foundid = $this->get_page_by_path( $matches[ $varmatch[1] ] ) ) {
+								continue;
+							} else {
+								wp_cache_set('qts_page_request', $page_foundid); // caching query :)
+							}		
 						}
 
 						// Got a match.
@@ -838,52 +778,40 @@ class QtranslateSlug {
 	function filter_request( $query ) {
 		global $q_config, $wp_query, $wp;
 		
+<<<<<<< HEAD
 		// little fix for 404 Errors
 		if ( isset($query['error']) && isset($wp->matched_query) )
 			$query = wp_parse_args($wp->matched_query);
+=======
+		if (isset($wp->matched_query))
+			$query = wp_parse_args($wp->matched_query);
 		
-		// special conditional for /%postname%/ post structure
+		foreach (get_post_types() as $post_type) 
+			if ( array_key_exists($post_type, $query) && !in_array($post_type, array('post', 'page')) ) $query['post_type'] = $post_type;
+>>>>>>> Version 1.1
+		
 		$page_foundit = false;
-		if ( $this->permalink_structure == '/%postname%/' ):
-			// post or page
-			if ( isset($query['name']) && !isset($query['post_type']) ) {
-				$page = $this->get_page_by_path($query['name']);
-				if ( !is_null($page) ) {
-					$id = $page->ID;
-					$cache_array = array($page);
-					update_post_caches($cache_array, 'page'); // caching query :)
-					unset($query['name']);
-					$query['pagename'] = get_page_uri($page);
-					$function = 'get_page_link';
-					$page_foundit = true;
-				} else {
-					$page = $this->get_page_by_path($query['name'], OBJECT, 'post');
-					if (!$page) return $query;
-					$query['name'] = $page->post_name;
-					$id = $page->ID;
-					$cache_array = array($page);
-					update_post_caches($cache_array); // caching query :)
-					$function = 'get_permalink';
-					$page_foundit = true;
-				}
-			}
-		endif;
 		
 		// -> page
-		if ( ( isset($query['pagename']) || isset($query['page_id']) ) &&  !$page_foundit ):
+		if ( isset($query['pagename']) || isset($query['page_id']) ):
 			
-			$page = isset($query['page_id']) ? get_page($query['page_id']) : $this->get_page_by_path($query['pagename']);
+			$page = wp_cache_get('qts_page_request');
+			if (!$page) 
+				$page = isset($query['page_id']) ? get_page($query['page_id']) : $this->get_page_by_path($query['pagename']);
+			
 			if (!$page) return $query;
 			$id = $page->ID;
 			$cache_array = array($page);
-			update_post_caches($cache_array, 'page');
+			update_post_caches($cache_array, 'page'); // caching query :)
+			wp_cache_delete('qts_page_request');
 			$query['pagename'] = get_page_uri($page);
 			$function = 'get_page_link';
 		
 		// -> custom post type
 		elseif ( isset($query['post_type']) ):
 			
-			$page = $this->get_page_by_path($query['name'], OBJECT, $query['post_type']);
+			$page_slug = ( isset($query['name']) && !empty($query['name']) ) ? $query['name'] : $query[$query['post_type']];
+			$page = $this->get_page_by_path($page_slug, OBJECT, $query['post_type']);
 			if (!$page) return $query;
 			$id = $page->ID;
 			$cache_array = array($page);
@@ -892,7 +820,7 @@ class QtranslateSlug {
 			$function = 'get_post_permalink';
 		
 		// -> post
-		elseif ( (isset($query['name']) || isset($query['p']) ) && !$page_foundit ):
+		elseif ( isset($query['name']) || isset($query['p']) ):
 			
 			$post = isset($query['p']) ? get_post($query['p']) : $this->get_page_by_path($query['name'], OBJECT, 'post');
 			if (!$post) return $query;
@@ -1029,7 +957,6 @@ class QtranslateSlug {
 		$parts = explode( '/', trim( $page_path, '/' ) );
 		$parts = array_map( 'esc_sql', $parts );
 		$parts = array_map( 'sanitize_title_for_query', $parts );
-
 		$in_string = "'". implode( "','", $parts ) . "'";
 		$meta_key = $this->get_meta_key();
 		$post_type_sql = $post_type;
@@ -1060,7 +987,6 @@ class QtranslateSlug {
 		}
 		
 		if ( $foundid ) {
-			
 			return $foundid;
 			
 		} else {
@@ -1089,6 +1015,7 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	private function get_page_by_path($page_path, $output = OBJECT, $post_type = 'page') {
+		
 		$foundid = $this->get_page_id_by_path($page_path, $output, $post_type);
 		if ( $foundid )
 			return get_page( $foundid, $output );
@@ -1109,7 +1036,7 @@ class QtranslateSlug {
 		
 		$backtrace = debug_backtrace();
 		
-		$ignore_functions = array('mod_rewrite_rules', 'save_mod_rewrite_rules', 'flush_rules', 'rewrite_rules', 'wp_rewrite_rules');
+		$ignore_functions = array('mod_rewrite_rules', 'save_mod_rewrite_rules', 'flush_rules', 'rewrite_rules', 'wp_rewrite_rules', 'query_vars');
 		
 		if ( isset($backtrace['function']) ) {
 			if (in_array($backtrace['function'], $ignore_functions)) return true;
