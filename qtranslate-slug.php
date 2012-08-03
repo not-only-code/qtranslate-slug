@@ -367,7 +367,6 @@ class QtranslateSlug {
 		echo "<p><strong>Qtranslate Slug:</strong></p>" . PHP_EOL;
 		echo "<p>" . __('This plugin requires at least <strong>Wordpress 3.3</strong> and <strong>Qtranslate(2.5.8 or newer)</strong>', 'qts') . "</p>" . PHP_EOL;
 	    echo "</div>" . PHP_EOL;
-
 	}
 	
 	
