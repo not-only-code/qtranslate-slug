@@ -755,7 +755,7 @@ class QtranslateSlug {
 			}
 		}
 
-		return $wp->public_query_vars;
+		return count(array_diff($query_vars, $wp->public_query_vars)) > 0 ? $query_vars : $wp->public_query_vars;
 	}
 	
 	
