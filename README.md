@@ -1,7 +1,7 @@
 Qtranslate Slug
 ===============
 
-![Qtranslate Slug logo](https://codingsomething.files.wordpress.com/2012/06/qts-logo.png?w=200)
+![Qtranslate Slug logo](http://codingsomething.files.wordpress.com/2013/01/qts-logo.png?w=200)
 
 Adds support for permalink translations and fix some QTranslate deficiencies since wordpress 3.0
 
