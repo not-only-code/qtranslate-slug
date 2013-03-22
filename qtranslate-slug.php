@@ -1292,16 +1292,18 @@ class QtranslateSlug {
 	public function _get_page_link( $link, $id ) {
 		global $post, $wp_rewrite, $q_config;
 
+		$current_post = $post;
+
 		if ( !$id )
 			$id = (int) $post->ID;
 		else
-			$post = &get_post($id);
+			$current_post = &get_post($id);
 
-		$draft_or_pending = in_array( $post->post_status, array( 'draft', 'pending', 'auto-draft' ) );
+		$draft_or_pending = in_array( $current_post->post_status, array( 'draft', 'pending', 'auto-draft' ) );
 
 		$link = $wp_rewrite->get_page_permastruct();
 
-		if ( !empty($link) && ( isset($post->post_status) && !$draft_or_pending ) ) {
+		if ( !empty($link) && ( isset($current_post->post_status) && !$draft_or_pending ) ) {
 			
 			$link = str_replace('%pagename%', $this->get_page_uri($id), $link);
 			
