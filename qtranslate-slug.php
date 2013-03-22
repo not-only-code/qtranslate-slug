@@ -1843,27 +1843,38 @@ class QtranslateSlug {
 	public function unique_term_slug($slug, $term, $lang) {
 		global $wpdb;
 		
-		$meta_key_name = $this->get_meta_key($lang);
-		$query = "SELECT term_id FROM $wpdb->termmeta WHERE meta_key = '$meta_key_name' AND meta_value = '$slug' AND term_id != $term->term_id ";
-		$exists_slug = $wpdb->get_results($query);
-		
-		if ( empty($exists_slug) )
-			return $slug;
-		
-		// If we didn't get a unique slug, try appending a number to make it unique.
-		$query = $wpdb->prepare( "SELECT meta_value FROM $wpdb->termmeta WHERE meta_key = '$meta_key_name' AND meta_value = '$slug' AND term_id != $term->term_id");
+        $meta_key_name = $this->get_meta_key($lang);
+        $query = $wpdb->prepare("SELECT term_id FROM $wpdb->termmeta WHERE meta_key = '%s' AND meta_value = '%s' AND term_id != %d ",
+                       $meta_key_name,
+                       $slug,
+                       $term->term_id);
+        $exists_slug = $wpdb->get_results($query);
 
-		if ( $wpdb->get_var( $query ) ) {
-			$num = 2;
-			do {
-				$alt_slug = $slug . "-$num";
-				$num++;
-				$slug_check = $wpdb->get_var( $wpdb->prepare(  "SELECT meta_value FROM $wpdb->termmeta WHERE meta_key = '$meta_key_name' AND meta_value = '$alt_slug'" ) );
-			} while ( $slug_check );
-			$slug = $alt_slug;
-		}
+        if ( empty($exists_slug) )
+            return $slug;
 
-		return $slug;
+        // If we didn't get a unique slug, try appending a number to make it unique.
+        $query = $wpdb->prepare(
+                    "SELECT meta_value FROM $wpdb->termmeta WHERE meta_key = '%s' AND meta_value = '%s' AND term_id != %d",
+                    $meta_key_name,
+                    $slug,
+                    $term->term_id);
+
+        if ( $wpdb->get_var( $query ) ) {
+            $num = 2;
+            do {
+                $alt_slug = $slug . "-$num";
+                $num++;
+                $slug_check = $wpdb->get_var(
+                                 $wpdb->prepare(
+                                "SELECT meta_value FROM $wpdb->termmeta WHERE meta_key = '%s' AND meta_value = '%s'",
+                                $meta_key_name,
+                                $alt_slug) );
+            } while ( $slug_check );
+            $slug = $alt_slug;
+        }
+
+        return $slug;
 	}
 	
 	
