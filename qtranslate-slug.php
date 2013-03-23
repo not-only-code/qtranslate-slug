@@ -2243,13 +2243,30 @@ add_action('plugins_loaded', array($qtranslate_slug, 'init') );
 
 /**
  * Language Selector Code for templating
- * 
+ *
+ * @package Qtranslate Slug
+ * @subpackage Core 
  * @since 1.0
  */
-function qts_language_menu($type = "text", $args = array()) {
+function qts_language_menu ($type = "text", $args = array()) {
 	global $qtranslate_slug;
 	
 	$qtranslate_slug->language_menu($type, $args);
+}
+
+
+
+/**
+ * Adds support for old plugin function
+ * 
+ * @package Qtranslate Slug
+ * @subpackage Core
+ * @since 1.1.5
+ */
+function qTranslateSlug_getSelfUrl ($lang = false) {
+	global $qtranslate_slug;
+
+	return $qtranslate_slug->get_current_url($lang);
 }
 
 
