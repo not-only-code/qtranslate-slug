@@ -616,10 +616,13 @@ class QtranslateSlug {
 		
 		if ( empty($this->permalink_structure) || $q_config['url_mode'] == 1 ) 
 			$base_args['lang'] = $this->get_lang();
-		
+
 		// rebulid query with all args
 		$url = add_query_arg($base_args, $url);
-		
+
+		$url = str_replace('/?', '?', $url); // hack: improve this code
+		$url = str_replace('?', '/?', $url); // hack: improve this code
+
 		return $url;
 	}
 	
