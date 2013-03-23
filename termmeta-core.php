@@ -2,6 +2,7 @@
 /**
  * Install Term meta table - setup table, store db version for future updates
  */
+if ( !function_exists('install_term_meta_table') ):
 function install_term_meta_table() {
 	global $wpdb;
 
@@ -19,6 +20,7 @@ function install_term_meta_table() {
 	  	PRIMARY KEY id (`meta_id`)) $collate;";
 	$wpdb->query($sql);
 }
+endif;
 
 
 
@@ -27,6 +29,8 @@ function simple_post_meta_define_table() {
 	$wpdb->termmeta = $wpdb->prefix . 'termmeta';
 }
 add_action( 'init', 'simple_post_meta_define_table' );
+
+
 
 /**
  * Updates metadata cache for list of term IDs.
@@ -38,9 +42,11 @@ add_action( 'init', 'simple_post_meta_define_table' );
  * @param array $term_ids List of post IDs.
  * @return bool|array Returns false if there is nothing to update or an array of metadata.
  */
-function update_termmeta_cache($term_ids) {
-	return update_meta_cache('term', $term_ids);
-}
+if ( !function_exists('update_termmeta_cache') ):
+	function update_termmeta_cache($term_ids) {
+		return update_meta_cache('term', $term_ids);
+	}
+endif;
 
 
 
@@ -53,9 +59,11 @@ function update_termmeta_cache($term_ids) {
  * @param bool $unique Optional, default is false. Whether the same key should not be added.
  * @return bool False for failure. True for success.
  */
-function add_term_meta( $term_id, $meta_key, $meta_value, $unique = false ) {
-	return add_metadata('term', $term_id, $meta_key, $meta_value, $unique);
-}
+if ( !function_exists('add_term_meta') ):
+	function add_term_meta( $term_id, $meta_key, $meta_value, $unique = false ) {
+		return add_metadata('term', $term_id, $meta_key, $meta_value, $unique);
+	}
+endif;
 
 
 
@@ -71,9 +79,11 @@ function add_term_meta( $term_id, $meta_key, $meta_value, $unique = false ) {
  * @param mixed $meta_value Optional. Metadata value.
  * @return bool False for failure. True for success.
  */
-function delete_term_meta( $term_id, $meta_key, $meta_value = '' ) {
-	return delete_metadata('term', $term_id, $meta_key, $meta_value);
-}
+if ( !function_exists('delete_term_meta') ):
+	function delete_term_meta( $term_id, $meta_key, $meta_value = '' ) {
+		return delete_metadata('term', $term_id, $meta_key, $meta_value);
+	}
+endif;
 
 
 
@@ -86,9 +96,11 @@ function delete_term_meta( $term_id, $meta_key, $meta_value = '' ) {
  * @return mixed Will be an array if $single is false. Will be value of meta data field if $single
  *  is true.
  */
-function get_term_meta( $term_id, $key, $single = false ) {
-	return get_metadata('term', $term_id, $key, $single);
-}
+if ( !function_exists('get_term_meta') ):
+	function get_term_meta( $term_id, $key, $single = false ) {
+		return get_metadata('term', $term_id, $key, $single);
+	}
+endif;
 
 
 
@@ -106,10 +118,11 @@ function get_term_meta( $term_id, $key, $single = false ) {
  * @param mixed $prev_value Optional. Previous value to check before removing.
  * @return bool False on failure, true if success.
  */
-function update_term_meta( $term_id, $meta_key, $meta_value, $prev_value = '' ) {
-	
-	return update_metadata('term', $term_id, $meta_key, $meta_value, $prev_value);
-}
+if ( !function_exists('update_term_meta') ):
+	function update_term_meta( $term_id, $meta_key, $meta_value, $prev_value = '' ) {
+		return update_metadata('term', $term_id, $meta_key, $meta_value, $prev_value);
+	}
+endif;
 
 
 
@@ -119,24 +132,26 @@ function update_term_meta( $term_id, $meta_key, $meta_value, $prev_value = '' ) 
  * @param string $term_meta_key Key to search for when deleting.
  * @return bool Whether the term meta key was deleted from the database
  */
-function delete_term_meta_by_key($term_meta_key) {
-	if ( !$term_meta_key )
-		return false;
+if ( !function_exists('delete_term_meta_by_key') ):
+	function delete_term_meta_by_key($term_meta_key) {
+		if ( !$term_meta_key )
+			return false;
 
-	global $wpdb;
-	$term_ids = $wpdb->get_col($wpdb->prepare("SELECT DISTINCT term_id FROM $wpdb->termmeta WHERE meta_key = %s", $term_meta_key));
-	if ( $term_ids ) {
-		$termmetaids = $wpdb->get_col( $wpdb->prepare( "SELECT meta_id FROM $wpdb->termmeta WHERE meta_key = %s", $term_meta_key ) );
-		$in = implode( ',', array_fill(1, count($termmetaids), '%d'));
-		do_action( 'delete_termmeta', $termmetaids );
-		$wpdb->query( $wpdb->prepare("DELETE FROM $wpdb->termmeta WHERE meta_id IN($in)", $termmetaids ));
-		do_action( 'deleted_termmeta', $termmetaids );
-		foreach ( $term_ids as $term_id )
-			wp_cache_delete($term_id, 'term_meta');
-		return true;
+		global $wpdb;
+		$term_ids = $wpdb->get_col($wpdb->prepare("SELECT DISTINCT term_id FROM $wpdb->termmeta WHERE meta_key = %s", $term_meta_key));
+		if ( $term_ids ) {
+			$termmetaids = $wpdb->get_col( $wpdb->prepare( "SELECT meta_id FROM $wpdb->termmeta WHERE meta_key = %s", $term_meta_key ) );
+			$in = implode( ',', array_fill(1, count($termmetaids), '%d'));
+			do_action( 'delete_termmeta', $termmetaids );
+			$wpdb->query( $wpdb->prepare("DELETE FROM $wpdb->termmeta WHERE meta_id IN($in)", $termmetaids ));
+			do_action( 'deleted_termmeta', $termmetaids );
+			foreach ( $term_ids as $term_id )
+				wp_cache_delete($term_id, 'term_meta');
+			return true;
+		}
+		return false;
 	}
-	return false;
-}
+endif;
 
 
 
@@ -150,14 +165,16 @@ function delete_term_meta_by_key($term_meta_key) {
  * @param int $term_id term ID
  * @return array
  */
-function get_term_custom( $term_id ) {
-	$term_id = (int) $term_id;
+if ( !function_exists('add_term_meta') ):
+	function get_term_custom( $term_id ) {
+		$term_id = (int) $term_id;
 
-	if ( ! wp_cache_get($term_id, 'term_meta') )
-		update_termmeta_cache($term_id);
+		if ( ! wp_cache_get($term_id, 'term_meta') )
+			update_termmeta_cache($term_id);
 
-	return wp_cache_get($term_id, 'term_meta');
-}
+		return wp_cache_get($term_id, 'term_meta');
+	}
+endif;
 
 
 
@@ -169,15 +186,17 @@ function get_term_custom( $term_id ) {
  * @param int $term_id term ID
  * @return array|null Either array of the keys, or null if keys could not be retrieved.
  */
-function get_term_custom_keys( $term_id ) {
-	$custom = get_term_custom( $term_id );
+if ( !function_exists('get_term_custom_keys') ):
+	function get_term_custom_keys( $term_id ) {
+		$custom = get_term_custom( $term_id );
 
-	if ( !is_array($custom) )
-		return;
+		if ( !is_array($custom) )
+			return;
 
-	if ( $keys = array_keys($custom) )
-		return $keys;
-}
+		if ( $keys = array_keys($custom) )
+			return $keys;
+	}
+endif;
 
 
 
@@ -191,11 +210,13 @@ function get_term_custom_keys( $term_id ) {
  * @param int $term_id Term ID
  * @return array Meta field values.
  */
-function get_term_custom_values( $key = '', $term_id ) {
-	if ( !$key )
-		return null;
+if ( !function_exists('get_term_custom_values') ):
+	function get_term_custom_values( $key = '', $term_id ) {
+		if ( !$key )
+			return null;
 
-	$custom = get_term_custom($term_id);
+		$custom = get_term_custom($term_id);
 
-	return isset($custom[$key]) ? $custom[$key] : null;
-}
+		return isset($custom[$key]) ? $custom[$key] : null;
+	}
+endif;
