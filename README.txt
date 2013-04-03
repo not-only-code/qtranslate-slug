@@ -3,7 +3,7 @@ Contributors: Carlos Sanz García
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYC46KSLRC4Q8
 Tags: qtranslate, slug, multilanguage
 Requires at least: 3.3
-Tested up to: 3.4.1
+Tested up to: 3.5.1
 Version: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -21,11 +21,9 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 * Wordpress 3.3 (PHP 5.2 and MySQL 5)
 * Qtranslate 2.5.8
 
-= New in version 1.1 = 
+= New in version 1.1.5 =
 
-* added multisite support
-* fixed some parse url bugs
-* fixed slug bases validation 
+* bugfixes
 
 **Advice: If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
 
@@ -79,6 +77,9 @@ That's because language selector metabox is hidden, if you are in admin *nav men
 4. Qtranslate Slug options page for translate base permastructs of post_types and taxonomies.
 
 == Changelog ==
+
+= 1.1.5 = 
+* bugfixes
 
 = 1.1 = 
 * added multisite support

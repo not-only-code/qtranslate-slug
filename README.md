@@ -17,12 +17,10 @@ Description
 * Wordpress 3.3 (PHP 5.2 and MySQL 5)
 * Qtranslate 2.5.8
 
-New in version 1.1
-------------------
+New in version 1.1.5
+---------------------
 
-* added multisite support
-* fixed some parse url bugs
-* fixed slug bases validation 
+* bugfixes
 
 **Advice: If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
 
@@ -87,6 +85,9 @@ Screenshots
 
 Changelog
 ---------
+
+**1.1.5**
+* bugfixes
 
 **1.1**
 * added multisite support
