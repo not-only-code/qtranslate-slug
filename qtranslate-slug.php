@@ -2315,19 +2315,14 @@ if (is_admin()) {
 			// make the output valid
 			$tax = str_replace("'", "", $taxonomy);
 			
-			if ( !is_taxonomy_hierarchical($tax) ) {
-				
-				$meta		= get_option('qtranslate_term_name');
-				$lang		= qtrans_getLanguage();
-				
-				if ( !empty( $terms ) ) {
-					foreach ($terms as $term) {
-						$term->original_name = $term->name;
-						$term->name = $meta[$term->name][$lang];
-					};
-				};
+			$meta = get_option('qtranslate_term_name');
+			$lang = qtrans_getLanguage();
 			
-			}
+			if ( !empty( $terms ) ) {
+				foreach ($terms as $term) {
+					$term->name = $meta[$term->name][$lang];
+				};
+			};
 		
 		}
 		return $terms;
