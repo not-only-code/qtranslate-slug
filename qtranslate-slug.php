@@ -435,7 +435,6 @@ class QtranslateSlug {
 			$this->check_old_versions();
 			
 			// add filters
-			add_filter( 'term_name', array($this, 'term_name'), 0, 2 );
 			add_filter( 'qts_validate_post_slug', array($this, 'validate_post_slug'), 0, 3 );
 			add_filter( 'qts_validate_post_slug', array($this, 'unique_post_slug'), 1, 3 );
 			add_filter( 'qts_validate_term_slug', array($this, 'validate_term_slug'), 0, 3 );
@@ -1986,40 +1985,6 @@ class QtranslateSlug {
 	
 	
 	
-	/**
-	 * Bug fix for taxonomy names in wp_terms_list_table
-	 *
-	 * @param string $name parsed term name
-	 * @param object $tag term object
-	 * @return string translated term name
-	 *
-	 * @since 1.0
-	 */	
-	function term_name($name, $tag) {
-		
-		$backtrace = debug_backtrace();
-		
-		foreach ( $backtrace as $tracepoint ) {
-			
-			// post page column
-			if ( isset($tracepoint['function']) && $tracepoint['function'] == 'sanitize_term_field' ) {
-				return apply_filters('single_term_title', $name);
-			}
-			
-			// term page column
-			if ( isset($tracepoint['class']) && $tracepoint['class'] == 'WP_Terms_List_Table' ) {
-				$name_array = explode('&#8212; ', $name);
-				array_pop($name_array);
-				array_push($name_array, apply_filters('single_term_title', $tag->name));
-				return implode('&#8212; ', $name_array);
-			}
-			
-		}
-		
-		return $name;
-	}
-	
-	
 	
 	/**
 	 * Bug fix for multisite blog names
@@ -2321,4 +2286,86 @@ function qts_uninstall() {
 	foreach ($q_config['enabled_languages'] as $lang) $meta_keys[] = sprintf("_qts_slug_%s", $lang);
 	$meta_keys = "'". implode( "','", $meta_keys ) . "'";
 	$wpdb->query("DELETE from $wpdb->postmeta WHERE meta_key IN ($meta_keys)");	
+}
+
+
+
+if (is_admin()) {
+	
+	/**
+	 * Fix for:
+	 * - Taxonomy & custom taxonomy names in Post Manage page
+	 * - List of tags already added to the post in Post 
+	 *   Edit page (but have issues when saving)
+	 *   -> temporarily disabled
+	 */	
+	function get_object_terms_qtranslate($terms, $obj_id, $taxonomy, $args) {
+		
+		global $pagenow;
+		
+		// Although in post edit page the tags are translated,
+		// but when saving/updating the post Wordpess considers
+		// the translated tags as new tags. Due to this
+		// issue I limit this 'hack' to the post manage
+		// page only.
+		if ( $pagenow == 'edit.php' ) {
+			
+			// $taxonomy output seems to be wrapped
+			// in single quotes, thus remove them to
+			// make the output valid
+			$tax = str_replace("'", "", $taxonomy);
+			
+			$meta = get_option('qtranslate_term_name');
+			$lang = qtrans_getLanguage();
+			
+			if ( !empty( $terms ) ) {
+				foreach ($terms as $term) {
+					$term->name = $meta[$term->name][$lang];
+				};
+			};
+		
+		}
+		return $terms;
+	}
+	add_filter( 'wp_get_object_terms', 'get_object_terms_qtranslate', 0, 4 );
+	
+	
+	/**
+	 * Fix for:
+	 * - Taxonomy names in Taxonomy Manage page
+	 * - 'Popular Tags' in Taxonomy (Tags) Manage page
+	 * - Category filter dropdown menu in Post Manage page
+	 * - Category list in Post Edit page
+	 * - 'Most Used' tags list in Post Edit page
+	 *   (but have issues when saving)
+	 *   -> temporarily disabled
+	 */	
+	function get_terms_qtranslate($terms, $taxonomy) {
+		
+		global $pagenow;
+		
+		// Although in post edit page the tags in 'most
+		// used' list are translated, but when saving the
+		// post Wordpess considers the translated tags as
+		// new tags. Due to this issue I skip this 'hack'
+		// for tags in post edit page.
+		if ( $pagenow != 'admin-ajax.php' ) {
+			
+			$meta		= get_option('qtranslate_term_name');
+			$lang		= qtrans_getLanguage();
+			
+			if ( !empty( $terms ) ) {
+				foreach ($terms as $term) {
+					if ($meta[$term->name][$lang]) {
+						$term->name = $meta[$term->name][$lang];
+					}
+				};
+			};
+		
+		}
+	
+		return $terms;
+	}
+	add_filter( 'get_terms', 'get_terms_qtranslate', 0, 3 );
+	
 }
