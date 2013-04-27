@@ -316,7 +316,7 @@ class QtranslateSlug {
 		}
 		
 		// regenerate rewrite rules in db
-		add_action( 'generate_rewrite_rules', array($this, 'modify_rewrite_rules') );
+		add_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
 		flush_rewrite_rules();
 	}
 	
@@ -331,7 +331,7 @@ class QtranslateSlug {
 		global $wp_rewrite;
 		
 		// regenerate rewrite rules in db
-		remove_action( 'generate_rewrite_rules', array($this, 'modify_rewrite_rules') );
+		remove_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
 		$wp_rewrite->flush_rules();
 	}
 	
@@ -406,7 +406,7 @@ class QtranslateSlug {
 	private function check_old_versions() {
 		
 		if ( $this->check_old_data() )
-			add_action('admin_notices', array($this, 'notice_update'));
+			add_action('admin_notices', array(&$this, 'notice_update'));
 	}
 	
 	
@@ -423,7 +423,7 @@ class QtranslateSlug {
 		// checking plugin activate
 		if ( self::block_activate() ) {
 			if (is_admin()) 
-				add_action('admin_notices', array($this, 'notice_dependences'));
+				add_action('admin_notices', array(&$this, 'notice_dependences'));
 			return;
 		}
 		
@@ -435,32 +435,34 @@ class QtranslateSlug {
 			$this->check_old_versions();
 			
 			// add filters
-			add_filter( 'qts_validate_post_slug', array($this, 'validate_post_slug'), 0, 3 );
-			add_filter( 'qts_validate_post_slug', array($this, 'unique_post_slug'), 1, 3 );
-			add_filter( 'qts_validate_term_slug', array($this, 'validate_term_slug'), 0, 3 );
-			add_filter( 'qts_validate_term_slug', array($this, 'unique_term_slug'), 1, 3 );
+			add_filter( 'qts_validate_post_slug', array(&$this, 'validate_post_slug'), 0, 3 );
+			add_filter( 'qts_validate_post_slug', array(&$this, 'unique_post_slug'), 1, 3 );
+			add_filter( 'qts_validate_term_slug', array(&$this, 'validate_term_slug'), 0, 3 );
+			add_filter( 'qts_validate_term_slug', array(&$this, 'unique_term_slug'), 1, 3 );
+			add_filter( 'wp_get_object_terms', array(&$this, 'get_object_terms'), 0, 4 );
+			add_filter( 'get_terms', array(&$this, 'get_terms'), 0, 3 );
 			
 			// admin actions
-			add_action( 'admin_menu', array($this, 'add_slug_meta_box') );
-			add_action( 'save_post', array($this, 'save_postdata'), 605, 2 );
-			add_action( 'delete_term', array($this, 'delete_term'), 0, 3);
-			add_action( 'created_term', array($this, 'save_term'), 605, 3);
-			add_action( 'edited_term', array($this, 'save_term'), 605, 3 );
-			add_action( 'admin_head', array($this, 'hide_slug_box'), 900 );
+			add_action( 'admin_menu', array(&$this, 'add_slug_meta_box') );
+			add_action( 'save_post', array(&$this, 'save_postdata'), 605, 2 );
+			add_action( 'delete_term', array(&$this, 'delete_term'), 0, 3);
+			add_action( 'created_term', array(&$this, 'save_term'), 605, 3);
+			add_action( 'edited_term', array(&$this, 'save_term'), 605, 3 );
+			add_action( 'admin_head', array(&$this, 'hide_slug_box'), 900 );
 			
-			add_action( 'init', array($this, 'taxonomies_hooks'), 805 );
+			add_action( 'init', array(&$this, 'taxonomies_hooks'), 805 );
 			
-			add_action( 'wp_dashboard_setup', array($this, 'remove_dashboard_widgets') );
-			add_action( 'admin_head', array($this, 'hide_quick_edit'), 600 );
-			add_action( 'admin_init', array($this, 'fix_nav_menu') );
+			add_action( 'wp_dashboard_setup', array(&$this, 'remove_dashboard_widgets') );
+			add_action( 'admin_head', array(&$this, 'hide_quick_edit'), 600 );
+			add_action( 'admin_init', array(&$this, 'fix_nav_menu') );
 			
 		} else {
 			
-			add_filter( 'request', array($this, 'filter_request') );
+			add_filter( 'request', array(&$this, 'filter_request') );
 		}
 		
-		add_filter( 'query_vars', array($this, 'query_vars'));
-		add_action( 'generate_rewrite_rules', array($this, 'modify_rewrite_rules') );
+		add_filter( 'query_vars', array(&$this, 'query_vars'));
+		add_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
 			
 		// remove some Qtranslate filters
 	    remove_filter( 'page_link', 	'qtrans_convertURL' );
@@ -468,17 +470,17 @@ class QtranslateSlug {
 	    remove_filter( 'category_link', 'qtrans_convertURL' );
 	    remove_filter( 'tag_link', 		'qtrans_convertURL' );
 		
-		add_filter( 'qts_permastruct' , array($this, 'get_extra_permastruct'), 0, 2);
-		add_filter( 'qts_url_args',		array($this, 'parse_url_args'), 0, 1);
-		add_filter( 'home_url',			array($this, 'home_url'), 10, 4);	
-		add_filter( 'post_type_link',	array($this, 'post_type_link'), 600, 4 );
-		add_filter( 'post_link',		array($this, 'post_link'), 0, 3 );
-		add_filter( '_get_page_link',	array($this, '_get_page_link'), 0, 2 );
-		add_filter( 'term_link',		array($this, 'term_link'), 600, 3 );
+		add_filter( 'qts_permastruct' , array(&$this, 'get_extra_permastruct'), 0, 2);
+		add_filter( 'qts_url_args',		array(&$this, 'parse_url_args'), 0, 1);
+		add_filter( 'home_url',			array(&$this, 'home_url'), 10, 4);	
+		add_filter( 'post_type_link',	array(&$this, 'post_type_link'), 600, 4 );
+		add_filter( 'post_link',		array(&$this, 'post_link'), 0, 3 );
+		add_filter( '_get_page_link',	array(&$this, '_get_page_link'), 0, 2 );
+		add_filter( 'term_link',		array(&$this, 'term_link'), 600, 3 );
 		
 		add_filter( 'single_term_title', 'qtrans_useTermLib', 805 );
-		add_filter( 'get_blogs_of_user', array($this, 'blog_names'), 1  );
-		add_action( 'widgets_init', array($this, 'widget_init'), 100 );
+		add_filter( 'get_blogs_of_user', array(&$this, 'blog_names'), 1  );
+		add_action( 'widgets_init', array(&$this, 'widget_init'), 100 );
 	}
 	
 	
@@ -1438,12 +1440,12 @@ class QtranslateSlug {
 	/**
 	 * Get all Term data from database by Term field and data.
 	 *
-	 * @param string $field Either 'slug', 'name', or 'id'
-	 * @param string|int $value Search for this term value
-	 * @param string $taxonomy Taxonomy Name
-	 * @param string $output Constant OBJECT, ARRAY_A, or ARRAY_N
-	 * @param string $filter Optional, default is raw or no WordPress defined filter will applied.
-	 * @return mixed Term Row from database. Will return false if $taxonomy does not exist or $term was not found.
+	 * @param (string) $field Either 'slug', 'name', or 'id'
+	 * @param (string|int) $value Search for this term value
+	 * @param (string) $taxonomy Taxonomy Name
+	 * @param (string) $output Constant OBJECT, ARRAY_A, or ARRAY_N
+	 * @param (string) $filter Optional, default is raw or no WordPress defined filter will applied.
+	 * @return (mixed) Term Row from database. Will return false if $taxonomy does not exist or $term was not found.
 	 *
 	 * @since 1.0
 	 */
@@ -1497,9 +1499,92 @@ class QtranslateSlug {
 			return $term;
 		}
 	}
-	
-	
-	
+
+
+
+	/**
+	 * Fix for:
+	 * - Taxonomy names in Taxonomy Manage page
+	 * - 'Popular Tags' in Taxonomy (Tags) Manage page
+	 * - Category filter dropdown menu in Post Manage page
+	 * - Category list in Post Edit page
+	 * - 'Most Used' tags list in Post Edit page (but have issues when saving)
+	 * 
+	 * @param (array) $terms
+	 * @param (string|array) $taxonomy
+	 * @since 1.2
+	 */
+	function get_terms($terms, $taxonomy) {
+		
+		global $pagenow;
+		
+		// Although in post edit page the tags in 'most
+		// used' list are translated, but when saving the
+		// post Wordpess considers the translated tags as
+		// new tags. Due to this issue I skip this 'hack'
+		// for tags in post edit page.
+		if ( $pagenow != 'admin-ajax.php' ) {
+			
+			$meta = get_option('qtranslate_term_name');
+			$lang = qtrans_getLanguage();
+			
+			if ( !empty( $terms ) ) {
+				foreach ($terms as $term) {
+					if ($meta[$term->name][$lang]) {
+						$term->name = $meta[$term->name][$lang];
+					}
+				};
+			};
+		}
+
+		return $terms;
+	}
+
+
+
+	/**
+	 * Fix for:
+	 * - Taxonomy & custom taxonomy names in Post Manage page
+	 * - List of tags already added to the post in Post 
+	 * - Edit page (but have issues when saving)
+	 *
+	 * @param (array) $terms
+	 * @param (int|array) $obj_id
+	 * @param (string|array) $taxonomy
+	 * @param (array) $taxonomy
+	 * @since 1.2
+	 */	
+	function get_object_terms($terms, $obj_id, $taxonomy, $args) {
+		
+		global $pagenow;
+		
+		// Although in post edit page the tags are translated,
+		// but when saving/updating the post Wordpess considers
+		// the translated tags as new tags. Due to this
+		// issue I limit this 'hack' to the post manage
+		// page only.
+		if ( $pagenow == 'edit.php' ) {
+			
+			// $taxonomy output seems to be wrapped
+			// in single quotes, thus remove them to
+			// make the output valid
+			$tax = str_replace("'", "", $taxonomy);
+			
+			$meta = get_option('qtranslate_term_name');
+			$lang = qtrans_getLanguage();
+			
+			if ( !empty( $terms ) ) {
+				foreach ($terms as $term) {
+					$term->name = $meta[$term->name][$lang];
+				};
+			};
+		
+		}
+		return $terms;
+	}
+
+
+
 	/**
 	 * hide quickedit button ( functionality not supported by qTranslate )
 	 * 
@@ -1555,11 +1640,11 @@ class QtranslateSlug {
 		
 		if ( function_exists( 'add_meta_box' ) ) {
 			
-			add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array($this, 'draw_meta_box'), 'post', 'side', 'high');
-			add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array($this, 'draw_meta_box'), 'page', 'side', 'high' );
+			add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), 'post', 'side', 'high');
+			add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), 'page', 'side', 'high' );
 			
 			foreach ( get_post_types( array('_builtin' => false ) ) as $ptype )
-				add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array($this, 'draw_meta_box'), $ptype, 'side', 'high' );
+				add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), $ptype, 'side', 'high' );
 		}
 	}
 	
@@ -1941,10 +2026,10 @@ class QtranslateSlug {
 			foreach ($taxonomies  as $taxonomy ) {
 				add_action( $taxonomy->name.'_add_form', 'qtrans_modifyTermFormFor');
 				add_action( $taxonomy->name.'_edit_form', 'qtrans_modifyTermFormFor');
-				add_action( $taxonomy->name.'_add_form',  array($this, 'show_term_fields'));
-				add_action( $taxonomy->name.'_edit_form_fields', array($this, 'show_term_fields') );
-				add_filter('manage_edit-'.$taxonomy->name.'_columns', array($this, 'taxonomy_columns'));
-				add_filter('manage_'.$taxonomy->name.'_custom_column', array($this, 'taxonomy_custom_column'), 0, 3);
+				add_action( $taxonomy->name.'_add_form',  array(&$this, 'show_term_fields'));
+				add_action( $taxonomy->name.'_edit_form_fields', array(&$this, 'show_term_fields') );
+				add_filter('manage_edit-'.$taxonomy->name.'_columns', array(&$this, 'taxonomy_columns'));
+				add_filter('manage_'.$taxonomy->name.'_custom_column', array(&$this, 'taxonomy_custom_column'), 0, 3);
 			}
 		}
 	}
@@ -2039,7 +2124,7 @@ class QtranslateSlug {
 		if( $pagenow != 'nav-menus.php' ) return;
 	
 		wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , __FILE__ ) , 'nav-menu', '1.0' );
-		add_meta_box( 'qt-languages', __('Languages'), array($this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
+		add_meta_box( 'qt-languages', __('Languages'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
 	}
 	
 	
@@ -2286,86 +2371,4 @@ function qts_uninstall() {
 	foreach ($q_config['enabled_languages'] as $lang) $meta_keys[] = sprintf("_qts_slug_%s", $lang);
 	$meta_keys = "'". implode( "','", $meta_keys ) . "'";
 	$wpdb->query("DELETE from $wpdb->postmeta WHERE meta_key IN ($meta_keys)");	
-}
-
-
-
-if (is_admin()) {
-	
-	/**
-	 * Fix for:
-	 * - Taxonomy & custom taxonomy names in Post Manage page
-	 * - List of tags already added to the post in Post 
-	 *   Edit page (but have issues when saving)
-	 *   -> temporarily disabled
-	 */	
-	function get_object_terms_qtranslate($terms, $obj_id, $taxonomy, $args) {
-		
-		global $pagenow;
-		
-		// Although in post edit page the tags are translated,
-		// but when saving/updating the post Wordpess considers
-		// the translated tags as new tags. Due to this
-		// issue I limit this 'hack' to the post manage
-		// page only.
-		if ( $pagenow == 'edit.php' ) {
-			
-			// $taxonomy output seems to be wrapped
-			// in single quotes, thus remove them to
-			// make the output valid
-			$tax = str_replace("'", "", $taxonomy);
-			
-			$meta = get_option('qtranslate_term_name');
-			$lang = qtrans_getLanguage();
-			
-			if ( !empty( $terms ) ) {
-				foreach ($terms as $term) {
-					$term->name = $meta[$term->name][$lang];
-				};
-			};
-		
-		}
-		return $terms;
-	}
-	add_filter( 'wp_get_object_terms', 'get_object_terms_qtranslate', 0, 4 );
-	
-	
-	/**
-	 * Fix for:
-	 * - Taxonomy names in Taxonomy Manage page
-	 * - 'Popular Tags' in Taxonomy (Tags) Manage page
-	 * - Category filter dropdown menu in Post Manage page
-	 * - Category list in Post Edit page
-	 * - 'Most Used' tags list in Post Edit page
-	 *   (but have issues when saving)
-	 *   -> temporarily disabled
-	 */	
-	function get_terms_qtranslate($terms, $taxonomy) {
-		
-		global $pagenow;
-		
-		// Although in post edit page the tags in 'most
-		// used' list are translated, but when saving the
-		// post Wordpess considers the translated tags as
-		// new tags. Due to this issue I skip this 'hack'
-		// for tags in post edit page.
-		if ( $pagenow != 'admin-ajax.php' ) {
-			
-			$meta		= get_option('qtranslate_term_name');
-			$lang		= qtrans_getLanguage();
-			
-			if ( !empty( $terms ) ) {
-				foreach ($terms as $term) {
-					if ($meta[$term->name][$lang]) {
-						$term->name = $meta[$term->name][$lang];
-					}
-				};
-			};
-		
-		}
-	
-		return $terms;
-	}
-	add_filter( 'get_terms', 'get_terms_qtranslate', 0, 3 );
-	
 }
