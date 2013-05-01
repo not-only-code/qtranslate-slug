@@ -481,10 +481,28 @@ class QtranslateSlug {
 		add_filter( 'single_term_title', 'qtrans_useTermLib', 805 );
 		add_filter( 'get_blogs_of_user', array(&$this, 'blog_names'), 1  );
 		add_action( 'widgets_init', array(&$this, 'widget_init'), 100 );
+		// Add specific CSS class to body class based on current lang
+		add_filter('body_class', array($this, 'qts_body_class'), 600, 1 );
 	}
 	
 	
-	
+	/**
+	* wrapper for qtranslate getLanguage() 
+	*/
+	public function qts_get_current_language() {
+		return qtrans_getLanguage();
+	}	
+
+	/**
+	* Add a class based on the current language
+	* @param array $classes list of classes
+	*/
+	public function qts_body_class( $classes ) {
+	  // add 'class-name' to the $classes array
+	  $classes[] = qts_get_current_language();
+	  // return the $classes array
+	  return $classes;
+	}
 	/**
 	 * Adds news rules to translate the URL bases, this function must be called on flush_rewrite or 'flush_rewrite_rules' 
 	 * 
