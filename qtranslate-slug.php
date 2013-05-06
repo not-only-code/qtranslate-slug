@@ -1681,6 +1681,11 @@ class QtranslateSlug {
 			
 			$value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
 			
+			if($value){
+				$value = preg_replace("/%u([0-9a-f]{3,4})/i", "&#x\\1;", urldecode($value));
+    			$value = html_entity_decode($value, null, 'UTF-8');	
+			}
+			
 			echo "<tr>" . PHP_EOL;
 			echo "<th style=\"text-align:left; width:10%; color:#555 \"><label for=\"qts_{$lang}_slug\">".__($q_config['language_name'][$lang], 'qtranslate')."</label></th>" . PHP_EOL;
 			echo "<td><input type=\"text\" id=\"qts_{$lang}_slug\" name=\"qts_{$lang}_slug\" value=\"$value\" style=\"width:90%; margin-left:10%; color:#777\" /></td>" . PHP_EOL;
