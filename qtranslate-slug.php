@@ -1314,7 +1314,11 @@ class QtranslateSlug {
 		if ( !$id )
 			$id = (int) $post->ID;
 		else
+			if(phpversion() >= 5.4) {
+			$current_post = get_post($id);
+			} else {
 			$current_post = &get_post($id);
+			}
 
 		$draft_or_pending = in_array( $current_post->post_status, array( 'draft', 'pending', 'auto-draft' ) );
 
