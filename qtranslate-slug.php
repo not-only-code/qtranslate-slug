@@ -884,6 +884,14 @@ class QtranslateSlug {
 			
 		endif;
 		
+	    // -> search
+	    if(isset($query['s'])):
+
+		  $id=$query['s'];
+		  $function="get_search_link";
+	  
+	    endif;	  
+		
 		if ( isset($function) ):
 				
 		// parse all languages links
