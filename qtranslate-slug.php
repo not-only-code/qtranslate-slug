@@ -801,7 +801,7 @@ class QtranslateSlug {
 			
 			$page = wp_cache_get('qts_page_request');
 			if (!$page) 
-				$page = isset($query['page_id']) ? get_page($query['page_id']) : $this->get_page_by_path($query['pagename']);
+				$page = isset($query['page_id']) ? get_post($query['page_id']) : $this->get_page_by_path($query['pagename']);
 			
 			if (!$page) return $query;
 			$id = $page->ID;
@@ -1030,7 +1030,7 @@ class QtranslateSlug {
 		
 		$foundid = $this->get_page_id_by_path($page_path, $output, $post_type);
 		if ( $foundid )
-			return get_page( $foundid, $output );
+			return get_post( $foundid, $output );
 		
 		return null;
 	}
@@ -1361,7 +1361,7 @@ class QtranslateSlug {
 	private function get_page_uri($page) {
 		
 		if ( ! is_object($page) )
-			$page = get_page($page);
+			$page = get_post($page);
 		
 		$uri = get_post_meta( $page->ID, $this->get_meta_key(), true );
 		if (!$uri) $uri =  $page->post_name;
@@ -1371,7 +1371,7 @@ class QtranslateSlug {
 			return $uri;
 
 		while ($page->post_parent != 0) {
-			$page = get_page($page->post_parent);
+			$page = get_post($page->post_parent);
 			
 			$page_name = get_post_meta( $page->ID, $this->get_meta_key(), true );
 			if (!$page_name) $page_name = $page->post_name;
