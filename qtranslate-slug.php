@@ -1322,7 +1322,7 @@ class QtranslateSlug {
 		if ( !$id )
 			$id = (int) $post->ID;
 		else
-			$current_post = &get_post($id);
+			$current_post = get_post($id);
 
 		$draft_or_pending = in_array( $current_post->post_status, array( 'draft', 'pending', 'auto-draft' ) );
 
