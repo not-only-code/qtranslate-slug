@@ -3,8 +3,8 @@ Contributors: Carlos Sanz García
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYC46KSLRC4Q8
 Tags: qtranslate, slug, multilanguage
 Requires at least: 3.3
-Tested up to: 3.5.1
-Version: 1.1.5
+Tested up to: 3.9
+Version: 1.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
