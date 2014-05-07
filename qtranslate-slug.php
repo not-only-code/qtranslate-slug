@@ -258,7 +258,9 @@ class QtranslateSlug {
 		
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); 
 		
-		return ( version_compare($wp_version, "3.3", "<" ) || !is_plugin_active('qtranslate/qtranslate.php') );
+		return ( version_compare($wp_version, "3.3", "<" ) || 
+		  (!is_plugin_active('qtranslate/qtranslate.php') &&
+		   !is_plugin_active('mqtranslate/mqtranslate.php')) );
 	}
 	
 	
