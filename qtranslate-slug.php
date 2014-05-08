@@ -634,8 +634,8 @@ class QtranslateSlug {
 		// rebulid query with all args
 		$url = add_query_arg($base_args, $url);
 
-		$url = str_replace('/?', '?', $url); // hack: improve this code
-		$url = str_replace('?', '/?', $url); // hack: improve this code
+		$url = str_replace('/?', '?', $url); // TODO: hack: improve this code
+		$url = str_replace('?', '/?', $url); // TODO: hack: improve this code
 
 		return $url;
 	}
@@ -690,6 +690,8 @@ class QtranslateSlug {
 			$req_uri = trim($req_uri, '/');
 			$req_uri = preg_replace("|^$home_path|", '', $req_uri);
 			$req_uri = trim($req_uri, '/');
+			if ($GLOBALS['q_config']['url_mode'] == QT_URL_PATH)
+        		  $req_uri = preg_replace("/^{$GLOBALS['q_config']['language']}(\/|$)/", '', $req_uri);
 			$pathinfo = trim($pathinfo, '/');
 			$pathinfo = preg_replace("|^$home_path|", '', $pathinfo);
 			$pathinfo = trim($pathinfo, '/');
