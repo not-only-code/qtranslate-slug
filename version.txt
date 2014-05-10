@@ -1,3 +1,15 @@
+= 1.1.6 =
+* compatible with mqtranslate
+* php5.4+ compatible
+
+= 1.1.5 = 
+* bugfixes
+
+= 1.1 = 
+* added multisite support
+* fixed some parse url bugs
+* fixed slug bases validation 
+
 = 1.0 =
 * new branch, the plugin has been rewrited: now the code is commented and wrapped inside a class, also all code has change and the performance has been increased.
 * structural changes:

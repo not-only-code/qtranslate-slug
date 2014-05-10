@@ -19,11 +19,12 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 = Requirements: =
 
 * Wordpress 3.3 (PHP 5.2 and MySQL 5)
-* Qtranslate 2.5.8
+* mQtranslate 2.6.2.4 or Qtranslate 2.5.8
 
-= New in version 1.1.5 =
+= New in version 1.1.6 =
 
-* bugfixes
+* compatible with mqtranslate
+* php5.4+ compatible
 
 **Advice: If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
 
@@ -77,6 +78,10 @@ That's because language selector metabox is hidden, if you are in admin *nav men
 4. Qtranslate Slug options page for translate base permastructs of post_types and taxonomies.
 
 == Changelog ==
+
+= 1.1.6 =
+* compatible with mqtranslate
+* php5.4+ compatible
 
 = 1.1.5 = 
 * bugfixes
