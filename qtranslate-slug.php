@@ -1486,7 +1486,7 @@ class QtranslateSlug {
 
 		if ( 'slug' == $field ) {
 			$field = 'm.meta_key = \''.$this->get_meta_key().'\' AND m.meta_value';
-			$value = sanitize_text_field($value);
+			$value = sanitize_title($value);
 			if ( empty($value) )
 				return false;
 		} else if ( 'name' == $field ) {
@@ -1729,7 +1729,7 @@ class QtranslateSlug {
 		
 		$slug = trim($slug);
 			
-		$slug = (empty($slug)) ? sanitize_text_field($name) : sanitize_text_field($slug);
+		$slug = (empty($slug)) ? sanitize_title($name) : sanitize_title($slug);
 		
 		
 		
@@ -1939,7 +1939,7 @@ class QtranslateSlug {
 		
 		$slug = trim($slug);
 			
-		$slug = (empty($slug)) ? sanitize_text_field($name) : sanitize_text_field($slug);
+		$slug = (empty($slug)) ? sanitize_title($name) : sanitize_title($slug);
 		
 		return htmlspecialchars( $slug , ENT_QUOTES );
 	}
