@@ -13,6 +13,7 @@ function qts_options_page_sections() {
 	$sections = array();
 	$sections['post_types'] = __('Post types', 'qts');
 	$sections['taxonomies'] = __('Taxonomies', 'qts');
+	$sections['styles']     = __('Styles', 'qts');
 	
 	return $sections;	
 }
@@ -52,6 +53,22 @@ function get_multi_txt_choices($name = false) {
  *
  * @return array
  */
+function qts_options_page_styles() {
+  global $q_config;
+    $options[] = array(
+    "section" => "styles",
+    "id"      => QTS_PREFIX . "styles",
+    "title"   => __('Use default Qtranslate Slug minimal style?'),
+    "desc"    => __('Choose an option to display default styles', 'qts' ),
+    "type"    => "select",
+    'class'   => 'qts-style',
+    "choices" => array("file","inline","none"),
+    "std"     => ""
+  );
+  
+  return $options;  
+}
+
 function qts_options_page_fields() {
 	global $q_config;
 	
@@ -115,6 +132,18 @@ function qts_options_page_fields() {
 		
 	endforeach;
 	// end each extra taxonomy
+	/*
+	$options[] = array(
+    "section" => "styles",
+    "id"      => QTS_PREFIX . "styles",
+    "title"   => __('Styles'),
+    "desc"    => __('Choose an option to display default styles', 'qts' ),
+    "type"    => "select",
+    'class'   => 'qts-style',
+    "choices" => array("file","inline","none"),
+    "std"     => ""
+  );
+*/
 	
 	return $options;	
 }

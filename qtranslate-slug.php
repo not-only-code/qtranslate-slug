@@ -3,7 +3,7 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.1.6
+Version: 1.1.7
 Author: Carlos Sanz Garcia
 Author URI: http://github.com/not-only-code
 */
@@ -203,9 +203,9 @@ class QtranslateSlug {
  	 * @since 1.0
 	 */
 	public function set_options() {
-		if (empty($this->options))
+		if (empty($this->options)) {
 			$this->options = get_option(QTS_OPTIONS_NAME);
-		
+    }
 		if (!$this->options)
 			add_option(QTS_OPTIONS_NAME, array());
 		
@@ -316,13 +316,32 @@ class QtranslateSlug {
 			// update installed option	
 			update_option('qts_version', QTS_VERSION);
 		}
-		
-		// regenerate rewrite rules in db
+    
+  	// regenerate rewrite rules in db
 		add_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
 		flush_rewrite_rules();
 	}
 	
-	
+	/**
+   * register front side styles and enqueue
+   *
+   * @since 1.1.7
+   */
+  
+  public function register_plugin_styles() {
+    wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts.css', __FILE__ ) );
+    wp_enqueue_style( 'qts_front_styles' );
+  }
+  public function print_plugin_styles() {
+    $css = "<style type=\"text/css\" media=\"screen\">\n";
+    $css .=".qts_type_image .qts_lang_item{float:left;margin-right:7px;}\n";
+    $css .=".qts_type_image .qts_lang_item.last-child{margin-right:0;}\n";
+    $css .=".qts_lang_item{margin-top:7px;margin-bottom:7px;}\n";
+    $css .=".qts_both{padding-left:25px;white-space:nowrap;line-height:1em;}\n";
+    $css .="</style>\n";
+    echo $css;
+  }
+  
 	
 	/**
 	 * actions when deactivating the plugin
@@ -337,8 +356,6 @@ class QtranslateSlug {
 		$wp_rewrite->flush_rules();
 	}
 	
-	
-	
 	/**
 	 * admin notice: update your old data 
 	 *
@@ -350,8 +367,8 @@ class QtranslateSlug {
 		if ($current_screen->id != 'settings_page_qtranslate-slug-settings'):
 		
 	    echo "<div class=\"updated\">" . PHP_EOL;
-		echo "<p><strong>Qtranslate Slug:</strong></p>" . PHP_EOL;
-		printf("<p>%s <a href=\"%s\" class=\"button\">%s</a></p>", __('Please update your old data to the new system.', 'qts'), add_query_arg(array('page' => 'qtranslate-slug-settings'), 'options-general.php'), __('upgrade now', 'qts')) . PHP_EOL;
+		  echo "<p><strong>Qtranslate Slug:</strong></p>" . PHP_EOL;
+		  printf("<p>%s <a href=\"%s\" class=\"button\">%s</a></p>", __('Please update your old data to the new system.', 'qts'), add_query_arg(array('page' => 'qtranslate-slug-settings'), 'options-general.php'), __('upgrade now', 'qts')) . PHP_EOL;
 	    echo "</div>" . PHP_EOL;
 		
 		endif;
@@ -419,7 +436,7 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	function init() {
-		
+	  
 		load_plugin_textdomain( 'qts', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 		
 		// checking plugin activate
@@ -429,6 +446,17 @@ class QtranslateSlug {
 			return;
 		}
 		
+    // adds external style file
+    $qts_options = $this->get_options();
+    //var_dump($qts_options);
+    if( $qts_options['_qts_styles'] == "file" ) {
+      add_action( 'wp_enqueue_scripts', array( &$this, 'register_plugin_styles' ) );
+    } elseif ($qts_options['_qts_styles'] == "inline" ) {
+      add_action( 'wp_print_styles', array( &$this, 'print_plugin_styles' ), 20 );
+    } else {
+      
+    }
+    
 		// caching qts options
 		$this->set_options();
 		
@@ -691,7 +719,7 @@ class QtranslateSlug {
 			$req_uri = preg_replace("|^$home_path|", '', $req_uri);
 			$req_uri = trim($req_uri, '/');
 			if ($GLOBALS['q_config']['url_mode'] == QT_URL_PATH)
-        		  $req_uri = preg_replace("/^{$GLOBALS['q_config']['language']}(\/|$)/", '', $req_uri);
+        $req_uri = preg_replace("/^{$GLOBALS['q_config']['language']}(\/|$)/", '', $req_uri);
 			$pathinfo = trim($pathinfo, '/');
 			$pathinfo = preg_replace("|^$home_path|", '', $pathinfo);
 			$pathinfo = trim($pathinfo, '/');
@@ -2008,7 +2036,7 @@ class QtranslateSlug {
         global $q_config;
 	     
 		if ( (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )				// check autosave
-		|| ( !current_user_can('edit_posts') ) ) {                      // check permission
+		|| ( !current_user_can('edit_posts') ) ) {                // check permission
 			return $term_id;
 		}
 		
@@ -2205,7 +2233,7 @@ class QtranslateSlug {
 			case 'text':
 			case 'both':
 			
-				echo "<ul id=\"{$args['id']}\" class=\"{$args['class']}\">". PHP_EOL;
+				echo "<ul id=\"{$args['id']}\" class=\"qts_type_{$type} {$args['class']}\">". PHP_EOL;
 				
 				foreach( $languages as $index => $lang ):
 					
@@ -2215,7 +2243,8 @@ class QtranslateSlug {
 					if ( (string)$q_config['language'] == (string)$lang ) $item_class[] = 'current-menu-item';
 					if ( $index == (count($languages) - 1) ) $item_class[] = 'last-child';
 					
-					$item_class = empty($item_class) ? '' : ' class="' . implode(' ', $item_class) . '"';
+          
+					$item_class = ' class="qts_lang_item ' . implode(' ', $item_class) . '"';
 					
 					$language_name = ($args['short']) ? $lang : $q_config['language_name'][$lang];
 					
@@ -2223,7 +2252,7 @@ class QtranslateSlug {
 						$link_class = " class=\"qtrans_flag qtrans_flag_$lang\"";
 						$link_content = "<span style=\"display:none\">$language_name</span>";
 					} else if ( $type == 'both' ) {
-						$link_class = " class=\"qtrans_flag qtrans_flag_$lang\" style=\"padding-left:25px\"";
+						$link_class = " class=\"qts_both qtrans_flag qtrans_flag_$lang\"";
 						$link_content = "$language_name";
 						
 					} else {
@@ -2272,11 +2301,11 @@ class QtranslateSlug {
  *
  * @since 1.0
  */
-if (!defined("QTS_VERSION")) 		define("QTS_VERSION", '1.0');
-if (!defined("QTS_PREFIX")) 		define("QTS_PREFIX", '_qts_');
+if (!defined("QTS_VERSION")) 		    define("QTS_VERSION", '1.0');
+if (!defined("QTS_PREFIX")) 		    define("QTS_PREFIX", '_qts_');
 if (!defined("QTS_PAGE_BASENAME")) 	define('QTS_PAGE_BASENAME', 'qtranslate-slug-settings');
 if (!defined("QTS_OPTIONS_NAME")) 	define("QTS_OPTIONS_NAME", 'qts_options');
-if (!defined("PHP_EOL")) 			define("PHP_EOL", "\r\n");
+if (!defined("PHP_EOL")) 			      define("PHP_EOL", "\r\n");
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2376,7 +2405,7 @@ add_filter( 'plugin_action_links', 'qts_add_settings_link', 10, 2 );
 
 
 /**
- * Delete plugin stored data ( options, termmeta table and postmeta data ) ################################################ test this function
+ * Delete plugin stored data ( options, termmeta table and postmeta data ) ################################################ TODO: test this function
  *
  * @package Qtranslate Slug
  * @subpackage Settings
