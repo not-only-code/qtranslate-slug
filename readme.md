@@ -15,18 +15,24 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 * Wordpress 3.3 (PHP 5.2 and MySQL 5)
 * mQtranslate 2.6.2.4 or Qtranslate 2.5.8
 
+## New in version 1.1.7
+* removed styles from html elements and added options to use .css file or print inline styles
+* fixed tag creation on post edit.
+* fixed earlier bad post slug introduced in 1.1.6
+
+
 ## New in version 1.1.6
 * compatible with mqtranslate
 * php5.4+ compatible
 
-**Advice: If you're using a multisite installation, you will must activate qtranslate plugins by sepparetly on each site.**
+**Advice: If you're using a multisite installation, you will must activate qtranslate plugins by separately on each site.**
 
 You can also check the [project website](http://not-only-code.github.com/qtranslate-slug/) hosted on [GitHub](http://not-only-code.github.com).
 Thanks for use this plugin!
 
 ## Installation
 
-**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) installed previously, if not, it will not activate.**
+**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) or (mqTranslate)(https://wordpress.org/plugins/mqtranslate/) installed previously, if not, it will not activate.**
 
 1. Upload `qtranslate-slug` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
@@ -77,6 +83,11 @@ That's because language selector metabox is hidden, if you are in admin *nav men
 *Qtranslate Slug options page for translate base permastructs of post_types and taxonomies*
 
 ## Changelog
+
+**1.1.7**
+* removed styles from html elements and added options to use .css file or print inline styles
+* fixed tag creation on post edit.
+* fixed earlier bad post slug introduced in 1.1.6
 
 **1.1.6**
 * compatible with mqtranslate

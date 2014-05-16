@@ -587,10 +587,7 @@ function qts_validate_options($input) {
 		// get the settings sections array
 		$settings_output = qts_get_settings();
 		
-    //
     $styleoptions =  $settings_output['qts_page_styles'];
-    //$styleoptions = array();
-    
     
 		$slugoptions = $settings_output['qts_page_fields'];
 		

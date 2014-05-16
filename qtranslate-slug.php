@@ -668,7 +668,7 @@ class QtranslateSlug {
 		if ( empty($this->permalink_structure) || $q_config['url_mode'] == 1 ) 
 			$base_args['lang'] = $this->get_lang();
 
-		// rebulid query with all args
+		// rebuild query with all args
 		$url = add_query_arg($base_args, $url);
 
 		$url = str_replace('/?', '?', $url); // TODO: hack: improve this code
@@ -1996,7 +1996,7 @@ class QtranslateSlug {
 	 *
 	 * @since 1.0
 	 */
-	public function unique_term_slug($slug, $term, $lang,$passedpost) {
+	public function unique_term_slug($slug, $term, $lang) {
 	  
 		global $wpdb;
     $meta_key_name = $this->get_meta_key($lang);

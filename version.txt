@@ -1,3 +1,8 @@
+= 1.1.7 = 
+* removed styles from html elements and added options to use .css file or print inline styles
+* fixed tag creation on post edit.
+* fixed earlier bad post slug introduced in 1.1.6
+
 = 1.1.6 =
 * compatible with mqtranslate
 * php5.4+ compatible
