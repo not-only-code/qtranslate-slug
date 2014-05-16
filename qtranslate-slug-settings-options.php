@@ -44,12 +44,13 @@ function get_multi_txt_choices($name = false) {
 }
 
 
+
 /**
- * Define our form fields (settings) 
+ * Define our form fields (settings) for displaying the default styles
  *
  * @package Qtranslate Slug
  * @subpackage Settings
- * @version 1.0
+ * @version 1.1.7
  *
  * @return array
  */
@@ -68,7 +69,15 @@ function qts_options_page_styles() {
   
   return $options;  
 }
-
+/**
+ * Define our form fields (settings) 
+ *
+ * @package Qtranslate Slug
+ * @subpackage Settings
+ * @version 1.0
+ *
+ * @return array
+ */
 function qts_options_page_fields() {
 	global $q_config;
 	
@@ -132,18 +141,7 @@ function qts_options_page_fields() {
 		
 	endforeach;
 	// end each extra taxonomy
-	/*
-	$options[] = array(
-    "section" => "styles",
-    "id"      => QTS_PREFIX . "styles",
-    "title"   => __('Styles'),
-    "desc"    => __('Choose an option to display default styles', 'qts' ),
-    "type"    => "select",
-    'class'   => 'qts-style',
-    "choices" => array("file","inline","none"),
-    "std"     => ""
-  );
-*/
+	
 	
 	return $options;	
 }

@@ -180,14 +180,10 @@ function qts_get_settings() {
 	// put together the output array 
 	$output['qts_option_name']		= QTS_OPTIONS_NAME; // the option name as used in the get_option() call.
 	$output['qts_page_title'] 		= __('Qtranslate Slug options', 'qts'); // the settings page title
-	$output['qts_page_sections'] 	= qts_options_page_sections(); // the setting section
-	$output['qts_page_fields'] 		= qts_options_page_fields(); // the setting fields
+	$output['qts_page_sections'] 	= qts_options_page_sections(); // the settings sections
+	$output['qts_page_fields'] 		= qts_options_page_fields(); // the settings fields
 	$output['qts_page_styles'] 		= qts_options_page_styles(); // the settings for style
 	
-	$oooo= qts_options_page_fields();
-	$oooi= qts_options_page_styles();
-  //var_dump($oooo);
-	//var_dump(array_merge( $oooo,$oooi ) );
 	
 	$output['qts_contextual_help'] = qts_options_page_contextual_help(); // the contextual help
 	
@@ -278,8 +274,6 @@ function qts_register_settings(){
 	if(!empty($settings_output['qts_page_styles'])){
 		// call the "add_settings_field" for each
 		foreach ($settings_output['qts_page_styles'] as $styleoption) {
-		  
-  
 			qts_create_settings_field($styleoption);
 		}
 	}
@@ -587,7 +581,8 @@ function qts_validate_options($input) {
 	// for enhanced security, create a new empty array
 	$valid_input = array();
 	
-	// collect only the values we expect and fill the new $valid_input array i.e. whitelist our option IDs
+	// collect only the values we expect and fill the new $valid_input array
+	// i.e. whitelist our option IDs
 	
 		// get the settings sections array
 		$settings_output = qts_get_settings();
@@ -693,10 +688,13 @@ function qts_validate_options($input) {
 								'i' => array (),
 								'strong' => array()
 							);
-							
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							$input[$option['id']] 		= force_balance_tags($input[$option['id']]); // find incorrectly nested or missing closing tags and fix markup
-							$input[$option['id']] 		= wp_kses( $input[$option['id']], $allowed_html); // need to add slashes still before sending to the database
+							// trim whitespace
+							$input[$option['id']] 		= trim($input[$option['id']]);
+							// find incorrectly nested or missing closing tags and fix markup
+							$input[$option['id']] 		= force_balance_tags($input[$option['id']]);
+              // need to add slashes still before sending to the database
+							$input[$option['id']] 		= wp_kses( $input[$option['id']], $allowed_html);
+              
 							$valid_input[$option['id']] = addslashes($input[$option['id']]); 
 						break;
 					}
@@ -762,23 +760,29 @@ function qts_validate_options($input) {
 						//for only inline html
 						case 'inlinehtml':
 							// accept only inline html
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							$input[$option['id']] 		= force_balance_tags($input[$option['id']]); // find incorrectly nested or missing closing tags and fix markup
-							$input[$option['id']] 		= addslashes($input[$option['id']]); //wp_filter_kses expects content to be escaped!
-							$valid_input[$option['id']] = wp_filter_kses($input[$option['id']]); //calls stripslashes then addslashes
+							// trim whitespace
+							$input[$option['id']] 		= trim($input[$option['id']]);
+              // find incorrectly nested or missing closing tags and fix markup
+							$input[$option['id']] 		= force_balance_tags($input[$option['id']]);
+              //wp_filter_kses expects content to be escaped!
+							$input[$option['id']] 		= addslashes($input[$option['id']]);
+              //calls stripslashes then addslashes
+							$valid_input[$option['id']] = wp_filter_kses($input[$option['id']]);
 						break;
 						
 						//for no html
 						case 'nohtml':
 							//accept the input only after stripping out all html, extra white space etc!
-							$input[$option['id']] 		= sanitize_text_field($input[$option['id']]); // need to add slashes still before sending to the database
+							// need to add slashes still before sending to the database
+							$input[$option['id']] 		= sanitize_text_field($input[$option['id']]); 
 							$valid_input[$option['id']] = addslashes($input[$option['id']]);
 						break;
 						
 						//for allowlinebreaks
 						case 'allowlinebreaks':
 							//accept the input only after stripping out all html, extra white space etc!
-							$input[$option['id']] 		= wp_strip_all_tags($input[$option['id']]); // need to add slashes still before sending to the database
+							// need to add slashes still before sending to the database
+							$input[$option['id']] 		= wp_strip_all_tags($input[$option['id']]); 
 							$valid_input[$option['id']] = addslashes($input[$option['id']]);
 						break;
 						
@@ -800,7 +804,7 @@ function qts_validate_options($input) {
 								'ol' 			=> array(),
 								'p' 			=> array(),
 								'q' 			=> array('cite' => array ()),
-								'strong' 		=> array(),
+								'strong' 	=> array(),
 								'ul' 			=> array(),
 								'h1' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
 								'h2' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
@@ -921,10 +925,12 @@ function qts_admin_msgs() {
 	
 	// check for our settings page - need this in conditional further down
 	$qts_settings_pg = isset($_GET['page']) ? strpos($_GET['page'], QTS_PAGE_BASENAME) : '';
-	// collect setting errors/notices: //http://codex.wordpress.org/Function_Reference/get_settings_errors
+	// collect setting errors/notices: 
+	// http://codex.wordpress.org/Function_Reference/get_settings_errors
 	$set_errors = get_settings_errors(); 
 	
-	//display admin message only for the admin to see, only on our settings page and only when setting errors/notices are returned!	
+	// display admin message only for the admin to see, only on our settings page
+	// and only when setting errors/notices are returned!	
 	if(current_user_can ('manage_options') && $qts_settings_pg !== false && !empty($set_errors)){
 
 		// have our settings succesfully been updated? 
