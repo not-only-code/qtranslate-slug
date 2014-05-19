@@ -32,7 +32,7 @@ Thanks for use this plugin!
 
 ## Installation
 
-**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) or (mqTranslate)(https://wordpress.org/plugins/mqtranslate/) installed previously, if not, it will not activate.**
+**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) or [mqTranslate](https://wordpress.org/plugins/mqtranslate/) installed previously, if not, it will not activate.**
 
 1. Upload `qtranslate-slug` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
