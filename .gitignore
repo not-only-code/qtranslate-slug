@@ -1,8 +1,8 @@
 # osx noise
 .DS_Store
 profile
-README.txt
-readme.txt
+/README.txt
+/readme.txt
 
 # xcode noise
 build/*
