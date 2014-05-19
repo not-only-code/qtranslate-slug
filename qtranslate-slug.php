@@ -318,40 +318,48 @@ class QtranslateSlug {
 			update_option('qts_version', QTS_VERSION);
 		}
     
-  	// regenerate rewrite rules in db
+  		// regenerate rewrite rules in db
 		add_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
 		flush_rewrite_rules();
 	}
   
 	
+
 	/**
-   * register front end styles and enqueue
-   *
-   * @since 1.1.7
-   */
-  
-  public function register_plugin_styles() {
-    wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts.css', __FILE__ ) );
-    wp_enqueue_style( 'qts_front_styles' );
-  }
-  
-  
-  /**
-   * print front end styles
-   *
-   * @since 1.1.7
-   */
-  public function print_plugin_styles() {
-    $css = "<style type=\"text/css\" media=\"screen\">\n";
-    $css .=".qts_type_image .qts_lang_item{float:left;margin-right:7px;}\n";
-    $css .=".qts_type_image .qts_lang_item.last-child{margin-right:0;}\n";
-    $css .=".qts_lang_item{margin-top:7px;margin-bottom:7px;}\n";
-    $css .=".qts_both{padding-left:25px;white-space:nowrap;line-height:1em;}\n";
-    $css .="</style>\n";
-    echo $css;
-  }
+	* register front end styles and enqueue
+	*
+	* @since 1.1.7
+	*/
+	public function register_plugin_styles() {
+		wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', __FILE__ ) );
+		wp_enqueue_style( 'qts_front_styles' );
+	}
+
+
+
+	/**
+	* print front end styles
+	*
+	* @since 1.1.7
+	*/
+	public function print_plugin_styles() {
+
+		$css_path = dirname(__FILE__).'/assets/css/qts-default.css';
+
+		if (!file_exists($css_path) || !is_readable($css_path)) {
+			return;
+		}
+
+		$default_css_file = file_get_contents($css_path, FILE_USE_INCLUDE_PATH);
+
+		$css = "<style media=\"screen\">\n";
+		$css .= "$default_css_file\n";
+		$css .="</style>\n";
+		echo $css;
+	}
   
 	
+
 	/**
 	 * actions when deactivating the plugin
 	 *
@@ -365,6 +373,8 @@ class QtranslateSlug {
 		$wp_rewrite->flush_rules();
 	}
 	
+
+
 	/**
 	 * admin notice: update your old data 
 	 *
@@ -454,16 +464,6 @@ class QtranslateSlug {
 				add_action('admin_notices', array(&$this, 'notice_dependences'));
 			return;
 		}
-		
-    // adds external style file
-    $qts_options = $this->get_options();
-    if( $qts_options['_qts_styles'] == "file" ) {
-      add_action( 'wp_enqueue_scripts', array( &$this, 'register_plugin_styles' ) );
-    } elseif ($qts_options['_qts_styles'] == "inline" ) {
-      add_action( 'wp_print_styles', array( &$this, 'print_plugin_styles' ), 20 );
-    } else {
-      
-    }
     
 		// caching qts options
 		$this->set_options();
@@ -497,6 +497,14 @@ class QtranslateSlug {
 		} else {
 			
 			add_filter( 'request', array(&$this, 'filter_request') );
+
+			// adds external style file
+    		$qts_options = $this->get_options();
+    		if ( !isset($qts_options[QTS_PREFIX.'styles']) || $qts_options[QTS_PREFIX.'styles'] == "file" ) {
+      			add_action( 'wp_enqueue_scripts', array( &$this, 'register_plugin_styles' ) );
+    		} elseif ($qts_options[QTS_PREFIX.'styles'] == "inline" ) {
+      			add_action( 'wp_print_styles', array( &$this, 'print_plugin_styles' ), 20 );
+    		}
 		}
 		
 		add_filter( 'query_vars', array(&$this, 'query_vars'));
@@ -525,18 +533,20 @@ class QtranslateSlug {
 		
 
 	/**
-	* Add a class based on the current language
-	* @param array $classes list of classes
-	*/
+	 * Add a class based on the current language
+	 * @param array $classes list of classes
+	 */
 	public function qts_body_class( $classes ) {
-	  // add 'class-name' to the $classes array
-	  $classes[] = qtrans_getLanguage();
-	  // return the $classes array
-	  return $classes;
+		// add 'class-name' to the $classes array
+		$classes[] = qtrans_getLanguage();
+	 	
+	 	// return the $classes array
+		return $classes;
 	}
+
 	/**
 	 * Adds news rules to translate the URL bases, 
-   * this function must be called on flush_rewrite or 'flush_rewrite_rules' 
+	 * this function must be called on flush_rewrite or 'flush_rewrite_rules' 
 	 * 
 	 * @param object $wp_rewrite
 	 *

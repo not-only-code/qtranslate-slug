@@ -26,11 +26,6 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 * fixed tag creation on post edit.
 * fixed earlier bad post slug introduced in 1.1.6
 
-= New in version 1.1.6 =
-
-* compatible with mqtranslate
-* php5.4+ compatible
-
 **Advice: If you're using a multisite installation, you will must activate qtranslate plugins by separately on each site.**
 
 

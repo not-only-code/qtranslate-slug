@@ -362,11 +362,10 @@ function qts_section_fn($page_section = false) {
 			
 			echo "<p>" . __('For example, the taxonomy <kbd>category</kbd>, in Spanish would be displayed as <code>http://example.org/es/categoria/taxonomy-name/</code>. If you leave this blank will use the default option when you <a href="http://codex.wordpress.org/Function_Reference/register_taxonomy">registered</a> the taxonomy (if you previously setup a base permastruct for <u>categories</u> or <u>tags</u> in <a href="options-permalink.php">permalinks</a> page, these bases will be overwritten by the translated ones).', 'qts') . "</p>";
 			break;
-  case 'styles':
-    echo "<p>" . __('The default styles are very minimal, and you can include them or not.', 'qts') . "</p>\n";    
-    echo "<p>" . __('<strong>File</strong>: Adds a file ( qts.css) file to the theme\'s header.', 'qts') . "</p>\n";    
-    echo "<p>" . __('<strong>Inline</strong>: Prints the styles directly into the theme\'s header.', 'qts') . "</p>\n";    
-    echo "<p>" . __('<strong>None</strong>: Neither include nor print the default style.', 'qts') . "</p>\n";    
+  		case 'styles':
+
+    		echo "<p>" . __('The default styles are very minimal, and you can include them or not.', 'qts') . "</p>\n";    
+    		break;
 	}
 }
 
@@ -484,6 +483,28 @@ function qts_show_form_field($args = array()) {
 				echo "<input class='checkbox$field_class' type='checkbox' id='$id|$item[1]' name='" . QTS_OPTIONS_NAME . "[$id|$item[1]]' value='1' $checked /> $item[0] <br/>";
 			}
 			echo ($desc != '') ? "<br /><span class='description'>$desc</span>" : "";
+		break;
+
+		case "multi-radio":
+			foreach($choices as $index => $item) {
+				
+				$item = explode("|",$item);
+				$item_key = (count($item) > 1) ? esc_html($item[0], 'qts') : esc_html(end($item), 'qts');
+				$item_value = (count($item) > 1) ? esc_html($item[1], 'qts') : esc_html(end($item), 'qts');
+				
+				$checked = '';
+				
+			    if ( isset($options[$id]) && $options[$id] === $item_value) {
+			   		$checked = 'checked="checked"';
+				}
+				
+				echo "<label for='$id|$item_value'><input class='radio$field_class' type='radio' id='$id|$item_value' name='" . QTS_OPTIONS_NAME . "[$id]' value='$item_value' $checked /> <strong>$item_key</strong>";
+				if (isset($desc[$index]) && !empty($desc[$index])) {
+					echo ": " . $desc[$index];
+				}
+				echo "</label>";
+			}
+			echo (!is_array($desc) && $desc != '') ? "<br /><span class='description'>$desc</span>" : "";
 		break;
 	}
 }
@@ -871,6 +892,10 @@ function qts_validate_options($input) {
 					if (!empty($checkboxarray)) {
 						$valid_input[$option['id']] = $checkboxarray;
 					}
+				break;
+
+				case 'multi-radio':
+						$valid_input[$option['id']] = $input[$option['id']];
 				break;
 				
 			endswitch;

@@ -10,6 +10,12 @@
 	display: inline-block;
 	min-width: 100px;
 }
+
+.form-table label {
+	display: block;
+	margin-bottom: 8px;
+}
+
 .qts-slug {
 	width: 35%;
 }
