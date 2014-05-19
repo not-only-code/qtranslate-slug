@@ -2350,8 +2350,9 @@ if (!defined("PHP_EOL")) 			      define("PHP_EOL", "\r\n");
  *
  * @since 1.0
  */
-if ( is_admin() && !QtranslateSlug::block_activate() )  // setting options page
+if ( is_admin() && !QtranslateSlug::block_activate() ) { // setting options page
 	include_once('qtranslate-slug-settings.php'); 
+}
 
 include_once('termmeta-core.php'); // termmeta install and core functions
 
