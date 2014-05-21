@@ -8,9 +8,9 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) is a nice plugin but unfortunately today is **outdated**. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations and fix some QTranslate deficiencies since wordpress 3.0.
 
-**Version 1.0** has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is better integrated with Wordpress API.
+**Version 1.0** has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is integrated with Wordpress API.
 
-**Requirments:**
+**Requirements:**
 
 * Wordpress 3.3 (PHP 5.2 and MySQL 5)
 * mQtranslate 2.6.2.4 or Qtranslate 2.5.8
@@ -24,6 +24,15 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 You can also check the [project website](http://not-only-code.github.com/qtranslate-slug/) hosted on [GitHub](http://not-only-code.github.com).
 Thanks for use this plugin!
+
+## Contributors
+
+* [Pedro de Carvalho](https://github.com/LC43/)
+* [Risto Niinemets](https://github.com/RistoNiinemets)
+* [Pedro Mendonça](https://github.com/pedro-mendonca)
+* [codep0et](https://github.com/codep0et)
+* [Giraldi Maggio](https://github.com/bedex78)
+* [jinoOM](https://github.com/jinoOM)
 
 ## Installation
 
