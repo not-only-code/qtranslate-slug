@@ -12,6 +12,10 @@ msgstr ""
 "Last-Translator: Carlos Sanz Garcia <carlos.sanz@gmail.com>\n"
 "Language-Team: Carlos Sanz Garcia <carlos.sanz@gmail.com>\n"
 
+
+
+
+
 #: qtranslate-slug.php
 msgid "Language selector"
 msgstr ""
@@ -21,11 +25,9 @@ msgid "Title:"
 msgstr ""
 
 #: qtranslate-slug.php
-msgid "<p style="color:red">This plugin requires qTranslate to be installed and activated.</p>"
+msgid "<p style=\"color:red\">This plugin requires qTranslate to be installed and activated.</p>"
 msgstr ""
 
-#: qtranslate-slug.php
-#: qtranslate-slug.php
 #: qtranslate-slug.php
 msgid "Slug"
 msgstr ""
@@ -56,10 +58,6 @@ msgstr ""
 
 #: qtranslate-slug-settings-options.php
 msgid "<code>http://example.org/<u>tag</u>/some-tag/</code>"
-msgstr ""
-
-#: qtranslate-slug-settings-options.php
-msgid "<code>http://example.org/<u>%s</u>/some-%s/</code>"
 msgstr ""
 
 #: qtranslate-slug-settings.php
@@ -94,7 +92,6 @@ msgstr ""
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: qtranslate-slug-settings.php
 #: qtranslate-slug-settings.php
 msgid "upgrade now"
 msgstr ""
@@ -136,7 +133,7 @@ msgid "This plugin requires at least <strong>Wordpress 3.3</strong> and <strong>
 msgstr ""
 
 #: qtranslate-slug-settings.php
-msgid "If you activated previously the <a href=\"/options-permalink.php\">pretty permalinks</a>, in this section you can translate the <abbr title=\"en inglés, Universal Resource Locator\">URLs</abbr> <strong>bases</strong> for <a href=\"http://codex.wordpress.org/Function_Reference/register_post_type#Arguments\">public</a> post_types, categories, tags and taxonomies."
+msgid "If you activated previously the <a href=\"options-permalink.php\">pretty permalinks</a>, in this section you can translate the <abbr title=\"en inglés, Universal Resource Locator\">URLs</abbr> <strong>bases</strong> for <a href=\"http://codex.wordpress.org/Function_Reference/register_post_type#Arguments\">public</a> post_types, categories, tags and taxonomies."
 msgstr ""
 
 #: qtranslate-slug-settings.php
@@ -144,5 +141,5 @@ msgid "For example, the post_type <kbd>books</kbd>, in Spanish would be displaye
 msgstr ""
 
 #: qtranslate-slug-settings.php
-msgid "For example, the taxonomy <kbd>category</kbd>, in Spanish would be displayed as <code>http://example.org/es/categoria/taxonomy-name/</code>. If you leave this blank will use the default option when you <a href=\"http://codex.wordpress.org/Function_Reference/register_taxonomy\">registered</a> the taxonomy (if you previously setup a base permastruct for <u>categories</u> or <u>tags</u> in <a href="options-permalink.php">permalinks</a> page, these bases will be overwritten by the translated ones)."
+msgid "For example, the taxonomy <kbd>category</kbd>, in Spanish would be displayed as <code>http://example.org/es/categoria/taxonomy-name/</code>. If you leave this blank will use the default option when you <a href=\"http://codex.wordpress.org/Function_Reference/register_taxonomy\">registered</a> the taxonomy (if you previously setup a base permastruct for <u>categories</u> or <u>tags</u> in <a href=\"options-permalink.php\">permalinks</a> page, these bases will be overwritten by the translated ones)."
 msgstr ""
