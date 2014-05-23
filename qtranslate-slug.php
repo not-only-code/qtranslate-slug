@@ -2182,8 +2182,12 @@ class QtranslateSlug {
 	 */
 	public function widget_init() {
 		
-		if (class_exists('qTranslateWidget'))
+		if (class_exists('qTranslateWidget')) {
 			unregister_widget('qTranslateWidget');
+		}
+		if (class_exists('mqTranslateWidget')) {
+			unregister_widget('mqTranslateWidget');
+		}
 		
 		register_widget('QtranslateSlugWidget');
 	}
