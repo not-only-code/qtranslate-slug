@@ -122,7 +122,11 @@ function qts_language_menu ($type = "text", $args = array()) {
  * @subpackage Core
  * @since 1.1.5
  */
-function qTranslateSlug_getSelfUrl ($lang = false) {
+function qTranslateSlug_getSelfUrl ($lang = false) { // bad naming, I'll keep just in case
+	return qts_get_url($lang);
+}
+
+function qts_get_url($lang = false) {
 	global $qtranslate_slug;
 
 	return $qtranslate_slug->get_current_url($lang);
