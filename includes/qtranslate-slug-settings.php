@@ -293,11 +293,12 @@ add_action( 'admin_init', 'qts_register_settings' );
 function qts_settings_scripts() {
 	global $qtranslate_slug;
 	
-	wp_enqueue_style('qts_theme_settings_css', plugins_url( 'assets/css/qts-settings.css' , __FILE__ ) );
-	wp_enqueue_script( 'qts_theme_settings_js', plugins_url( 'assets/js/qts-settings.js' , __FILE__ ), array('jquery'));
+	wp_enqueue_style('qts_theme_settings_css', plugins_url( 'assets/css/qts-settings.css' , dirname(__FILE__)  ) );
+	wp_enqueue_script( 'qts_theme_settings_js', plugins_url( 'assets/js/qts-settings.js' , dirname(__FILE__)  ), array('jquery'));
 	
-	if ($qtranslate_slug->check_old_data())
-		wp_enqueue_script('qts_theme_settings_upgrade_js', plugins_url( 'assets/js/qts-settings-upgrade.js' , __FILE__ ), array('jquery') );
+	if ($qtranslate_slug->check_old_data()) {
+		wp_enqueue_script('qts_theme_settings_upgrade_js', plugins_url( 'assets/js/qts-settings-upgrade.js' , dirname(__FILE__) ), array('jquery') );
+	}
 }
 
 
@@ -605,309 +606,308 @@ function qts_validate_options($input) {
 	// collect only the values we expect and fill the new $valid_input array
 	// i.e. whitelist our option IDs
 	
-		// get the settings sections array
-		$settings_output = qts_get_settings();
+	// get the settings sections array
+	$settings_output = qts_get_settings();
 		
     $styleoptions =  $settings_output['qts_page_styles'];
     
-		$slugoptions = $settings_output['qts_page_fields'];
+	$slugoptions = $settings_output['qts_page_fields'];
 		
     $options = array_merge($styleoptions,$slugoptions);
 
-		// run a foreach and switch on option type
-		foreach ($options as $option):
-		
-			switch ( $option['type'] ):
-				case 'text':
-					//switch validation based on the class!
-					switch ( $option['class'] ) {
-						//for numeric 
-						case 'numeric':
-							//accept the input only when numeric!
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							$valid_input[$option['id']] = (is_numeric($input[$option['id']])) ? $input[$option['id']] : 'Expecting a Numeric value!';
-							
-							// register error
-							if(is_numeric($input[$option['id']]) == FALSE) {
-								add_settings_error(
-									$option['id'], // setting title
-									QTS_PREFIX . '_txt_numeric_error', // error ID
-									__('Expecting a Numeric value! Please fix.', 'qts'), // error message
-									'error' // type of message
-								);
-							}
-						break;
+	// run a foreach and switch on option type
+	foreach ($options as $option):
+	
+		switch ( $option['type'] ):
+			case 'text':
+				//switch validation based on the class!
+				switch ( $option['class'] ) {
+					//for numeric 
+					case 'numeric':
+						//accept the input only when numeric!
+						$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
+						$valid_input[$option['id']] = (is_numeric($input[$option['id']])) ? $input[$option['id']] : 'Expecting a Numeric value!';
 						
-						//for multi-numeric values (separated by a comma)
-						case 'multinumeric':
-							//accept the input only when the numeric values are comma separated
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							
-							if($input[$option['id']] !=''){
-								// /^-?\d+(?:,\s?-?\d+)*$/ matches: -1 | 1 | -12,-23 | 12,23 | -123, -234 | 123, 234  | etc.
-								$valid_input[$option['id']] = (preg_match('/^-?\d+(?:,\s?-?\d+)*$/', $input[$option['id']]) == 1) ? $input[$option['id']] : __('Expecting comma separated numeric values','qts');
-							}else{
-								$valid_input[$option['id']] = $input[$option['id']];
-							}
-							
-							// register error
-							if($input[$option['id']] !='' && preg_match('/^-?\d+(?:,\s?-?\d+)*$/', $input[$option['id']]) != 1) {
-								add_settings_error(
-									$option['id'], // setting title
-									QTS_PREFIX . '_txt_multinumeric_error', // error ID
-									__('Expecting comma separated numeric values! Please fix.','qts'), // error message
-									'error' // type of message
-								);
-							}
-						break;
-						
-						//for no html
-						case 'nohtml':
-							//accept the input only after stripping out all html, extra white space etc!
-							$input[$option['id']] 		= sanitize_text_field($input[$option['id']]); // need to add slashes still before sending to the database
-							$valid_input[$option['id']] = addslashes($input[$option['id']]);
-						break;
-						
-						//for url
-						case 'url':
-							//accept the input only when the url has been sanited for database usage with esc_url_raw()
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							$valid_input[$option['id']] = esc_url_raw($input[$option['id']]);
-						break;
-						
-						//for email
-						case 'email':
-							//accept the input only after the email has been validated
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							if($input[$option['id']] != ''){
-								$valid_input[$option['id']] = (is_email($input[$option['id']])!== FALSE) ? $input[$option['id']] : __('Invalid email', 'qts');
-							}elseif($input[$option['id']] == ''){
-								$valid_input[$option['id']] = __('This setting field cannot be empty! Please enter a valid email address.', 'qts');
-							}
-							
-							// register error
-							if(is_email($input[$option['id']])== FALSE || $input[$option['id']] == '') {
-								add_settings_error(
-									$option['id'], // setting title
-									QTS_PREFIX . '_txt_email_error', // error ID
-									__('Please enter a valid email address.', 'qts'), // error message
-									'error' // type of message
-								);
-							}
-						break;
-						
-						// a "cover-all" fall-back when the class argument is not set
-						default:
-							// accept only a few inline html elements
-							$allowed_html = array(
-								'a' => array('href' => array (),'title' => array ()),
-								'b' => array(),
-								'em' => array (), 
-								'i' => array (),
-								'strong' => array()
+						// register error
+						if(is_numeric($input[$option['id']]) == FALSE) {
+							add_settings_error(
+								$option['id'], // setting title
+								QTS_PREFIX . '_txt_numeric_error', // error ID
+								__('Expecting a Numeric value! Please fix.', 'qts'), // error message
+								'error' // type of message
 							);
-							// trim whitespace
-							$input[$option['id']] 		= trim($input[$option['id']]);
-							// find incorrectly nested or missing closing tags and fix markup
-							$input[$option['id']] 		= force_balance_tags($input[$option['id']]);
-              // need to add slashes still before sending to the database
-							$input[$option['id']] 		= wp_kses( $input[$option['id']], $allowed_html);
-              
-							$valid_input[$option['id']] = addslashes($input[$option['id']]); 
-						break;
-					}
-				break;
-				
-				case "multi-text":
-					// this will hold the text values as an array of 'key' => 'value'
-					unset($textarray);
+						}
+					break;
 					
-					$text_values = array();
-					foreach ($option['choices'] as $k => $v ) {
+					//for multi-numeric values (separated by a comma)
+					case 'multinumeric':
+						//accept the input only when the numeric values are comma separated
+						$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
+						
+						if($input[$option['id']] !=''){
+							// /^-?\d+(?:,\s?-?\d+)*$/ matches: -1 | 1 | -12,-23 | 12,23 | -123, -234 | 123, 234  | etc.
+							$valid_input[$option['id']] = (preg_match('/^-?\d+(?:,\s?-?\d+)*$/', $input[$option['id']]) == 1) ? $input[$option['id']] : __('Expecting comma separated numeric values','qts');
+						}else{
+							$valid_input[$option['id']] = $input[$option['id']];
+						}
+						
+						// register error
+						if($input[$option['id']] !='' && preg_match('/^-?\d+(?:,\s?-?\d+)*$/', $input[$option['id']]) != 1) {
+							add_settings_error(
+								$option['id'], // setting title
+								QTS_PREFIX . '_txt_multinumeric_error', // error ID
+								__('Expecting comma separated numeric values! Please fix.','qts'), // error message
+								'error' // type of message
+							);
+						}
+					break;
+					
+					//for no html
+					case 'nohtml':
+						//accept the input only after stripping out all html, extra white space etc!
+						$input[$option['id']] 		= sanitize_text_field($input[$option['id']]); // need to add slashes still before sending to the database
+						$valid_input[$option['id']] = addslashes($input[$option['id']]);
+					break;
+					
+					//for url
+					case 'url':
+						//accept the input only when the url has been sanited for database usage with esc_url_raw()
+						$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
+						$valid_input[$option['id']] = esc_url_raw($input[$option['id']]);
+					break;
+					
+					//for email
+					case 'email':
+						//accept the input only after the email has been validated
+						$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
+						if($input[$option['id']] != ''){
+							$valid_input[$option['id']] = (is_email($input[$option['id']])!== FALSE) ? $input[$option['id']] : __('Invalid email', 'qts');
+						}elseif($input[$option['id']] == ''){
+							$valid_input[$option['id']] = __('This setting field cannot be empty! Please enter a valid email address.', 'qts');
+						}
+						
+						// register error
+						if(is_email($input[$option['id']])== FALSE || $input[$option['id']] == '') {
+							add_settings_error(
+								$option['id'], // setting title
+								QTS_PREFIX . '_txt_email_error', // error ID
+								__('Please enter a valid email address.', 'qts'), // error message
+								'error' // type of message
+							);
+						}
+					break;
+					
+					// a "cover-all" fall-back when the class argument is not set
+					default:
+						// accept only a few inline html elements
+						$allowed_html = array(
+							'a' => array('href' => array (),'title' => array ()),
+							'b' => array(),
+							'em' => array (), 
+							'i' => array (),
+							'strong' => array()
+						);
+						// trim whitespace
+						$input[$option['id']] 		= trim($input[$option['id']]);
+						// find incorrectly nested or missing closing tags and fix markup
+						$input[$option['id']] 		= force_balance_tags($input[$option['id']]);
+						// need to add slashes still before sending to the database
+						$input[$option['id']] 		= wp_kses( $input[$option['id']], $allowed_html);
+          
+						$valid_input[$option['id']] = addslashes($input[$option['id']]); 
+					break;
+				}
+			break;
+			
+			case "multi-text":
+				// this will hold the text values as an array of 'key' => 'value'
+				unset($textarray);
+				
+				$text_values = array();
+				foreach ($option['choices'] as $k => $v ) {
+					// explode the connective
+					$pieces = explode("|", $v);
+					
+					$text_values[] = $pieces[1];
+				}
+				
+				foreach ($text_values as $v ) {		
+					
+					// Check that the option isn't empty
+					if (!empty($input[$option['id'] . '|' . $v])) {
+						// If it's not null, make sure it's sanitized, add it to an array
+						switch ($option['class']) {
+							// different sanitation actions based on the class create you own cases as you need them
+							
+							//for numeric input
+							case 'numeric':
+								//accept the input only if is numberic!
+								$input[$option['id'] . '|' . $v]= trim($input[$option['id'] . '|' . $v]); // trim whitespace
+								$input[$option['id'] . '|' . $v]= (is_numeric($input[$option['id'] . '|' . $v])) ? $input[$option['id'] . '|' . $v] : '';
+							break;
+							
+							case 'qts-slug':
+								// strip all html tags and white-space.
+								$type_ = end( explode('_', $option['id']) );
+								$input[$option['id'] . '|' . $v]= sanitize_title( sanitize_text_field( $input[$option['id'] . '|' . $v] ) );
+								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
+							break;
+							
+							// a "cover-all" fall-back when the class argument is not set
+							default:
+								// strip all html tags and white-space.
+								$input[$option['id'] . '|' . $v]= sanitize_text_field($input[$option['id'] . '|' . $v]); // need to add slashes still before sending to the database
+								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
+							break;
+						}
+						// pass the sanitized user input to our $textarray array
+						$textarray[$v] = $input[$option['id'] . '|' . $v];
+					
+					} else {
+						$textarray[$v] = '';
+					}
+				}
+				// pass the non-empty $textarray to our $valid_input array
+				if (!empty($textarray)) {
+					$valid_input[$option['id']] = $textarray;
+				}
+			break;
+			
+			case 'textarea':
+				//switch validation based on the class!
+				switch ( $option['class'] ) {
+					//for only inline html
+					case 'inlinehtml':
+						// accept only inline html
+						// trim whitespace
+						$input[$option['id']] 		= trim($input[$option['id']]);
+         				// find incorrectly nested or missing closing tags and fix markup
+						$input[$option['id']] 		= force_balance_tags($input[$option['id']]);
+						//wp_filter_kses expects content to be escaped!
+						$input[$option['id']] 		= addslashes($input[$option['id']]);
+          				//calls stripslashes then addslashes
+						$valid_input[$option['id']] = wp_filter_kses($input[$option['id']]);
+					break;
+					
+					//for no html
+					case 'nohtml':
+						//accept the input only after stripping out all html, extra white space etc!
+						// need to add slashes still before sending to the database
+						$input[$option['id']] 		= sanitize_text_field($input[$option['id']]); 
+						$valid_input[$option['id']] = addslashes($input[$option['id']]);
+					break;
+					
+					//for allowlinebreaks
+					case 'allowlinebreaks':
+						//accept the input only after stripping out all html, extra white space etc!
+						// need to add slashes still before sending to the database
+						$input[$option['id']] 		= wp_strip_all_tags($input[$option['id']]); 
+						$valid_input[$option['id']] = addslashes($input[$option['id']]);
+					break;
+					
+					// a "cover-all" fall-back when the class argument is not set
+					default:
+						// accept only limited html
+						//my allowed html
+						$allowed_html = array(
+							'a' 			=> array('href' => array (),'title' => array ()),
+							'b' 			=> array(),
+							'blockquote' 	=> array('cite' => array ()),
+							'br' 			=> array(),
+							'dd' 			=> array(),
+							'dl' 			=> array(),
+							'dt' 			=> array(),
+							'em' 			=> array (), 
+							'i' 			=> array (),
+							'li' 			=> array(),
+							'ol' 			=> array(),
+							'p' 			=> array(),
+							'q' 			=> array('cite' => array ()),
+							'strong' 	=> array(),
+							'ul' 			=> array(),
+							'h1' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
+							'h2' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
+							'h3' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
+							'h4' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
+							'h5' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
+							'h6' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ())
+						);
+						
+						$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
+						$input[$option['id']] 		= force_balance_tags($input[$option['id']]); // find incorrectly nested or missing closing tags and fix markup
+						$input[$option['id']] 		= wp_kses( $input[$option['id']], $allowed_html); // need to add slashes still before sending to the database
+						$valid_input[$option['id']] = addslashes($input[$option['id']]);							
+					break;
+				}
+			break;
+			
+			case 'select':
+				// check to see if the selected value is in our approved array of values!
+				$valid_input[$option['id']] = (in_array( $input[$option['id']], $option['choices']) ? $input[$option['id']] : '' );
+			break;
+			
+			case 'select2':
+				// process $select_values
+					$select_values = array();
+					foreach ($option['choices'] as $k => $v) {
 						// explode the connective
 						$pieces = explode("|", $v);
 						
-						$text_values[] = $pieces[1];
+						$select_values[] = $pieces[1];
 					}
+				// check to see if selected value is in our approved array of values!
+				$valid_input[$option['id']] = (in_array( $input[$option['id']], $select_values) ? $input[$option['id']] : '' );
+			break;
+			
+			case 'checkbox':
+				// if it's not set, default to null!
+				if (!isset($input[$option['id']])) {
+					$input[$option['id']] = null;
+				}
+				// Our checkbox value is either 0 or 1
+				$valid_input[$option['id']] = ( $input[$option['id']] == 1 ? 1 : 0 );
+			break;
+			
+			case 'multi-checkbox':
+				unset($checkboxarray);
+				$check_values = array();
+				foreach ($option['choices'] as $k => $v ) {
+					// explode the connective
+					$pieces = explode("|", $v);
 					
-					foreach ($text_values as $v ) {		
-						
-						// Check that the option isn't empty
-						if (!empty($input[$option['id'] . '|' . $v])) {
-							// If it's not null, make sure it's sanitized, add it to an array
-							switch ($option['class']) {
-								// different sanitation actions based on the class create you own cases as you need them
-								
-								//for numeric input
-								case 'numeric':
-									//accept the input only if is numberic!
-									$input[$option['id'] . '|' . $v]= trim($input[$option['id'] . '|' . $v]); // trim whitespace
-									$input[$option['id'] . '|' . $v]= (is_numeric($input[$option['id'] . '|' . $v])) ? $input[$option['id'] . '|' . $v] : '';
-								break;
-								
-								case 'qts-slug':
-									// strip all html tags and white-space.
-									$type_ = end( explode('_', $option['id']) );
-									$input[$option['id'] . '|' . $v]= sanitize_title( sanitize_text_field( $input[$option['id'] . '|' . $v] ) );
-									$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
-								break;
-								
-								// a "cover-all" fall-back when the class argument is not set
-								default:
-									// strip all html tags and white-space.
-									$input[$option['id'] . '|' . $v]= sanitize_text_field($input[$option['id'] . '|' . $v]); // need to add slashes still before sending to the database
-									$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
-								break;
-							}
-							// pass the sanitized user input to our $textarray array
-							$textarray[$v] = $input[$option['id'] . '|' . $v];
-						
-						} else {
-							$textarray[$v] = '';
-						}
-					}
-					// pass the non-empty $textarray to our $valid_input array
-					if (!empty($textarray)) {
-						$valid_input[$option['id']] = $textarray;
-					}
-				break;
+					$check_values[] = $pieces[1];
+				}
 				
-				case 'textarea':
-					//switch validation based on the class!
-					switch ( $option['class'] ) {
-						//for only inline html
-						case 'inlinehtml':
-							// accept only inline html
-							// trim whitespace
-							$input[$option['id']] 		= trim($input[$option['id']]);
-              // find incorrectly nested or missing closing tags and fix markup
-							$input[$option['id']] 		= force_balance_tags($input[$option['id']]);
-              //wp_filter_kses expects content to be escaped!
-							$input[$option['id']] 		= addslashes($input[$option['id']]);
-              //calls stripslashes then addslashes
-							$valid_input[$option['id']] = wp_filter_kses($input[$option['id']]);
-						break;
-						
-						//for no html
-						case 'nohtml':
-							//accept the input only after stripping out all html, extra white space etc!
-							// need to add slashes still before sending to the database
-							$input[$option['id']] 		= sanitize_text_field($input[$option['id']]); 
-							$valid_input[$option['id']] = addslashes($input[$option['id']]);
-						break;
-						
-						//for allowlinebreaks
-						case 'allowlinebreaks':
-							//accept the input only after stripping out all html, extra white space etc!
-							// need to add slashes still before sending to the database
-							$input[$option['id']] 		= wp_strip_all_tags($input[$option['id']]); 
-							$valid_input[$option['id']] = addslashes($input[$option['id']]);
-						break;
-						
-						// a "cover-all" fall-back when the class argument is not set
-						default:
-							// accept only limited html
-							//my allowed html
-							$allowed_html = array(
-								'a' 			=> array('href' => array (),'title' => array ()),
-								'b' 			=> array(),
-								'blockquote' 	=> array('cite' => array ()),
-								'br' 			=> array(),
-								'dd' 			=> array(),
-								'dl' 			=> array(),
-								'dt' 			=> array(),
-								'em' 			=> array (), 
-								'i' 			=> array (),
-								'li' 			=> array(),
-								'ol' 			=> array(),
-								'p' 			=> array(),
-								'q' 			=> array('cite' => array ()),
-								'strong' 	=> array(),
-								'ul' 			=> array(),
-								'h1' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
-								'h2' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
-								'h3' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
-								'h4' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
-								'h5' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ()),
-								'h6' 			=> array('align' => array (),'class' => array (),'id' => array (), 'style' => array ())
-							);
-							
-							$input[$option['id']] 		= trim($input[$option['id']]); // trim whitespace
-							$input[$option['id']] 		= force_balance_tags($input[$option['id']]); // find incorrectly nested or missing closing tags and fix markup
-							$input[$option['id']] 		= wp_kses( $input[$option['id']], $allowed_html); // need to add slashes still before sending to the database
-							$valid_input[$option['id']] = addslashes($input[$option['id']]);							
-						break;
-					}
-				break;
-				
-				case 'select':
-					// check to see if the selected value is in our approved array of values!
-					$valid_input[$option['id']] = (in_array( $input[$option['id']], $option['choices']) ? $input[$option['id']] : '' );
-				break;
-				
-				case 'select2':
-					// process $select_values
-						$select_values = array();
-						foreach ($option['choices'] as $k => $v) {
-							// explode the connective
-							$pieces = explode("|", $v);
-							
-							$select_values[] = $pieces[1];
-						}
-					// check to see if selected value is in our approved array of values!
-					$valid_input[$option['id']] = (in_array( $input[$option['id']], $select_values) ? $input[$option['id']] : '' );
-				break;
-				
-				case 'checkbox':
-					// if it's not set, default to null!
-					if (!isset($input[$option['id']])) {
-						$input[$option['id']] = null;
-					}
-					// Our checkbox value is either 0 or 1
-					$valid_input[$option['id']] = ( $input[$option['id']] == 1 ? 1 : 0 );
-				break;
-				
-				case 'multi-checkbox':
-					unset($checkboxarray);
-					$check_values = array();
-					foreach ($option['choices'] as $k => $v ) {
-						// explode the connective
-						$pieces = explode("|", $v);
-						
-						$check_values[] = $pieces[1];
-					}
+				foreach ($check_values as $v ) {		
 					
-					foreach ($check_values as $v ) {		
-						
-						// Check that the option isn't null
-						if (!empty($input[$option['id'] . '|' . $v])) {
-							// If it's not null, make sure it's true, add it to an array
-							$checkboxarray[$v] = 'true';
-						}
-						else {
-							$checkboxarray[$v] = 'false';
-						}
+					// Check that the option isn't null
+					if (!empty($input[$option['id'] . '|' . $v])) {
+						// If it's not null, make sure it's true, add it to an array
+						$checkboxarray[$v] = 'true';
 					}
-					// Take all the items that were checked, and set them as the main option
-					if (!empty($checkboxarray)) {
-						$valid_input[$option['id']] = $checkboxarray;
+					else {
+						$checkboxarray[$v] = 'false';
 					}
-				break;
+				}
+				// Take all the items that were checked, and set them as the main option
+				if (!empty($checkboxarray)) {
+					$valid_input[$option['id']] = $checkboxarray;
+				}
+			break;
 
-				case 'multi-radio':
-						$valid_input[$option['id']] = $input[$option['id']];
-				break;
-				
-			endswitch;
-      
-      if( $valid_input[$option['class']] === "qts-slug" )
-        $valid_input = qts_sanitize_bases($valid_input);
-      else 
+			case 'multi-radio':
+				$valid_input[$option['id']] = (empty($input) || !isset($input[$option['id']])) ? $option['std'] : $input[$option['id']];
+			break;
+			
+		endswitch;
+  
+      	if (!empty($valid_input) && $valid_input[$option['id']] === "qts-slug" ) {
+        	$valid_input = qts_sanitize_bases($valid_input);
+      	} else {
 		    $valid_input= $valid_input;
-      
-		endforeach;
-		
-    
+      	}
+  
+	endforeach;    
     
 	return $valid_input;
 }
