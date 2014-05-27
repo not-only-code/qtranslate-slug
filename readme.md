@@ -42,6 +42,11 @@ Thanks for use this plugin!
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. That's all!
 
+## Testing
+
+1. Install [wp-cli](http://wp-cli.org/)
+1. Follow this instrucctions **ommiting 2nd step**: [Plugin Unit Tests](https://github.com/wp-cli/wp-cli/wiki/Plugin-Unit-Tests).
+
 ## Changing base permastructs
 
 1. In admin: navigate to *Settings/Slug options*.
