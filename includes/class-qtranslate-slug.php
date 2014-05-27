@@ -772,7 +772,7 @@ class QtranslateSlug {
     function filter_request( $query ) {
         global $q_config, $wp_query, $wp;
 
-        if (isset($wp->matched_query) {
+        if ((isset($wp->matched_query) || empty($query))  && ! isset($query['s']) ) {
             $query = wp_parse_args($wp->matched_query);
         }
         
