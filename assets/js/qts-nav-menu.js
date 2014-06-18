@@ -15,6 +15,17 @@ jQuery(document).ready(function($){
 	// Change titles (and values) when document is ready:
 	var lang = $('#qt-languages :radio:checked').val();
 	changeTitles();
+        
+        /**
+        * Change titles when there is a click on pagination
+        * on show all pages tab.
+        * 
+        * It happens when there are a large number of pages.
+        */
+        $( document ).ajaxComplete(function() {
+            lang = $('#qt-languages :radio:checked').val();
+            changeTitles();
+        });
 	
 	// Change titles (and values) when language is changed:
 	$('#qt-languages :radio').change( function() {
