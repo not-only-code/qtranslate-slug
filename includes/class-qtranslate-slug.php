@@ -316,7 +316,7 @@ class QtranslateSlug {
         
         echo "<div class=\"error\">" . PHP_EOL;
         echo "<p><strong>Qtranslate Slug:</strong></p>" . PHP_EOL;
-        echo "<p>" . __('This plugin requires at least <strong>Wordpress 3.3</strong>,  <strong>mqtranslate( 2.6.2.4 or newer)</strong> or <strong>Qtranslate(2.5.8 or newer)</strong>', 'qts') . "</p>" . PHP_EOL;
+        echo "<p>" . __('This plugin requires at least <strong>WordPress 3.3</strong> and either <strong>mqTranslate 2.6.2.4 (or newer)</strong> or <strong>qTranslate 2.5.8 (or newer)</strong>', 'qts') . "</p>" . PHP_EOL;
         echo "</div>" . PHP_EOL; 
     }
     
