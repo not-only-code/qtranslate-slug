@@ -40,7 +40,7 @@ jQuery(document).ready(function($){
 	});
 		
 	// Update original value when user changed a value:
-	$('input.edit-menu-item-title').live('change', function() {
+	$(document.body).on('change', 'input.edit-menu-item-title', null, function() {
 		regexp = new RegExp('(<!--:' + lang + '-->)(.*?)(<!--:-->)', 'i');
 		if( regexp.test( $(this).data( 'qt-value' ) ) )
 			$(this).data( 'qt-value', $(this).data('qt-value').replace( regexp, '$1' + $(this).val() + '$3' ) );
