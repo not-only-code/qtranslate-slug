@@ -1301,7 +1301,12 @@ class QtranslateSlug {
     private function get_category_parents( $id, $link = false, $separator = '/', $nicename = false, $visited = array() ) {
         
         $chain = '';
-        $parent = &get_category( $id );
+        if(phpversion() >= 5.4) {
+            $parent = get_category( $id );
+        } else {
+            $parent = &get_category( $id );
+        }
+
         if ( is_wp_error( $parent ) ) {
             return $parent;
         }
