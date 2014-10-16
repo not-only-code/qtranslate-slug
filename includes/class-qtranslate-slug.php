@@ -944,8 +944,9 @@ class QtranslateSlug {
         $slug = rawurlencode( urldecode( $slug ) );
         $slug = str_replace('%2F', '/', $slug);
         $slug = str_replace('%20', ' ', $slug);
-            
-        return array_pop( explode('/', $slug) );
+        $exploded_slug = explode('/', $slug);
+
+        return array_pop( $exploded_slug );
     }
     
     
