@@ -1601,7 +1601,7 @@ class QtranslateSlug {
             
             if ( !empty( $terms ) ) {
                 foreach ($terms as $term) {
-                    if ($meta[$term->name][$lang]) {
+                    if ( isset( $meta[$term->name][$lang] ) ) {
                         $term->name = $meta[$term->name][$lang];
                     }
                 };
