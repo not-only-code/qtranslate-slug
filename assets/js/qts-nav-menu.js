@@ -5,12 +5,12 @@ jQuery(document).ready(function($){
 	wpNavMenu.addMenuItemToBottom = function( menuMarkup, req ) {
 		oldAddMenuItemToBottom( menuMarkup, req );
 		changeTitles();
-	}
+	};
 	var oldAddMenuItemToTop = wpNavMenu.addMenuItemToTop;
 	wpNavMenu.addMenuItemToTop = function( menuMarkup, req ) {
 		oldAddMenuItemToTop( menuMarkup, req );
 		changeTitles();
-	}
+	};
 	
 	// Change titles (and values) when document is ready:
 	var lang = $('#qt-languages :radio:checked').val();
@@ -94,7 +94,7 @@ jQuery(document).ready(function($){
 	// Just before leaving the page (or refresh) restore the original input values:
 	window.onbeforeunload = function(){ 
 		restoreValues();		
-		return
-	}
+		return;
+	};
 
 });

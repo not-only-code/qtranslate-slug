@@ -243,7 +243,16 @@ class QtranslateSlug {
     * @since 1.1.7
     */
     public function register_plugin_styles() {
-        wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', __FILE__ ) );
+		wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', dirname(__FILE__ ) ) );
+        wp_enqueue_style( 'qts_front_styles' );
+    }
+    /**
+    * register minified front end styles and enqueue
+    * 43LC: easier duplicating the function :|
+    * @since 1.1.8
+    */
+    public function register_plugin_styles_min() {
+		wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.min.css', dirname(__FILE__ ) ) );
         wp_enqueue_style( 'qts_front_styles' );
     }
 
@@ -419,6 +428,8 @@ class QtranslateSlug {
             $qts_options = $this->get_options();
             if ( !isset($qts_options[QTS_PREFIX.'styles']) || $qts_options[QTS_PREFIX.'styles'] == "file" ) {
                 add_action( 'wp_enqueue_scripts', array( &$this, 'register_plugin_styles' ) );
+            } elseif ($qts_options[QTS_PREFIX.'styles'] == "minified" ) {
+                add_action( 'wp_enqueue_scripts', array( &$this, 'register_plugin_styles_min' ) );
             } elseif ($qts_options[QTS_PREFIX.'styles'] == "inline" ) {
                 add_action( 'wp_print_styles', array( &$this, 'print_plugin_styles' ), 20 );
             }
@@ -426,7 +437,13 @@ class QtranslateSlug {
         
         add_filter( 'query_vars', array(&$this, 'query_vars'));
         add_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
-            
+        
+        // remove from qtranslate the discouraged meta http-equiv, inline styles
+        // (including flag URLs) and wrong hreflang links   
+        remove_action('wp_head','qtrans_header');
+        // add proper hreflang links
+        add_action('wp_head',array(&$this, 'qtranslate_slug_header_extended'));
+        
         // remove some Qtranslate filters
         remove_filter( 'page_link',     'qtrans_convertURL' );
         remove_filter( 'post_link',     'qtrans_convertURL' );
@@ -448,6 +465,27 @@ class QtranslateSlug {
         add_filter('body_class', array($this, 'qts_body_class'), 600, 1 );
     }
         
+
+    /**
+     * Adds proper links to the content with available translations.
+     * Fixes issue #25
+     *  
+     * @global $qtranslate_slug used to convert the url
+     * @global $q_config available languages
+     *
+     * @since 1.1.8
+     */ 
+    public function qtranslate_slug_header_extended(){
+        global $qtranslate_slug;
+        global $q_config;
+        if(is_404()) return;
+
+        foreach($q_config['enabled_languages'] as $language) {
+            if($language != $q_config['language'] )
+                echo '<link hreflang="'.$language.'" href="'.$qtranslate_slug->get_current_url($language).'" rel="alternate" />'."\n";
+        }
+    }
+    
 
     /**
      * Add a class based on the current language
@@ -1601,7 +1639,7 @@ class QtranslateSlug {
             
             if ( !empty( $terms ) ) {
                 foreach ($terms as $term) {
-                    if ( isset( $meta[$term->name][$lang] ) ) {
+					if( isset( $meta[$term->name][$lang] ) ) {
                         $term->name = $meta[$term->name][$lang];
                     }
                 };
@@ -1646,7 +1684,9 @@ class QtranslateSlug {
             
             if ( !empty( $terms ) ) {
                 foreach ($terms as $term) {
-                    $term->name = $meta[$term->name][$lang];
+                    if( isset( $meta[$term->name][$lang] ) ) {
+                        $term->name = $meta[$term->name][$lang];
+                    }
                 };
             };
         
@@ -2215,7 +2255,7 @@ class QtranslateSlug {
             return;
         }
     
-        wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , __FILE__ ) , 'nav-menu', '1.0' );
+        wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , dirname(__FILE__ ) ), 'nav-menu', '1.0' );
         add_meta_box( 'qt-languages', __('Languages'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
     }
     
@@ -2270,6 +2310,8 @@ class QtranslateSlug {
             case 'text':
             case 'both':
             
+                $baseurl = dirname(plugins_url());
+                $num_languages = count($languages);
                 echo "<ul id=\"{$args['id']}\" class=\"qts_type_{$type} {$args['class']}\">". PHP_EOL;
                 
                 foreach( $languages as $index => $lang ):
@@ -2278,7 +2320,7 @@ class QtranslateSlug {
                     
                     $item_class = array();
                     if ( (string)$q_config['language'] == (string)$lang ) $item_class[] = 'current-menu-item';
-                    if ( $index == (count($languages) - 1) ) $item_class[] = 'last-child';
+                    if ( $index == ( $num_languages - 1) ) $item_class[] = 'last-child';
                     
           
                     $item_class = ' class="qts_lang_item ' . implode(' ', $item_class) . '"';
@@ -2290,14 +2332,19 @@ class QtranslateSlug {
                         $link_content = "<span style=\"display:none\">$language_name</span>";
                     } else if ( $type == 'both' ) {
                         $link_class = " class=\"qts_both qtrans_flag qtrans_flag_$lang\"";
-                        $link_content = "$language_name";
-                        
+                        $link_content = "$language_name";                        
                     } else {
                         $link_class = '';
                         $link_content = $language_name;
                     }
-                    
-                    echo "<li$item_class><a href=\"$url\" hreflang=\"$lang\"$link_class>$link_content</a></li>" . PHP_EOL;
+                    if( $type == 'image' || $type == 'both' ) {
+                        $link_flag_url =  $baseurl . '/'.$q_config['flag_location'].$q_config['flag'][$lang];
+                        
+                        //TODO: add i18n for alt attribute
+                        //43LC: hardcoding height and width
+                        $link_flag = "<img widht=\"18\" height=\"12\" src=\"$link_flag_url\" alt=\"$language_name\" />";
+                    }
+                    echo "<li$item_class><a href=\"$url\" lang=\"$lang\" hreflang=\"$lang\"$link_class>$link_flag$link_content</a></li>" . PHP_EOL;
                     
                 endforeach;
                 

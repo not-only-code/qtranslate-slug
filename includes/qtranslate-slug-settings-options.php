@@ -57,12 +57,15 @@ function get_multi_txt_choices($name = false) {
 function qts_options_page_styles() {
  	global $q_config;
 
+  
+	  
     $options[] = array(
 	    "section" => "styles",
 	    "id"      => QTS_PREFIX . "styles",
 	    "title"   => __('Change styles type', 'qts'),
 	    "desc"    => array(
-	    	__("adds a file (qts-default.css) file to the theme's header.", "qts"),
+	    	__("adds a file (qts-default.css) to the theme's header.", "qts"),
+	    	__("adds a minified ( slighlty faster) file (qts-default.min.css) to the theme's header.", "qts"),
 	    	__("prints the styles directly into the theme's header.", "qts"),
 	    	__("neither include not print the default style.", "qts")
 	    	),
@@ -70,6 +73,7 @@ function qts_options_page_styles() {
 	    'class'   => 'qts-style',
 	    "choices" => array(
 	    	"file",
+	    	"minified",
 	    	"inline",
 	    	"none"
 	    	),

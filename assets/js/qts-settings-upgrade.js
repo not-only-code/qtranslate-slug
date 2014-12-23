@@ -63,7 +63,7 @@ jQuery(document).ready(function($) {
 			package_.type = $('#qts-slug-type').val();
 			
 		$.post(ajaxurl, package_, check_types);
-	}
+	};
 	
 	upgrade_button.bind('click', start_upgrade);
 });
