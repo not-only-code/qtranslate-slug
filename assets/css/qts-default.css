@@ -10,7 +10,7 @@
     margin-bottom: 7px;
 }
 .qts_both {
-    padding-left: 25px;
     white-space: nowrap;
     line-height:1em;
 }
+.qts_both img { margin-right: 4px }

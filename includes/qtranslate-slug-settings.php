@@ -578,7 +578,13 @@ function qts_show_settings_page() {
 			// rewrite rules
 			flush_rewrite_rules();
 			?>
-			
+	  <?php $css_path = plugin_dir_url(dirname(__FILE__)).'/assets/css/qts-default.css';
+            $file_styles = file_get_contents($css_path);
+            
+             
+            ?>
+            <p>If you selected "none", copy and use these styles as you see fit:</p>
+            <textarea name="textarea" rows="10" cols="80"><?php echo $file_styles; ?></textarea>;
 			<p class="submit">
 				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','qts'); ?>" />
 			</p>
