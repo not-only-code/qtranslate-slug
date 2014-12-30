@@ -194,7 +194,7 @@ class QtranslateSlug {
      * @since tbd
      */
     private function plugin_prefix(){
-        if ('' === $this->$plugin_prefix){
+        if ('' === $this->plugin_prefix){
             if (is_plugin_active('qtranslate-x/qtranslate.php')){
                 $this->plugin_prefix = 'qtranxf_';
             } else {
