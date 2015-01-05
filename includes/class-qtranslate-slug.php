@@ -1658,25 +1658,25 @@ class QtranslateSlug {
         
         global $pagenow;
         
-        // Although in post edit page the tags in 'most
-        // used' list are translated, but when saving the
-        // post Wordpress considers the translated tags as
-        // new tags. Due to this issue I skip this 'hack'
-        // for tags in post edit page.
         if ( $pagenow != 'admin-ajax.php' ) {
             
             $meta = get_option('qtranslate_term_name');
-            $lang = call_user_func($this->plugin_prefix() . 'getLanguage');
-
+            $lang = qtrans_getLanguage();
+                    
+            
             if ( !empty( $terms ) ) {
-                foreach ($terms as $term) {
-					if( isset( $meta[$term->name][$lang] ) ) {
-                        $term->name = $meta[$term->name][$lang];
+                foreach ($terms as $term_index => $term) {
+                    // after saving, dont do anything
+                    if( isset($_POST['action'] ) && $_POST['action']  == "editedtag" ) {
+                        return $terms;
+                    }
+                    $termname = $term->name;
+                    if( isset( $meta[$termname][$lang] ) ) {
+                        $term->name = $meta[$termname][$lang];
                     }
                 };
             };
         }
-
         return $terms;
     }
 
@@ -2144,7 +2144,7 @@ class QtranslateSlug {
                 $term_slug = $term->slug;
             } else {
                 // otherwise, its the edit term screen
-                $term_slug =  $_POST["qts_term_{$lang}_slug"];
+                $term_slug = $_POST["qts_{$lang}_slug"];
             }
             
             $meta_value = apply_filters( 'qts_validate_term_slug', $term_slug, $term, $lang);
