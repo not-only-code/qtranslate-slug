@@ -2,17 +2,17 @@
 # This file is distributed under the same license as the qTranslate slug package.
 msgid ""
 msgstr ""
-"Project-Id-Version: qTranslate slug 1.0\n"
+"Project-Id-Version: qTranslate slug\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/qtranslate-slug\n"
 "POT-Creation-Date: 2012-05-27 20:27:55+00:00\n"
-"PO-Revision-Date: 2014-05-22 12:29-0000\n"
+"PO-Revision-Date: 2015-01-07 13:02-0000\n"
 "Last-Translator: Pedro Mendonça <ped.gaspar@gmail.com>\n"
 "Language-Team: Pedro Mendonça <ped.gaspar@gmail.com>\n"
 "Language: pt_PT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.4\n"
+"X-Generator: Poedit 1.7.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -113,8 +113,8 @@ msgstr "Actualize os seus dados"
 
 #: qtranslate-slug-settings.php
 msgid ""
-"There are slugs stored with old data system. Please upgrade your data "
-"pressing upgrade button:"
+"There are slugs stored with old data system. Please upgrade your data pressing "
+"upgrade button:"
 msgstr ""
 "Existem URLs com sistema de dados antigo. Por favor actualize os seus dados "
 "através do botão actualizar:"
@@ -153,31 +153,29 @@ msgstr ""
 #: qtranslate-slug-settings.php
 msgid ""
 "If you activated previously the <a href=\"options-permalink.php\">pretty "
-"permalinks</a>, in this section you can translate the <abbr title=\"en "
-"inglés, Universal Resource Locator\">URLs</abbr> <strong>bases</strong> for "
-"<a href=\"http://codex.wordpress.org/Function_Reference/"
-"register_post_type#Arguments\">public</a> post_types, categories, tags and "
-"taxonomies."
+"permalinks</a>, in this section you can translate the <abbr title=\"en inglés, "
+"Universal Resource Locator\">URLs</abbr> <strong>bases</strong> for <a href="
+"\"http://codex.wordpress.org/Function_Reference/register_post_type#Arguments"
+"\">public</a> post_types, categories, tags and taxonomies."
 msgstr ""
 "Se activou previamente as <a href=\"options-permalink.php\">ligações "
 "permanentes</a>, nesta secção poderá traduzir as <strong>bases</strong> das "
 "<abbr title=\"em inglês, Universal Resource Locator\">URLs</abbr> para tipos "
-"de artigo, categorias, etiquetas e taxonomias <a href=\"http://codex."
-"wordpress.org/Function_Reference/register_post_type#Arguments\">públicas</a>."
+"de artigo, categorias, etiquetas e taxonomias <a href=\"http://codex.wordpress."
+"org/Function_Reference/register_post_type#Arguments\">públicas</a>."
 
 #: qtranslate-slug-settings.php
 msgid ""
-"For example, the post_type <kbd>books</kbd>, in Spanish would be displayed "
-"as <code>http://example.org/es/libros/post-type-name/</code>. If you leave "
-"this blank will use the default option when you <a href=\"http://codex."
-"wordpress.org/Function_Reference/register_post_type\">registered</a> the "
-"post_type."
+"For example, the post_type <kbd>books</kbd>, in Spanish would be displayed as "
+"<code>http://example.org/es/libros/post-type-name/</code>. If you leave this "
+"blank will use the default option when you <a href=\"http://codex.wordpress."
+"org/Function_Reference/register_post_type\">registered</a> the post_type."
 msgstr ""
 "Por exemplo, o tipo de artigo <kbd>livros</kbd>, em português seria mostrado "
 "como <code>http://exemplo.org/pt/livros/nome-de-tipo-de-artigo/</code>. Se "
 "deixar isto em branco, será usada a opção por omissão <a href=\"http://codex."
-"wordpress.org/Function_Reference/register_post_type\">registada</a> no tipo "
-"de artigo."
+"wordpress.org/Function_Reference/register_post_type\">registada</a> no tipo de "
+"artigo."
 
 #: qtranslate-slug-settings.php
 msgid ""
@@ -185,15 +183,70 @@ msgid ""
 "as <code>http://example.org/es/categoria/taxonomy-name/</code>. If you leave "
 "this blank will use the default option when you <a href=\"http://codex."
 "wordpress.org/Function_Reference/register_taxonomy\">registered</a> the "
-"taxonomy (if you previously setup a base permastruct for <u>categories</u> "
-"or <u>tags</u> in <a href=\"options-permalink.php\">permalinks</a> page, "
-"these bases will be overwritten by the translated ones)."
+"taxonomy (if you previously setup a base permastruct for <u>categories</u> or "
+"<u>tags</u> in <a href=\"options-permalink.php\">permalinks</a> page, these "
+"bases will be overwritten by the translated ones)."
 msgstr ""
 "Por exemplo, a taxonomia <kbd>categoria</kbd>, em português seria mostrado "
 "como <code>http://exemplo.org/pt/categoria/nome-de-taxonomia/</code>. Se "
 "deixar isto em branco, será usada a opção por omissão <a href=\"http://codex."
 "wordpress.org/Function_Reference/register_taxonomy\">registada</a> na "
 "taxonomia (se previamente configurou a base das ligações permanentes para "
-"<u>categorias</u> ou <u>etiquetas</u> na página <a href=\"options-permalink."
-"php\">ligações permanentes</a>, estas bases serão sobrepostas pelas "
-"traduzidas)."
+"<u>categorias</u> ou <u>etiquetas</u> na página <a href=\"options-permalink.php"
+"\">ligações permanentes</a>, estas bases serão sobrepostas pelas traduzidas)."
+
+#: qtranslate-slug-settings-options.php
+msgid "Styles"
+msgstr "Estilos"
+
+#: qtranslate-slug-settings.php
+msgid "The default styles are very minimal, and you can include them or not."
+msgstr "﻿Os estilos padrão são mínimos, pode incluí-los ou não."
+
+#: qtranslate-slug-settings-options.php
+msgid "Change styles type"
+msgstr "﻿Alterar o tipo de estilos"
+
+#: qtranslate-slug-settings-options.php
+msgid "file"
+msgstr "ficheiro"
+
+#: qtranslate-slug-settings-options.php
+msgid "minified"
+msgstr "minimizado"
+
+#: qtranslate-slug-settings-options.php
+msgid "inline"
+msgstr "em linha"
+
+#: qtranslate-slug-settings-options.php
+msgid "none"
+msgstr "nenhum"
+
+#: qtranslate-slug-settings-options.php
+msgid "adds a file (qts-default.css) to the theme's header."
+msgstr "adiciona um ficheiro (qts-default.css) ao cabeçalho do tema."
+
+#: qtranslate-slug-settings-options.php
+msgid ""
+"adds a minified ( slighlty faster) file (qts-default.min.css) to the theme's "
+"header."
+msgstr ""
+"adiciona um ficheiro minimizado (qts-default.min.css), ligeiramente mais "
+"rápido, ao cabeçalho do tema."
+
+#: qtranslate-slug-settings-options.php
+msgid "prints the styles directly into the theme's header."
+msgstr "﻿exibe os estilos directamente no cabeçalho do tema."
+
+#: qtranslate-slug-settings-options.php
+msgid "neither include not print the default style."
+msgstr "nem incluir nem exibir o estilo padrão."
+
+#: qtranslate-slug-settings.php
+msgid "If you selected \"none\", copy and use these styles as you see fit:"
+msgstr "Se escolher \"nenhum\", copie e utilize estes estilos como entender:"
+
+#: class-qtranslate-slug-widget.php
+msgid "Allows your visitors to choose a Language."
+msgstr "Permite aos visitantes escolher o seu Idioma."
