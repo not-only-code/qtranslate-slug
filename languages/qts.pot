@@ -143,3 +143,55 @@ msgstr ""
 #: qtranslate-slug-settings.php
 msgid "For example, the taxonomy <kbd>category</kbd>, in Spanish would be displayed as <code>http://example.org/es/categoria/taxonomy-name/</code>. If you leave this blank will use the default option when you <a href=\"http://codex.wordpress.org/Function_Reference/register_taxonomy\">registered</a> the taxonomy (if you previously setup a base permastruct for <u>categories</u> or <u>tags</u> in <a href=\"options-permalink.php\">permalinks</a> page, these bases will be overwritten by the translated ones)."
 msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "Styles"
+msgstr ""
+
+#: qtranslate-slug-settings.php
+msgid "The default styles are very minimal, and you can include them or not."
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "Change styles type"
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "file"
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "minified"
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "inline"
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "none"
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "adds a file (qts-default.css) to the theme's header."
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "adds a minified ( slighlty faster) file (qts-default.min.css) to the theme's header."
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "prints the styles directly into the theme's header."
+msgstr ""
+
+#: qtranslate-slug-settings-options.php
+msgid "neither include not print the default style."
+msgstr ""
+
+#: qtranslate-slug-settings.php
+msgid "If you selected \"none\", copy and use these styles as you see fit:"
+msgstr ""
+
+#: class-qtranslate-slug-widget.php
+msgid "Allows your visitors to choose a Language."
+msgstr ""
