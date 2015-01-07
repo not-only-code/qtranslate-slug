@@ -412,7 +412,7 @@ class QtranslateSlug {
      */
     function init() {
       
-        load_plugin_textdomain( 'qts', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+        load_plugin_textdomain( 'qts', false, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages' );
         
         // checking plugin activate
         if ( self::block_activate() ) {
