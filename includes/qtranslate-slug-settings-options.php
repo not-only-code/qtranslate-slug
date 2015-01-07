@@ -72,10 +72,10 @@ function qts_options_page_styles() {
 	    "type"    => "multi-radio",
 	    'class'   => 'qts-style',
 	    "choices" => array(
-	    	"file",
-	    	"minified",
-	    	"inline",
-	    	"none"
+	    	__("file", "qts"),
+	    	__("minified", "qts"),
+	    	__("inline", "qts"),
+	    	__("none", "qts")
 	    	),
 	    "std"     => "file"
   	);

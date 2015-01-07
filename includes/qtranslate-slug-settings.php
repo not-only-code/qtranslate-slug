@@ -583,7 +583,7 @@ function qts_show_settings_page() {
             
              
             ?>
-            <p>If you selected "none", copy and use these styles as you see fit:</p>
+            <p><?php  _e('If you selected "none", copy and use these styles as you see fit:','qts'); ?> </p>
             <textarea name="textarea" rows="10" cols="80"><?php echo $file_styles; ?></textarea>;
 			<p class="submit">
 				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','qts'); ?>" />

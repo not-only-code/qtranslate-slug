@@ -8,7 +8,7 @@
 class QtranslateSlugWidget extends WP_Widget {
      
     function QtranslateSlugWidget() {
-        $widget_ops = array('classname' => 'qts_widget', 'description' => __('Allows your visitors to choose a Language.','qtranslate') );
+        $widget_ops = array('classname' => 'qts_widget', 'description' => __('Allows your visitors to choose a Language.','qts') );
         $this->WP_Widget('qtranslateslug', __('Language selector', 'qts'), $widget_ops);
     }
     
