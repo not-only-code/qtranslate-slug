@@ -49,7 +49,29 @@ class QtranslateSlug {
      * @since 1.0
      */
     private $lang = false;
+	
+	/**
+	 * variable for current language
+	 */
+    private $current_lang = false;
     
+	/**
+     * Array of enabled languages
+     *
+     * @var array
+     *
+     * @since 1.0
+     */
+    private $enabled_languages = array();
+	/**
+     * Array of enabled languages
+     *
+     * @var array
+     *
+     * @since 1.0
+     */
+    private $url_path_mode = "";
+	
     
     
     /**
@@ -71,8 +93,8 @@ class QtranslateSlug {
      * @since 1.0
      */
     private $current_url = array();
-
-
+    
+    
     /**
      * Variable that contains the prefix for base plugin function names (qtranslate/qtranslate-x)
      *
@@ -81,9 +103,8 @@ class QtranslateSlug {
      * @since ?
      */
     private $plugin_prefix = "";
-    
-    
-    
+	
+	
     /**
      * return the current / temp language
      *
@@ -94,7 +115,33 @@ class QtranslateSlug {
         
         return ($this->lang) ? $this->lang : $q_config['language'];
     }
-    
+    /**
+     * return the current / temp language
+	 * we store and use it all the way!
+     *
+     * @since 1.1.9
+     */
+    private function get_currentlang() {
+        return $this->current_lang;
+    }
+    /**
+     * return the enabled languages
+	 * we store and use it all the way!
+     *
+     * @since 1.1.9
+     */
+    private function get_enabled_languages() {
+        return $this->enabled_languages;
+    }
+    /**
+     * return the enabled languages
+	 * we store and use it all the way!
+     *
+     * @since 1.1.9
+     */
+    private function get_url_path_mode() {
+        return $this->url_path_mode;
+    }
     
     
     /**
@@ -106,7 +153,17 @@ class QtranslateSlug {
         $this->set_options();
         return $this->options;
     }
-    
+    /**
+     * Returns the correct prefix for the function names of the different supported translation plugins.
+     * Will return 'qtranxf_' if qtranslate-x is used, 'qtrans_' otherwise.
+     *
+     * @return string the function name prefix for translation functions from other plugins
+     * @since 1.1.9
+     */
+    private function get_plugin_prefix(){
+        
+        return $this->plugin_prefix;
+    }
     
     
     /**
@@ -129,7 +186,36 @@ class QtranslateSlug {
         }
     }
     
-    
+    /**
+	 * Sets the prefix for the active fork. See get_plugin_prefix
+	 * @since 1.1.9
+	 *
+	 */
+    private function set_plugin_prefix(){
+        if ('' === $this->plugin_prefix){
+            if (is_plugin_active('qtranslate-x/qtranslate.php')){
+                $this->plugin_prefix = 'qtranxf_';
+            } else {
+                $this->plugin_prefix = 'qtrans_';
+            }
+        }
+    }
+    /**
+     * Returns the correct prefix for the function names of the different supported translation plugins.
+     * Will return 'qtranxf_' if qtranslate-x is used, 'qtrans_' otherwise.
+     *
+     * @return string the function name prefix for translation functions from other plugins
+     * @since 1.1.9
+     */
+    private function set_url_path_mode(){
+        if ('' === $this->url_path_mode){
+            if (is_plugin_active('qtranslate-x/qtranslate.php')){
+                $this->url_path_mode = QTX_URL_PATH;
+            } else {
+                $this->url_path_mode = QT_URL_PATH;
+            }
+        }
+    }
     
     /**
      * setter: options | permalink_structure
@@ -182,29 +268,14 @@ class QtranslateSlug {
         
         return (
             version_compare($wp_version, "3.3", "<" ) ||
-                ( !is_plugin_active('qtranslate/qtranslate.php') && !is_plugin_active('mqtranslate/mqtranslate.php') && !is_plugin_active('qtranslate-x/qtranslate.php'))
+                ( !is_plugin_active('qtranslate/qtranslate.php') && 
+                !is_plugin_active('mqtranslate/mqtranslate.php') && 
+                !is_plugin_active('qtranslate-x/qtranslate.php'))
         );
     }
-
-    /**
-     * Returns the correct prefix for the function names of the different supported translation plugins.
-     * Will return 'qtranxf_' if qtranslate-x is used, 'qtrans_' otherwise.
-     *
-     * @return string the function name prefix for translation functions from other plugins
-     * @since tbd
-     */
-    private function plugin_prefix(){
-        if ('' === $this->plugin_prefix){
-            if (is_plugin_active('qtranslate-x/qtranslate.php')){
-                $this->plugin_prefix = 'qtranxf_';
-            } else {
-                $this->plugin_prefix = 'qtrans_';
-            }
-        }
-        return $this->plugin_prefix;
-    }
     
     
+	
     
     /**
      * check if exists qtranslate and do the installation, support multisite
@@ -412,7 +483,7 @@ class QtranslateSlug {
      */
     function init() {
       
-        load_plugin_textdomain( 'qts', false, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages' );
+		load_plugin_textdomain( 'qts', false, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages' );
         
         // checking plugin activate
         if ( self::block_activate() ) {
@@ -425,9 +496,18 @@ class QtranslateSlug {
         // caching qts options
         $this->set_options();
         
+		global $q_config;
+		
+		// until we get  a proper function, this will make it for it.
+		$this->current_lang = $q_config['language'];
+	    $this->enabled_languages = $q_config['enabled_languages'];
+		$this->set_plugin_prefix();
+		$this->set_url_path_mode();
+		
         if ( is_admin() ) {
             
             $this->check_old_versions();
+       
             
             // add filters
             add_filter( 'qts_validate_post_slug', array(&$this, 'validate_post_slug'), 0, 3 );
@@ -471,15 +551,15 @@ class QtranslateSlug {
         
         // remove from qtranslate the discouraged meta http-equiv, inline styles
         // (including flag URLs) and wrong hreflang links   
-        remove_action('wp_head', $this->plugin_prefix() . 'header');
+        remove_action('wp_head', $this->get_plugin_prefix() . 'header');
         // add proper hreflang links
         add_action('wp_head',array(&$this, 'qtranslate_slug_header_extended'));
         
         // remove some Qtranslate filters
-        remove_filter( 'page_link',     $this->plugin_prefix() . 'convertURL' );
-        remove_filter( 'post_link',     $this->plugin_prefix() . 'convertURL' );
-        remove_filter( 'category_link', $this->plugin_prefix() . 'convertURL' );
-        remove_filter( 'tag_link',      $this->plugin_prefix() . 'convertURL' );
+        remove_filter( 'page_link',     $this->get_plugin_prefix() . 'convertURL' );
+        remove_filter( 'post_link',     $this->get_plugin_prefix() . 'convertURL' );
+        remove_filter( 'category_link', $this->get_plugin_prefix() . 'convertURL' );
+        remove_filter( 'tag_link',      $this->get_plugin_prefix() . 'convertURL' );
         
         add_filter( 'qts_permastruct' , array(&$this, 'get_extra_permastruct'), 0, 2);
         add_filter( 'qts_url_args',     array(&$this, 'parse_url_args'), 0, 1);
@@ -489,13 +569,26 @@ class QtranslateSlug {
         add_filter( '_get_page_link',   array(&$this, '_get_page_link'), 0, 2 );
         add_filter( 'term_link',        array(&$this, 'term_link'), 600, 3 );
         
-        add_filter( 'single_term_title', $this->plugin_prefix() . 'useTermLib', 805 );
+        add_filter( 'single_term_title', $this->get_plugin_prefix() . 'useTermLib', 805 );
         add_filter( 'get_blogs_of_user', array(&$this, 'blog_names'), 1  );
         add_action( 'widgets_init', array(&$this, 'widget_init'), 100 );
         // Add specific CSS class to body class based on current lang
         add_filter('body_class', array($this, 'qts_body_class'), 600, 1 );
-    }
         
+        add_filter( 'nav_menu_attr_title', array($this, 'qts_filter_attr_title'), 0, 3 );
+
+
+    }
+      
+     /**
+     * Filters menu link attribute
+     *  
+     * @since 1.1.9
+     */ 
+    function qts_filter_attr_title( $attr_title ) {
+        return $this->qts_quickuse($attr_title);
+    }
+
 
     /**
      * Adds proper links to the content with available translations.
@@ -507,13 +600,12 @@ class QtranslateSlug {
      * @since 1.1.8
      */ 
     public function qtranslate_slug_header_extended(){
-        global $qtranslate_slug;
-        global $q_config;
-        if(is_404()) return;
-
-        foreach($q_config['enabled_languages'] as $language) {
-            if($language != $q_config['language'] )
-                echo '<link hreflang="'.$language.'" href="'.$qtranslate_slug->get_current_url($language).'" rel="alternate" />'."\n";
+    	if(is_404()) return;
+        
+        
+        foreach($this->get_enabled_languages() as $language) {
+            if($language != $this->get_currentlang() )
+                echo '<link hreflang="'.$language.'" href="'.$this->get_current_url($language).'" rel="alternate" />'."\n";
         }
     }
     
@@ -524,12 +616,131 @@ class QtranslateSlug {
      */
     public function qts_body_class( $classes ) {
         // add 'class-name' to the $classes array
-        $classes[] = call_user_func($this->plugin_prefix() . 'getLanguage');
-
+        $classes[] = call_user_func($this->get_plugin_prefix() . 'getLanguage');
+        
         // return the $classes array
         return $classes;
     }
 
+	// TODO: properly test this
+	/**
+	 * Get text in $lang, or in the current lang
+	 *
+	 * @package Qtranslate Slug
+	 * @since 1.1.9
+	 * @param string $text the whole text
+	 * @param string $lang (optional) get the text in this language, or if empty, the current
+	 * @return array the text in the required language
+	 */
+	public function qts_quickuse( $text,$lang='' ){
+	    global $q_config;
+	    $lang = '' == $lang ? $q_config['language'] : $lang;
+	    $parsed_text = $this->qts_split($text);
+	    if( !empty($parsed_text[$lang])){
+	      return $parsed_text[$lang];  
+	    }  
+	}
+	/**
+	 * Quickly splits text in the different languages, either by 
+	 * long tags "<!--:en-->text<!--:-->", or 
+	 * ~short tags "[:en]text"~ <- dont support any more.
+	 * NOTE: this is different behaviour from qtrans_split. don't mix long and short
+	 * ANOTHER NOTE: don't mix <!--:en-->text<!--:-->more text. 
+	 * @param $text the whole text
+	 * @param bool $quicktag  
+	 *
+	 * @package Qtranslate Slug
+	 * @since 1.1.9
+	 */
+	public function qts_split($text, $quicktags = false ) {
+	   
+	    $result = array();
+	/*    if( $quicktags ) {
+	        $split_regex = "#\[(:[a-z]{2})\]#ism";
+	        $split_texts = preg_split($split_regex, $text, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+	        $max = count( $split_texts);
+	        for( $i=0 ; $i < $max; $i+=2) {
+	            $result[$split_texts[$i]] = $split_texts[$i+1];
+	        }
+	        return $result;
+	    } else {*/
+	        $split_texts = explode('<!--:-->', $text);
+	        foreach ($split_texts as $split_text) {
+	          if(preg_match("#<!--:([a-z]{2})-->(.*)#i", $split_text, $matches)) {
+	              $result[$matches[1]] = $matches[2];
+	          }
+	        }
+	    //}
+	    return $result;
+	}
+	
+	
+	/**
+	 * 
+	 * Splits and returns the text in the right language.
+	 * Based on https://github.com/xhaleera/mqtranslate
+	 * and https://wordpress.org/support/topic/evidence-on-how-slow-and-inefficient-qtranslate-is-please-do-something
+	 * @param string $lang the language to extr
+	 */
+	public function qts_use($lang, $text, $show_available=false) {
+		if (empty($text) || !call_user_func($this->get_plugin_prefix() . 'isEnabled',$lang))
+	        return $text;
+	    
+	    $re = '/<!--:[a-z]{2}-->/i';
+		// dropping quicktags like a boss
+	    if (is_string($text) && !preg_match($re, $text))
+	        return $text;
+	    
+	    if (is_array($text) || is_object($text)) {
+	        foreach ($text as &$t)
+	            if ($t && ((is_string($t) && preg_match($re, $t)) || is_array($t) || is_object($t)))
+	                $t = $this->qts_use($lang, $t, $show_available);
+	        return $text;
+	    }
+	    
+	    
+	    
+	    // get content
+	    $content = $this->qts_split($text);
+	    // find available languages
+	    $available_languages = array();
+	    foreach($content as $language => $lang_text) {
+	        $lang_text = trim($lang_text);
+	        if(!empty($lang_text)) {
+	          $available_languages[] = $language;  
+	        }
+	    }
+	    // if no languages available show full text
+	    if (empty($available_languages))
+	        return $text;
+	    
+	    // if content is available, show the content in the requested language
+	    if (!empty($content[$lang]))
+	        return $content[$lang];
+	    if( $show_available ) {
+	    	global $q_config;
+	    	// display selection for available languages
+	        $language_list = "";
+	        // Not Available Message + separators
+	        $language_notavailable = explode(":",  $q_config['not_available'][$lang] );
+	        if (empty($language_notavailable )) {
+	            $language_url = get_the_permalink();
+	            $normal_separator = $language_notavailable[1];
+	            $end_separator = $language_notavailable[2];
+	            // build available languages string backward
+	            foreach ($available_languages as $k => $language) {
+	                if ($k == 1)
+	                    $language_list = $end_separator.$language_list;
+	                else if ($k > 1)
+	                    $language_list = $normal_separator.$language_list;
+	                $language_list = "<a href=\"". call_user_func($this->get_plugin_prefix() . 'convertURL',$language_url, $language)."\">".$q_config['language_name'][$language]."</a>".$language_list;
+	            }
+	        }//TODO: fix this! the link isn't updated.
+	        return "<p>".sprintf( $q_config['not_available'][$lang], $language_list)."</p>";
+	    }
+	    return "";
+	   
+	}
     /**
      * Adds news rules to translate the URL bases, 
      * this function must be called on flush_rewrite or 'flush_rewrite_rules' 
@@ -539,7 +750,8 @@ class QtranslateSlug {
      * @since 1.0
      */ 
     public function modify_rewrite_rules() {
-        global $wp_rewrite;
+        // do we need this global?	
+        //global $wp_rewrite;
         
         // post types rules
         $post_types = get_post_types( array('_builtin' => false ), 'objects');
@@ -565,9 +777,9 @@ class QtranslateSlug {
      * @since 1.0
      */
     private function generate_extra_rules( $name = false ) {
-        global $wp_rewrite, $q_config;
+        global $wp_rewrite;
         
-        foreach ($q_config['enabled_languages'] as $lang):
+        foreach ($this->get_enabled_languages() as $lang):
             
             if ( $base = $this->get_base_slug( $name, $lang) ):
                 
@@ -621,10 +833,8 @@ class QtranslateSlug {
             return false;
         }
         
-        $option = $qts_options[$option_name][$lang];
-        
-        if (isset($option)) {
-            return $option;
+        if (isset($qts_options[$option_name][$lang])) {
+            return $qts_options[$option_name][$lang];
         }
         
         return false;
@@ -736,7 +946,7 @@ class QtranslateSlug {
             $req_uri = trim($req_uri, '/');
             $req_uri = preg_replace("|^$home_path|", '', $req_uri);
             $req_uri = trim($req_uri, '/');
-            if ($GLOBALS['q_config']['url_mode'] == QT_URL_PATH) {
+            if ($GLOBALS['q_config']['url_mode'] == $this->get_url_path_mode()) {
                 $req_uri = preg_replace("/^{$GLOBALS['q_config']['language']}(\/|$)/", '', $req_uri);
             }
             $pathinfo = trim($pathinfo, '/');
@@ -839,8 +1049,7 @@ class QtranslateSlug {
      * @since 1.0
      */
     function filter_request( $query ) {
-        global $q_config, $wp_query, $wp;
-
+        global $wp_query, $wp;
         if ((isset($wp->matched_query) || empty($query))  && ! isset($query['s']) ) {
             $query = wp_parse_args($wp->matched_query);
         }
@@ -962,7 +1171,7 @@ class QtranslateSlug {
         if ( isset($function) ) {
                     
             // parse all languages links
-            foreach( $q_config['enabled_languages'] as $lang ) {
+            foreach( $this->get_enabled_languages() as $lang ) {
                 
                 $this->lang = $lang;
                 $this->current_url[$lang] = apply_filters('qts_url_args', call_user_func($function, $id));
@@ -985,7 +1194,6 @@ class QtranslateSlug {
      * @since 1.0
      */
     public function get_current_url( $lang = false ) {
-        global $q_config;
         
         if (!$lang) {
             $lang = $this->get_lang();
@@ -1172,7 +1380,7 @@ class QtranslateSlug {
         }
             
         if ( !$ignore_caller ) {
-            $url = call_user_func($this->plugin_prefix() . 'convertURL', $url, $this->get_lang(), true);
+            $url = call_user_func($this->get_plugin_prefix() . 'convertURL', $url, $this->get_lang(), true);
         }
         
         return $url;
@@ -1658,20 +1866,22 @@ class QtranslateSlug {
         
         global $pagenow;
         
+        
         if ( $pagenow != 'admin-ajax.php' ) {
             
             $meta = get_option('qtranslate_term_name');
-            $lang = qtrans_getLanguage();
+            $lang = call_user_func($this->get_plugin_prefix() . 'getLanguage');
                     
             
             if ( !empty( $terms ) ) {
                 foreach ($terms as $term_index => $term) {
                     // after saving, dont do anything
-                    if( isset($_POST['action'] ) && $_POST['action']  == "editedtag" ) {
+                    if( ( isset($_POST['action'] ) && $_POST['action']  == "editedtag") ||
+                     !is_object( $term ) ) {
                         return $terms;
                     }
                     $termname = $term->name;
-                    if( isset( $meta[$termname][$lang] ) ) {
+					if( isset( $meta[$termname][$lang] ) ) {
                         $term->name = $meta[$termname][$lang];
                     }
                 };
@@ -1711,7 +1921,7 @@ class QtranslateSlug {
             $tax = str_replace("'", "", $taxonomy);
             
             $meta = get_option('qtranslate_term_name');
-            $lang = call_user_func($this->plugin_prefix() . 'getLanguage');
+            $lang = call_user_func($this->get_plugin_prefix() . 'getLanguage');
             
             if ( !empty( $terms ) ) {
                 foreach ($terms as $term) {
@@ -1728,14 +1938,14 @@ class QtranslateSlug {
 
 
     /**
-     * hide quickedit button ( functionality not supported by qTranslate )
+     * hide quickedit slug
      * 
      * @since 1.0
      */
     public function hide_quick_edit() {
         echo "<!-- QTS remove quick edit box -->" . PHP_EOL;
         echo "<style type=\"text/css\" media=\"screen\">" . PHP_EOL;
-        echo "  .row-actions .inline.inline.hide-if-no-js { display: none !important }" . PHP_EOL;
+        echo "  .inline-edit-row fieldset.inline-edit-col-left .inline-edit-col *:first-child + label + label  { display: none !important }" . PHP_EOL;
         echo "</style>" . PHP_EOL;
     }
     
@@ -1836,7 +2046,7 @@ class QtranslateSlug {
      */
     public function validate_post_slug( $slug, $post, $lang ) { 
             
-        $post_title = trim(call_user_func($this->plugin_prefix() . 'use', $lang, $_POST['post_title']));
+        $post_title = trim($this->qts_use($lang, $_POST['post_title']));
         $post_name = get_post_meta($post->ID, $this->get_meta_key($lang), true);
         if (!$post_name) {
             $post_name = $post->post_name;
@@ -1952,7 +2162,6 @@ class QtranslateSlug {
      * @since 1.0
      */
     public function save_postdata( $post_id, $post ) {
-        global $q_config;
         
         $post_type_object = get_post_type_object( $post->post_type);
         
@@ -1964,7 +2173,7 @@ class QtranslateSlug {
             return $post_id;
         }
         
-        foreach ($q_config['enabled_languages'] as $lang) {
+        foreach ($this->get_enabled_languages() as $lang) {
             
             $meta_name = $this->get_meta_key($lang);
             $meta_value = apply_filters( 'qts_validate_post_slug', $_POST["qts_{$lang}_slug"], $post, $lang);
@@ -2123,28 +2332,29 @@ class QtranslateSlug {
      * @since 1.0
      */
     public function save_term( $term_id, $tt_id, $taxonomy ) {
-        global $q_config;
-         
-        if ( (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )         // check autosave
-        || ( !current_user_can('edit_posts') ) ) {                  // check permission
+        
+        $cur_screen = get_current_screen();
+        if ( (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )  // check autosave
+        || ( !current_user_can('edit_posts') ) // check permission
+        || ( $cur_screen->id === "nav-menus") 
+        ) {                  
             return $term_id;
         }
         
         $term = get_term( $term_id, $taxonomy);
-    
-        foreach( $q_config['enabled_languages'] as $lang ) {
+        foreach( $this->get_enabled_languages() as $lang ) {
             
             $meta_name = $this->get_meta_key($lang);
       
-            //LC43: when at the post edit screen and creating a new tag
+            //43LC: when at the post edit screen and creating a new tag
             // the $slug comes from $_POST with the value of the post slug,
             // not with the term slug. 
-            if ($_POST['action'] == "editpost") {
+            if ($_POST['action'] == "editpost")  {
                 // so we use the slug wp gave it
                 $term_slug = $term->slug;
             } else {
                 // otherwise, its the edit term screen
-                $term_slug = $_POST["qts_{$lang}_slug"];
+                $term_slug =  $_POST["qts_{$lang}_slug"];
             }
             
             $meta_value = apply_filters( 'qts_validate_term_slug', $term_slug, $term, $lang);
@@ -2180,8 +2390,8 @@ class QtranslateSlug {
 
         if ($taxonomies) {
             foreach ($taxonomies  as $taxonomy ) {
-                add_action( $taxonomy->name.'_add_form', $this->plugin_prefix() . 'modifyTermFormFor');
-                add_action( $taxonomy->name.'_edit_form', $this->plugin_prefix() . 'modifyTermFormFor');
+                add_action( $taxonomy->name.'_add_form', $this->get_plugin_prefix() . 'modifyTermFormFor');
+                add_action( $taxonomy->name.'_edit_form', $this->get_plugin_prefix() . 'modifyTermFormFor');
                 add_action( $taxonomy->name.'_add_form',  array(&$this, 'show_term_fields'));
                 add_action( $taxonomy->name.'_edit_form_fields', array(&$this, 'show_term_fields') );
                 add_filter('manage_edit-'.$taxonomy->name.'_columns', array(&$this, 'taxonomy_columns'));
@@ -2256,6 +2466,13 @@ class QtranslateSlug {
         if (class_exists('mqTranslateWidget')) {
             unregister_widget('mqTranslateWidget');
         }
+        if (class_exists('ppqTranslateWidget')) {
+            unregister_widget('ppqTranslateWidget');
+        }
+        
+        if (class_exists('qTranslateXWidget')) {
+            unregister_widget('qTranslateXWidget');
+        }
         
         register_widget('QtranslateSlugWidget');
     }
@@ -2308,6 +2525,10 @@ class QtranslateSlug {
             echo __($q_config['language_name'][$language], 'qtranslate');
             echo '</label></p>';
         }
+         echo '<p style="margin:0 0 5px 0"><input type="radio" style="margin-right:5px" name="wa_qt_lang" value="all" id="wa_gt_lang_999" />';
+            echo '<label for="wa_gt_lang_999">';
+            echo __('All languages', 'qts');
+            echo '</label></p>';
         echo '</p>';
     }
     
@@ -2332,7 +2553,7 @@ class QtranslateSlug {
         );
         $args = wp_parse_args( $args, $defaults );
         
-        $languages = call_user_func($this->plugin_prefix() . 'getSortedLanguages');
+        $languages = call_user_func($this->get_plugin_prefix() . 'getSortedLanguages');
         
         // every type
         switch ( $type ) {
@@ -2367,6 +2588,7 @@ class QtranslateSlug {
                     } else {
                         $link_class = '';
                         $link_content = $language_name;
+                        $link_flag ='';
                     }
                     if( $type == 'image' || $type == 'both' ) {
                         $link_flag_url =  $baseurl . '/'.$q_config['flag_location'].$q_config['flag'][$lang];

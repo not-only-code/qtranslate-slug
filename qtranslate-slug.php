@@ -3,7 +3,7 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.1.8
+Version: 1.1.9
 Author: Carlos Sanz Garcia
 Author URI: http://github.com/not-only-code
 */
@@ -98,8 +98,6 @@ add_action('plugins_loaded', array($qtranslate_slug, 'init') );
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
-
 /**
  * Language Selector Code for templating
  *
@@ -159,7 +157,7 @@ add_filter( 'plugin_action_links', 'qts_add_settings_link', 10, 2 );
 
 
 /**
- * Delete plugin stored data ( options, termmeta table and postmeta data ) ################################################ TODO: test this function
+ * Delete plugin stored data ( options, termmeta table and postmeta data )
  *
  * @package Qtranslate Slug
  * @subpackage Settings
