@@ -3,8 +3,8 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.1.9
-Author: Carlos Sanz Garcia
+Version: 1.1.11
+Author: Carlos Sanz Garcia, Pedro Carvalho 
 Author URI: http://github.com/not-only-code
 */
 
