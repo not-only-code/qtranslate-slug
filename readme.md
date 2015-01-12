@@ -6,7 +6,7 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 ## Description
 
-[Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) is a nice plugin but unfortunately today is **outdated**. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations and fix some QTranslate deficiencies since wordpress 3.0. Check out all the new forks from qtranslate!
+[Qtranslate](http://wordpress.org/plugins/qtranslate/) was a nice plugin but unfortunately today is **outdated**. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations and fix some QTranslate deficiencies since wordpress 3.0. Check out all the new forks from qtranslate!
 
 **Version 1.0** has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is integrated with Wordpress API.
 
@@ -14,6 +14,11 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 * Wordpress 3.3 (PHP 5.4 and MySQL 5)
 * mQtranslate 2.6.2.4, qtranslate-X 2.9.1 or Qtranslate 2.5.8
+
+## New in Versions 1.1.12
+
+* fixed warnings in settings
+* replace qtranslate with our own for taxonomies
 
 ## New in Versions 1.1.10 and 1.1.11
 
@@ -32,7 +37,7 @@ Lots of bug fixes! Thanks again to everyone that contributed to this project, wi
 * Fixed taxonomies slugs ( thanks to [eirikv's bug report](https://wordpress.org/support/topic/categories-slug-dont-work) )
 * Fixed many warnings ( thanks piffpaffpuff, issue #78 and to [pedrodu1](https://wordpress.org/support/topic/warnings-qtranslate-slugphp) )
 * Changed the behaviour of "Quick Edit", from the wp forums [1](https://wordpress.org/support/topic/categories-tags-and-quick-edit-dont-show-in-admin) [2](https://wordpress.org/support/topic/quick-edit-inhibited-by-qtranslate-slug-with-wp-41-mqtranslate) ( thanks everyone!! )
-* Fixed the menus! Now you can properly use one menu for every language. Use the dropdown section "Languages", and for each item, change the "Navigation Label" and "Title Attribute". Select "All languages", to make sure everything is awesome! All these features were a consequence of fixing all the warnings based on [Gery's bug report)[https://wordpress.org/support/topic/qtranslate-slug-conflicting-with-ubermenu). 
+* Fixed the menus! Now you can properly use one menu for every language. Use the dropdown section "Languages", and for each item, change the "Navigation Label" and "Title Attribute". Select "All languages", to make sure everything is awesome! All these features were a consequence of fixing all the warnings based on [Gery's bug report](https://wordpress.org/support/topic/qtranslate-slug-conflicting-with-ubermenu). 
 * Minor fixes, etc. 
 
 See you next Version!
@@ -100,6 +105,11 @@ In the admin go to *Settings/Permalinks* or *Settings/Slug options* and save.
 **I can't manage translations in Nav Menus.**
 
 That's because language selector metabox is hidden, if you are in admin *nav menus* screen, press the button **Screen options** (on top and right) and after, check the option *Languages*. It will appear a **Language** meta box on top of the left sidebar.
+
+**How to get the current url in a specific language?**
+
+You can use `qts_get_url()` or the awkwardly named `qTranslateSlug_getSelfUrl()` which is an alias for the first one.
+
 
 ## Screenshots
 

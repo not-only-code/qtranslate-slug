@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: qtranslate, slug, multilanguage, widget
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 1.1.11
+Stable tag: 1.1.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 == Description ==
 
-[Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) is a nice plugin but unfortunately today is **outdated**. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations and fix some QTranslate deficiencies since wordpress 3.0. Check out all the new forks from qtranslate!
+[Qtranslate](http://wordpress.org/plugins/qtranslate/) is a nice plugin but unfortunately today is **outdated**. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations and fix some QTranslate deficiencies since wordpress 3.0. Check out all the new forks from qtranslate!
 
 **Version 1.0** has been written from scratch using OOP. The code has been structured better, the functions have been marked and commented and everything is better integrated with Wordpress API.
 
@@ -20,6 +20,11 @@ Adds support for permalink translations and fix some QTranslate deficiencies sin
 
 * Wordpress 3.3 (PHP 5.4 and MySQL 5)
 * mQtranslate 2.6.2.4 or Qtranslate 2.5.8 ( soon qtranslate-x too )
+
+= New in Versions 1.1.12 =
+
+* fixed warnings in settings
+* replace qtranslate with our own for taxonomies
 
 = New in Versions 1.1.10 and 1.1.11 =
 

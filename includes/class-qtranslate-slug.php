@@ -2380,8 +2380,7 @@ class QtranslateSlug {
 	 * creates and prints the forms and hides the default fields 
 	 * @param object $term the term object 
 	 * @since 1.1.12
-	 *  
-	 *
+	 * 
 	 * TODO: merge with our own form.
 	 * TODO: move code into js file
 	 *
@@ -2395,11 +2394,11 @@ class QtranslateSlug {
 		}
 	    if(isset($_GET['action']) && $_GET['action']=='edit') {
 		   foreach($this->get_enabled_languages() as $language) {
-			   echo $this->qts_insert_term_input('name', __('Name'), $termname, $language,"edit");
+			   echo $this->qts_insert_term_input('name', __('Name','qts'), $termname, $language,"edit");
 	        }
 	    } else {
 		   foreach($this->get_enabled_languages() as $language) {
-	           echo $this->qts_insert_term_input('tag-name', __('Name'), $termname, $language,"new");   
+	           echo $this->qts_insert_term_input('tag-name', __('Name','qts'), $termname, $language,"new");   
 	        }
 	    }
 		// hide real category text
@@ -2414,6 +2413,7 @@ class QtranslateSlug {
 	 * @param string $language the term name
 	 * @param string $action the term name
 	 * @return string $html the new input fields
+	 * @since 1.1.12
 	 * TODO: use DocumentFragment
 	 */
 	private function qts_insert_term_input($id,$name, $language,$action){
