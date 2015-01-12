@@ -754,7 +754,8 @@ function qts_validate_options($input) {
 							
 							case 'qts-slug':
 								// strip all html tags and white-space.
-								$type_ = end( explode('_', $option['id']) );
+								$exploded_types = explode('_', $option['id']);
+								$type_ = end($exploded_types  );
 								$input[$option['id'] . '|' . $v]= sanitize_title( sanitize_text_field( $input[$option['id'] . '|' . $v] ) );
 								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
 							break;

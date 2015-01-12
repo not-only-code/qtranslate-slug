@@ -2172,12 +2172,10 @@ class QtranslateSlug {
         || (!current_user_can($post_type_object->cap->edit_post, $post_id))) {  // check permission
             return $post_id;
         }
-        
         foreach ($this->get_enabled_languages() as $lang) {
             
             $meta_name = $this->get_meta_key($lang);
             $meta_value = apply_filters( 'qts_validate_post_slug', $_POST["qts_{$lang}_slug"], $post, $lang);
-            
             delete_post_meta($post_id, $meta_name);
             update_post_meta($post_id, $meta_name, $meta_value);
             
@@ -2209,7 +2207,7 @@ class QtranslateSlug {
                 $value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
             
                 echo "<tr class=\"form-field form-required\">" . PHP_EOL;
-                echo "<th scope=\"row\" valig=\"top\"><label for=\"qts_term_{$lang}_slug\">Slug (".__($q_config['language_name'][$lang], 'qtranslate').")</label></th>" . PHP_EOL;
+                echo "<th scope=\"row\" valig=\"top\"><label for=\"qts_{$lang}_slug\">Slug (".__($q_config['language_name'][$lang], 'qtranslate').")</label></th>" . PHP_EOL;
                 echo "<td><input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" /></td></tr>" . PHP_EOL;
             
             }
@@ -2230,7 +2228,7 @@ class QtranslateSlug {
             
 
                 echo "<label for=\"qts_{$lang}_slug\">Slug (".__($q_config['language_name'][$lang], 'qtranslate').")</label>" . PHP_EOL;
-                echo "<input type=\"text\" name=\"qts_term_{$lang}_slug\" value=\"$value\" aria-required=\"true\">" . PHP_EOL;
+                echo "<input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" aria-required=\"true\">" . PHP_EOL;
                 
                 echo '</div>';
             
@@ -2291,7 +2289,7 @@ class QtranslateSlug {
     public function unique_term_slug($slug, $term, $lang) {
       
         global $wpdb;
-
+		
         $meta_key_name = $this->get_meta_key($lang);
         $query = $wpdb->prepare("SELECT term_id FROM $wpdb->termmeta WHERE meta_key = '%s' AND meta_value = '%s' AND term_id != %d ", $meta_key_name, $slug, $term->term_id);
         $exists_slug = $wpdb->get_results($query);
@@ -2336,14 +2334,13 @@ class QtranslateSlug {
         $cur_screen = get_current_screen();
         if ( (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )  // check autosave
         || ( !current_user_can('edit_posts') ) // check permission
-        || ( $cur_screen->id === "nav-menus") 
+        || ( isset($cur_screen) && $cur_screen->id === "nav-menus") 
         ) {                  
             return $term_id;
         }
         
         $term = get_term( $term_id, $taxonomy);
         foreach( $this->get_enabled_languages() as $lang ) {
-            
             $meta_name = $this->get_meta_key($lang);
       
             //43LC: when at the post edit screen and creating a new tag
@@ -2380,6 +2377,133 @@ class QtranslateSlug {
     
     
     /**
+	 * creates and prints the forms and hides the default fields 
+	 * @param object $term the term object 
+	 * @since 1.1.12
+	 *  
+	 *
+	 * TODO: merge with our own form.
+	 * TODO: move code into js file
+	 *
+	 */
+	public function qts_modify_term_form($term) {
+		echo "<script type=\"text/javascript\">\n// <![CDATA[\r\n";
+		if(is_object($term)&&isset($term->name)) {
+			$termname = $term->name;
+		} else {
+			$termname = "";
+		}
+	    if(isset($_GET['action']) && $_GET['action']=='edit') {
+		   foreach($this->get_enabled_languages() as $language) {
+			   echo $this->qts_insert_term_input('name', __('Name'), $termname, $language,"edit");
+	        }
+	    } else {
+		   foreach($this->get_enabled_languages() as $language) {
+	           echo $this->qts_insert_term_input('tag-name', __('Name'), $termname, $language,"new");   
+	        }
+	    }
+		// hide real category text
+		echo "if (ins != null) ins.style.display='none';\n";
+		echo "// ]]>\n</script>\n";
+	}
+
+	/**
+	 * Helper for qts_modify_term_form_for
+	 * @param string $id the term id
+	 * @param object #term the term
+	 * @param string $language the term name
+	 * @param string $action the term name
+	 * @return string $html the new input fields
+	 * TODO: use DocumentFragment
+	 */
+	private function qts_insert_term_input($id,$name, $language,$action){
+		global $q_config;
+		
+		if( $action === "new") {
+		    $html ="
+	        var il = document.getElementsByTagName('input'),
+	        	 d = document.createElement('div'),
+                 l = document.createTextNode('".$name." (".$q_config['language_name'][$language].")'),
+	            ll = document.createElement('label'),
+	             i = document.createElement('input'),
+	           ins = null;
+	        for(var j = 0; j < il.length; j++) {
+	            if(il[j].id=='".$id."') {
+	                ins = il[j];
+	                break;
+	            }
+	        }
+	        i.type = 'text';
+	        i.id = i.name = ll.htmlFor ='qtrans_term_".$language."';
+	    ";
+		} elseif ( $action === "edit") {
+		    $html ="
+	        var tr = document.createElement('tr'),
+	            th = document.createElement('th'),
+	            ll = document.createElement('label'),
+	             l = document.createTextNode('".$name." (".$q_config['language_name'][$language].")'),
+	            td = document.createElement('td'),
+	             i = document.createElement('input'),
+	           ins = document.getElementById('".$id."');
+	        i.type = 'text';
+	        i.id = i.name = ll.htmlFor ='qtrans_term_".$language."';
+	    ";
+	    }
+		if(isset($q_config['term_name'][$termname][$language])) {
+		$html .="
+		    i.value = '".addslashes(htmlspecialchars_decode($q_config['term_name'][$termname][$language], ENT_QUOTES))."';";
+		    //43LC: applied ENT_QUOTES to both edit and new forms. 
+		} else {
+		$html .="
+			if (ins != null)
+				i.value = ins.value;
+			";
+		}
+		
+		if($language == $q_config['default_language']) {
+			$html .="
+				i.onchange = function() { 
+					var il = document.getElementsByTagName('input'),
+					   ins = null;
+					for(var j = 0; j < il.length; j++) {
+						if(il[j].id=='".$id."') {
+							ins = il[j];
+							break;
+						}
+					}
+					if (ins != null)
+						ins.value = document.getElementById('qtrans_term_".$language."').value;
+				};
+				";
+		}
+		if( $action === "new") {
+	        $html .="
+	        if (ins != null)
+	            ins = ins.parentNode;
+	        d.className = 'form-field form-required';
+	        ll.appendChild(l);
+	        d.appendChild(ll);
+	        d.appendChild(i);
+	        if (ins != null)
+	            ins.parentNode.insertBefore(d,ins);
+	        ";
+	    } elseif ( $action === "edit") {
+	        $html .="
+	        ins = ins.parentNode.parentNode;
+	        tr.className = 'form-field form-required';
+	        th.scope = 'row';
+	        th.vAlign = 'top';
+	        ll.appendChild(l);
+	        th.appendChild(ll);
+	        tr.appendChild(th);
+	        td.appendChild(i);
+	        tr.appendChild(td);
+	        ins.parentNode.insertBefore(tr,ins);
+	        ";
+	    }
+		return $html;	
+	}
+    /**
      * adds support for qtranslate in taxonomies
      *
      * @since 1.0
@@ -2390,8 +2514,8 @@ class QtranslateSlug {
 
         if ($taxonomies) {
             foreach ($taxonomies  as $taxonomy ) {
-                add_action( $taxonomy->name.'_add_form', $this->get_plugin_prefix() . 'modifyTermFormFor');
-                add_action( $taxonomy->name.'_edit_form', $this->get_plugin_prefix() . 'modifyTermFormFor');
+                add_action( $taxonomy->name.'_add_form', array(&$this, 'qts_modify_term_form'));
+                add_action( $taxonomy->name.'_edit_form', array(&$this, 'qts_modify_term_form'));
                 add_action( $taxonomy->name.'_add_form',  array(&$this, 'show_term_fields'));
                 add_action( $taxonomy->name.'_edit_form_fields', array(&$this, 'show_term_fields') );
                 add_filter('manage_edit-'.$taxonomy->name.'_columns', array(&$this, 'taxonomy_columns'));

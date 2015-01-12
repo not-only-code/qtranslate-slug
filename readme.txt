@@ -101,6 +101,11 @@ In the admin go to *Settings/Permalinks* or *Settings/Slug options* and save.
 
 That's because language selector metabox is hidden, if you are in admin *nav menus* screen, press the button **Screen options** (on top and right) and after, check the option *Languages*. It will appear a **Language** meta box on top of the left sidebar.
 
+= How to get the current url in a specific language? =
+
+You can use `qts_get_url()` or the awkwardly named `qTranslateSlug_getSelfUrl()` which is an alias for the first one.
+
+
 == Screenshots ==
 
 1. Edit page for: post / page / post_type, you can see the meta box for translated slugs on top and right.
