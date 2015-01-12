@@ -424,11 +424,14 @@ class QtranslateSlug {
      */
     function notice_dependences(){
         global $current_screen;
-        
-        echo "<div class=\"error\">" . PHP_EOL;
-        echo "<p><strong>Qtranslate Slug:</strong></p>" . PHP_EOL;
-        echo "<p>" . __('This plugin requires at least <strong>WordPress 3.3</strong> and either <strong>mqTranslate 2.6.2.4 (or newer)</strong> or <strong>qTranslate 2.5.8 (or newer)</strong>', 'qts') . "</p>" . PHP_EOL;
-        echo "</div>" . PHP_EOL; 
+        $ornewer=__('or newer','qts');
+        $info_url=admin_url('plugin-install.php?tab=plugin-information');
+        echo '<div class="error">' . PHP_EOL;
+        echo '<p><strong>Qtranslate Slug:</strong></p>' . PHP_EOL;
+        echo '<p>';
+        printf(__('This plugin requires at least %s and either %s, or %s, or %s', 'qts'),'<strong>WordPress 3.3</strong>','<a href="'.$info_url.'&plugin=qtranslate-x&TB_iframe=true" class="thickbox" aria-label="More information about qTranslate-X" data-title="qTranslate-X"><strong>qTranslate-X</strong></a> (2.9 '.$ornewer.')','<a href="'.$info_url.'&plugin=mqtranslate&TB_iframe=true" class="thickbox" aria-label="More information about mqTranslate" data-title="mqTranslate"><strong>mqTranslate</strong></a> (2.6.2.4 '.$ornewer.')','<a href="'.$info_url.'&plugin=qtranslate&TB_iframe=true" class="thickbox" aria-label="More information about qTranslate" data-title="qTranslate"><strong>qTranslate</strong></a> (2.5.8 '.$ornewer.')');
+        echo '</p>' . PHP_EOL;
+        echo '</div>' . PHP_EOL; 
     }
     
     
