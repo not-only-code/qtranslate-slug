@@ -532,7 +532,8 @@ class QtranslateSlug {
             
             add_action( 'wp_dashboard_setup', array(&$this, 'remove_dashboard_widgets') );
             add_action( 'admin_head', array(&$this, 'hide_quick_edit'), 600 );
-            add_action( 'admin_init', array(&$this, 'fix_nav_menu') );
+            if(!defined('QTRANSLATE_FILE'))
+              add_action( 'admin_init', array(&$this, 'fix_nav_menu') );
             
         } else {
             
@@ -2597,9 +2598,9 @@ class QtranslateSlug {
             unregister_widget('ppqTranslateWidget');
         }
         
-        if (class_exists('qTranslateXWidget')) {
-            unregister_widget('qTranslateXWidget');
-        }
+        //if (class_exists('qTranslateXWidget')) {//it has additional features some people use.
+        //    unregister_widget('qTranslateXWidget');
+        //}
         
         register_widget('QtranslateSlugWidget');
     }
