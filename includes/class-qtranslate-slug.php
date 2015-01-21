@@ -2211,7 +2211,7 @@ class QtranslateSlug {
                 $value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
             
                 echo "<tr class=\"form-field form-required\">" . PHP_EOL;
-                echo "<th scope=\"row\" valig=\"top\"><label for=\"qts_{$lang}_slug\">Slug (".__($q_config['language_name'][$lang], 'qtranslate').")</label></th>" . PHP_EOL;
+                echo "<th scope=\"row\" valig=\"top\"><label for=\"qts_term_{$lang}_slug\">".sprintf( __('Slug (%s)', 'qts'), $q_config['language_name'][$lang] )."</label></th>" . PHP_EOL;
                 echo "<td><input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" /></td></tr>" . PHP_EOL;
             
             }
@@ -2230,9 +2230,7 @@ class QtranslateSlug {
             
                 $value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
             
-
-                echo "<label for=\"qts_{$lang}_slug\">Slug (".__($q_config['language_name'][$lang], 'qtranslate').")</label>" . PHP_EOL;
-                echo "<input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" aria-required=\"true\">" . PHP_EOL;
+                echo "<label for=\"qts_{$lang}_slug\">".sprintf( __('Slug (%s)', 'qts'), $q_config['language_name'][$lang] )."</label>" . PHP_EOL;                echo "<input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" aria-required=\"true\">" . PHP_EOL;
                 
                 echo '</div>';
             
