@@ -46,7 +46,7 @@ class QtranslateSlugWidget extends WP_Widget {
         $title = $instance['title'];
         $hide_title = $instance['hide-title'];
         $type = $instance['type'];
-        $short_text = $instance['short_text'];
+        $short_text = isset($instance['short_text']) ? $instance['short_text'] : '';
  ?>
         <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'qtranslate'); ?> <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label></p>
         <p><label for="<?php echo $this->get_field_id('hide-title'); ?>"><?php _e('Hide Title:', 'qtranslate'); ?> <input type="checkbox" id="<?php echo $this->get_field_id('hide-title'); ?>" name="<?php echo $this->get_field_name('hide-title'); ?>" <?php echo ($hide_title=='on')?'checked="checked"':''; ?>/></label></p>
