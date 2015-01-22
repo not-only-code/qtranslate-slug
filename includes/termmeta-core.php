@@ -7,7 +7,8 @@ function install_term_meta_table() {
 	global $wpdb;
 
 	$collate = '';
-	if($wpdb->supports_collation()) {
+	//if($wpdb->supports_collation())//deprecated, was a reason for activation admin notice
+	if($wpdb->has_cap( 'collation' )) {
 		if(!empty($wpdb->charset)) $collate = "DEFAULT CHARACTER SET $wpdb->charset";
 		if(!empty($wpdb->collate)) $collate .= " COLLATE $wpdb->collate";
 	}
