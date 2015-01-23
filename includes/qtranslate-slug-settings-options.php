@@ -116,7 +116,7 @@ function qts_options_page_fields() {
 	$options[] = array(
 		"section" => "taxonomies",
 		"id"      => QTS_PREFIX . "taxonomy_category",
-		"title"   => __('Categories'),
+		"title"   => __( 'Categories', 'qts' ),
 		"desc"    => __( '<code>http://example.org/<u>category</u>/some-category/</code>', 'qts' ),
 		"type"    => "multi-text",
 		'class'	  => 'qts-slug',
@@ -127,7 +127,7 @@ function qts_options_page_fields() {
 	$options[] = array(
 		"section" => "taxonomies",
 		"id"      => QTS_PREFIX . "taxonomy_post_tag",
-		"title"   => __('Tags'),
+		"title"   => __( 'Tags', 'qts' ),
 		"desc"    => __( '<code>http://example.org/<u>tag</u>/some-tag/</code>', 'qts' ),
 		"type"    => "multi-text",
 		'class'	  => 'qts-slug',
