@@ -56,8 +56,7 @@ class QtranslateSlugWidget extends WP_Widget {
         <p><label for="<?php echo $this->get_field_id('type'); ?>3"><input type="radio" name="<?php echo $this->get_field_name('type'); ?>" id="<?php echo $this->get_field_id('type'); ?>3" value="both"<?php echo ($type=='both')?' checked="checked"':'' ?>/> <?php _e('Text and Image', 'qtranslate'); ?></label></p>
         <p><label for="<?php echo $this->get_field_id('type'); ?>4"><input type="radio" name="<?php echo $this->get_field_name('type'); ?>" id="<?php echo $this->get_field_id('type'); ?>4" value="dropdown"<?php echo ($type=='dropdown')?' checked="checked"':'' ?>/> <?php _e('Dropdown Box', 'qtranslate'); ?></label></p>
         <p><label for="<?php echo $this->get_field_id('short_text'); ?>"><?php _e('Show short name (en):', 'qts'); ?> <input type="checkbox" id="<?php echo $this->get_field_id('short_text'); ?>" name="<?php echo $this->get_field_name('short_text'); ?>" <?php checked($short_text, 'on')  ?>/></label></p>
-        <p><?php _e('Display:', 'qtranslate'); ?></p>
-        
+
  <?php
     }
 }
