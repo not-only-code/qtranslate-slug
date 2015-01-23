@@ -88,7 +88,7 @@ function qts_upgrade_response($type = 0, $slug = null) {
 			$response = array(
 				'status' => 2,
 				'message' => sprintf(__('One step more, select what type of slug is this: <strong>%s</strong>', 'qts'), $slug),
-				'options' => array( 'post' => __('Post, Page or Custom post type', 'qts'), 'term' => __('Category, tag or custom taxonomy') )
+				'options' => array( 'post' => __('Post, Page or Custom post type', 'qts'), 'term' => __('Category, tag or custom taxonomy', 'qts') )
 			);
 			break;
 	}

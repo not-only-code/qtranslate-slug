@@ -147,7 +147,7 @@ function qts_add_settings_link( $links, $file ) {
 	
 	$this_plugin = plugin_basename( __FILE__ );
 	if( $file == $this_plugin ) {
-		$settings_link = "<a href=\"options-general.php?page=" . QTS_PAGE_BASENAME . "\">" . __( 'Settings' ) . '</a>';
+		$settings_link = "<a href=\"options-general.php?page=" . QTS_PAGE_BASENAME . "\">" . __( 'Settings', 'qts' ) . '</a>';
 		array_unshift($links, $settings_link);
 	}
 	return $links;

@@ -429,7 +429,7 @@ class QtranslateSlug {
         echo '<div class="error">' . PHP_EOL;
         echo '<p><strong>Qtranslate Slug:</strong></p>' . PHP_EOL;
         echo '<p>';
-        printf(__('This plugin requires at least %s and either %s, or %s, or %s', 'qts'),'<strong>WordPress 3.3</strong>','<a href="'.$info_url.'&plugin=qtranslate-x&TB_iframe=true" class="thickbox" aria-label="More information about qTranslate-X" data-title="qTranslate-X"><strong>qTranslate-X</strong></a> (2.9 '.$ornewer.')','<a href="'.$info_url.'&plugin=mqtranslate&TB_iframe=true" class="thickbox" aria-label="More information about mqTranslate" data-title="mqTranslate"><strong>mqTranslate</strong></a> (2.6.2.4 '.$ornewer.')','<a href="'.$info_url.'&plugin=qtranslate&TB_iframe=true" class="thickbox" aria-label="More information about qTranslate" data-title="qTranslate"><strong>qTranslate</strong></a> (2.5.8 '.$ornewer.')');
+        printf(__('This plugin requires at least %s and either %s, or %s, or %s', 'qts'),'<strong>WordPress 3.3</strong>','<a href="'.$info_url.'&plugin=qtranslate-x&TB_iframe=true" class="thickbox" aria-label="'.__('More information about', 'qts').' '.'qTranslate-X" data-title="qTranslate-X"><strong>qTranslate-X</strong></a> (2.9 '.$ornewer.')','<a href="'.$info_url.'&plugin=mqtranslate&TB_iframe=true" class="thickbox" aria-label="'.__('More information about', 'qts').' '.'mqTranslate" data-title="mqTranslate"><strong>mqTranslate</strong></a> (2.6.2.4 '.$ornewer.')','<a href="'.$info_url.'&plugin=qtranslate&TB_iframe=true" class="thickbox" aria-label="'.__('More information about', 'qts').' '.'qTranslate" data-title="qTranslate"><strong>qTranslate</strong></a> (2.5.8 '.$ornewer.')');
         echo '</p>' . PHP_EOL;
         echo '</div>' . PHP_EOL; 
     }
@@ -1609,7 +1609,7 @@ class QtranslateSlug {
         }
         
         if ( $link ) {
-            $chain .= '<a href="' . get_category_link( $parent->term_id ) . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $parent->name ) ) . '">'.$name.'</a>' . $separator;
+            $chain .= '<a href="' . get_category_link( $parent->term_id ) . '" title="' . esc_attr( sprintf( __( "View all posts in %s", "qts" ), $parent->name ) ) . '">'.$name.'</a>' . $separator;
         } else {
             $chain .= $name.$separator;
         }
@@ -1736,7 +1736,7 @@ class QtranslateSlug {
         }
 
         if ( !is_object($term) ) {
-            $term = new WP_Error('invalid_term', __('Empty Term'));
+            $term = new WP_Error('invalid_term', __('Empty Term', 'qts'));
         }
 
         if ( is_wp_error( $term ) ) {
@@ -2230,7 +2230,8 @@ class QtranslateSlug {
             
                 $value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
             
-                echo "<label for=\"qts_{$lang}_slug\">".sprintf( __('Slug (%s)', 'qts'), $q_config['language_name'][$lang] )."</label>" . PHP_EOL;                echo "<input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" aria-required=\"true\">" . PHP_EOL;
+                echo "<label for=\"qts_{$lang}_slug\">".sprintf( __('Slug (%s)', 'qts'), $q_config['language_name'][$lang] )."</label>" . PHP_EOL;
+                echo "<input type=\"text\" name=\"qts_{$lang}_slug\" value=\"$value\" aria-required=\"true\">" . PHP_EOL;
                 
                 echo '</div>';
             
@@ -2538,7 +2539,7 @@ class QtranslateSlug {
         unset($columns['posts']);
         
         $columns['qts-slug'] = __('Slug', 'qts');
-        $columns['posts'] = __('Posts');
+        $columns['posts'] = __('Posts', 'qts');
         
         return $columns;
     }
@@ -2630,7 +2631,7 @@ class QtranslateSlug {
         }
     
         wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , dirname(__FILE__ ) ), 'nav-menu', '1.0' );
-        add_meta_box( 'qt-languages', __('Languages'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
+        add_meta_box( 'qt-languages', __('Languages', 'qts'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
     }
     
     
