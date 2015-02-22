@@ -1083,15 +1083,20 @@ class QtranslateSlug {
         
         // -> custom post type
         elseif ( isset($query['post_type']) ):
-            
-            $page_slug = ( isset($query['name']) && !empty($query['name']) ) ? $query['name'] : $query[$query['post_type']];
-            $page = $this->get_page_by_path($page_slug, OBJECT, $query['post_type']);
-            if (!$page) return $query;
-            $id = $page->ID;
-            $cache_array = array($page);
-            update_post_caches($cache_array, $query['post_type']); // caching query :)
-            $query['name'] = $query[$query['post_type']] = get_page_uri($page); 
-            $function = 'get_post_permalink';
+
+            if (count($query) == 1) {
+                $function = 'get_post_type_archive_link';
+                $id = $query['post_type'];
+            } else {
+                $page_slug = ( isset($query['name']) && !empty($query['name']) ) ? $query['name'] : $query[$query['post_type']];
+                $page = $this->get_page_by_path($page_slug, OBJECT, $query['post_type']);
+                if (!$page) return $query;
+                $id = $page->ID;
+                $cache_array = array($page);
+                update_post_caches($cache_array, $query['post_type']); // caching query :)
+                $query['name'] = $query[$query['post_type']] = get_page_uri($page); 
+                $function = 'get_post_permalink';
+            }
         
         // -> post
         elseif ( isset($query['name']) || isset($query['p']) ):
