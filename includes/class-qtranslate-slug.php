@@ -1998,15 +1998,18 @@ class QtranslateSlug {
      * @since 1.0
      */
     public function add_slug_meta_box() {
+        if ( function_exists( 'add_meta_box' ) ) {                                                                                                                                              
+                                                                                                                                                                                                
+            $context  = apply_filters("qts_admin_meta_box_context","side");                                                                                                                     
+            $priority = apply_filters("qts_admin_meta_box_priority","high");                                                                                                                    
+                                                                                                                                                                                                
+            add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), 'post', $context, $priority);                                                                     
+            add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), 'page', $context, $priority);                                                                     
         
-        if ( function_exists( 'add_meta_box' ) ) {
-            
-            add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), 'post', 'side', 'high');
-            add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), 'page', 'side', 'high' );
-            
-            foreach ( get_post_types( array('_builtin' => false ) ) as $ptype )
-                add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), $ptype, 'side', 'high' );
-        }
+            foreach ( get_post_types( array('_builtin' => false ) ) as $ptype ) {                                                                                                               
+                add_meta_box( 'qts_sectionid', __('Slug', 'qts'), array(&$this, 'draw_meta_box'), $ptype, $context, $priority );                                                                
+            }                                                                                                                                                                                   
+        }      
     }
     
     
