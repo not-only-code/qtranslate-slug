@@ -2264,7 +2264,18 @@ class QtranslateSlug {
 
         global $q_config;
         
-        $lang_name = $q_config['term_name'][$term->name][$lang];
+        $term_key = $term->name;
+
+        // probably qTranslate-X support is required
+        if (function_exists('qtranxf_split')) {
+        $term_key = qtranxf_split($term->name);
+        // after split we will get array (with language code as a key
+        
+        // under default_language you will find required string
+        $term_key = $term_key[$q_config['default_language']];
+        }
+
+        $lang_name = $q_config['term_name'][$term_key][$lang];
         
         $ajax_name = 'new' . $term->taxonomy;
         
