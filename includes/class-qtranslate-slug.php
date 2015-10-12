@@ -1829,7 +1829,7 @@ class QtranslateSlug {
             
             if ( !empty( $terms ) ) {
                 foreach ($terms as $term) {
-                    if( isset( $meta[$term->name][$lang] ) ) {
+                    if( isset( $term->name ) && isset( $meta[$term->name][$lang] ) ) {
                         $term->name = $meta[$term->name][$lang];
                     }
                 };
