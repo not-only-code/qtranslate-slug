@@ -2076,17 +2076,19 @@ class QtranslateSlug {
         
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)                       // check autosave
         || (!isset($_POST['post_ID']) || $post_id != $_POST['post_ID']) // check revision
-        || (!wp_verify_nonce( $_POST['qts_nonce'], 'qts_nonce'))                // verify nonce
+        || (isset($_POST['qts_nonce']) && !wp_verify_nonce( $_POST['qts_nonce'], 'qts_nonce'))                // verify nonce
         || (!current_user_can($post_type_object->cap->edit_post, $post_id))) {  // check permission
             return $post_id;
         }
         foreach ($this->get_enabled_languages() as $lang) {
             
-            $meta_name = $this->get_meta_key($lang);
-            $meta_value = apply_filters( 'qts_validate_post_slug', $_POST["qts_{$lang}_slug"], $post, $lang);
-            delete_post_meta($post_id, $meta_name);
-            update_post_meta($post_id, $meta_name, $meta_value);
-            
+            // check required because it is not available inside quick edit
+            if (isset($_POST["qts_{$lang}_slug"])) {
+                $meta_name = $this->get_meta_key($lang);
+                $meta_value = apply_filters( 'qts_validate_post_slug', $_POST["qts_{$lang}_slug"], $post, $lang);
+                delete_post_meta($post_id, $meta_name);
+                update_post_meta($post_id, $meta_name, $meta_value);
+            }
         }
     }
     
