@@ -3,7 +3,7 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.1.12
+Version: 1.1.17
 Author: Carlos Sanz Garcia, Pedro Carvalho 
 Author URI: http://github.com/not-only-code
 */
@@ -111,6 +111,17 @@ function qts_language_menu ($type = "text", $args = array()) {
 	$qtranslate_slug->language_menu($type, $args);
 }
 
+/**
+ * Finds the translated slug of the given post by calling get_slug
+ * @param int $id the post id
+ * @param string $lang which language to look for
+ * @since 1.1.13
+ */ 
+
+function qts_get_slug( $id, $lang ) {
+	global $qtranslate_slug;
+	return $qtranslate_slug->get_slug($id, $lang);
+}
 
 
 /**
