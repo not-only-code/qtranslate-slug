@@ -34,15 +34,15 @@ class QtranslateSlug {
      * @since 1.0
      */
     private $lang = false;
-	
+  
     /**
-	   * variable for current language
-	   */
+     * variable for current language
+     */
     private $current_lang = false;
     
     /**
-	   * variable for default language
-	   */
+     * variable for default language
+     */
     private $default_language = false;
     
     /**
@@ -58,7 +58,7 @@ class QtranslateSlug {
      * @since 1.0
      */
     private $url_path_mode = "";
-	
+  
     /**
      * slug in meta_key name in meta tables
      * @var string
@@ -79,8 +79,8 @@ class QtranslateSlug {
      * @since ?
      */
     private $plugin_prefix = "";
-	
-	
+  
+  
     /**
      * return the current / temp language
      * @since 1.0
@@ -90,7 +90,7 @@ class QtranslateSlug {
     }
     /**
      * return the current / temp language
-	   * we store and use it all the way!
+     * we store and use it all the way!
      * @since 1.1.9
      */
     private function get_currentlang() {
@@ -157,10 +157,10 @@ class QtranslateSlug {
     }
     
     /**
-	 * Sets the prefix for the active fork. See get_plugin_prefix
-	 * @since 1.1.9
-	 *
-	 */
+   * Sets the prefix for the active fork. See get_plugin_prefix
+   * @since 1.1.9
+   *
+   */
     private function set_plugin_prefix(){
         if ('' === $this->plugin_prefix){
             if (is_plugin_active('qtranslate-x/qtranslate.php') || defined( 'QTRANSLATE_FILE' ) ){
@@ -235,16 +235,16 @@ class QtranslateSlug {
         
         return (
             version_compare($wp_version, "4.0", "<" ) ||
-            !defined( 'QTRANSLATE_FILE' ) ||
-            !( !is_plugin_active('qtranslate/qtranslate.php') && 
-              !is_plugin_active('mqtranslate/mqtranslate.php') && 
-              !is_plugin_active('qtranslate-x/qtranslate.php')) 
+            !( defined( 'QTRANSLATE_FILE' ) ||
+               ( is_plugin_active('qtranslate/qtranslate.php') || 
+                 is_plugin_active('mqtranslate/mqtranslate.php') || 
+                 is_plugin_active('qtranslate-x/qtranslate.php')) )
             
         );
     }
     
     
-	
+  
     
     /**
      * check if exists qtranslate and do the installation, support multisite
@@ -255,7 +255,9 @@ class QtranslateSlug {
         global $wpdb;
         
         if ( self::block_activate() ) {
-            return;
+             if (is_admin()) {
+                add_action('admin_notices', array(&$this, 'notice_dependences'));
+            }
         }
         
         if ( function_exists('is_multisite') && is_multisite() ) {
@@ -314,7 +316,7 @@ class QtranslateSlug {
     * @since 1.1.7
     */
     public function register_plugin_styles() {
-		wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', dirname(__FILE__ ) ) );
+    wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', dirname(__FILE__ ) ) );
         wp_enqueue_style( 'qts_front_styles' );
     }
     /**
@@ -323,7 +325,7 @@ class QtranslateSlug {
     * @since 1.1.8
     */
     public function register_plugin_styles_min() {
-		wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.min.css', dirname(__FILE__ ) ) );
+    wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.min.css', dirname(__FILE__ ) ) );
         wp_enqueue_style( 'qts_front_styles' );
     }
 
@@ -392,9 +394,6 @@ class QtranslateSlug {
      * @since 1.0
      */
     function notice_dependences(){
-        global $current_screen;
-        
-        global $wp_version;
         
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); 
         $ornewer=__('or newer','qts');
@@ -402,12 +401,6 @@ class QtranslateSlug {
         echo '<div class="error">' . PHP_EOL;
         echo '<p><strong>Qtranslate Slug:</strong></p>' . PHP_EOL;
         echo '<p>';
-        echo version_compare($wp_version, "4.0", "<" ) ||
-            !defined( 'QTRANSLATE_FILE' ) ||
-            !( !is_plugin_active('qtranslate/qtranslate.php') && 
-              !is_plugin_active('mqtranslate/mqtranslate.php') && 
-              !is_plugin_active('qtranslate-x/qtranslate.php')); 
-        var_dump(QTRANSLATE_FILE);
         printf(__('This plugin requires at least %s and either %s, or %s, or %s', 'qts'),'<strong>WordPress 4.0</strong>','<a href="'.$info_url.'&plugin=qtranslate-x&TB_iframe=true" class="thickbox" aria-label="'.__('More information about', 'qts').' '.'qTranslate-X" data-title="qTranslate-X"><strong>qTranslate-X</strong></a> (2.9 '.$ornewer.')','<a href="'.$info_url.'&plugin=mqtranslate&TB_iframe=true" class="thickbox" aria-label="'.__('More information about', 'qts').' '.'mqTranslate" data-title="mqTranslate"><strong>mqTranslate</strong></a> (2.6.2.4 '.$ornewer.')','<a href="'.$info_url.'&plugin=qtranslate&TB_iframe=true" class="thickbox" aria-label="'.__('More information about', 'qts').' '.'qTranslate" data-title="qTranslate"><strong>qTranslate</strong></a> (2.5.8 '.$ornewer.')');
         echo '</p>' . PHP_EOL;
         echo '</div>' . PHP_EOL; 
@@ -458,7 +451,7 @@ class QtranslateSlug {
     
     
     
-    /**
+     /**
      * Initialise the Class with all hooks
      *
      * @since 1.0
@@ -474,7 +467,7 @@ class QtranslateSlug {
             }
             return;
         }
-    
+ 
         // caching qts options
         $this->set_options();
         
@@ -486,7 +479,7 @@ class QtranslateSlug {
         $this->default_language  = $q_config['default_language'];
         $this->set_plugin_prefix();
         $this->set_url_path_mode();
-		
+    
         if ( is_admin() ) {
             
             $this->check_old_versions();
@@ -538,7 +531,8 @@ class QtranslateSlug {
         
         remove_action('wp_head', $this->get_plugin_prefix() . 'header');
         if( "qtranxf_" === $this->get_plugin_prefix() ) {
-            remove_action('wp_head', $this->get_plugin_prefix() . 'head');
+            remove_action('wp_head', $this->get_plugin_prefix() . 'wp_head');
+            remove_action('wp_head', 'qtranxf_wp_head_meta_generator');
         } // TODO: else?
         
         // add proper hreflang links
@@ -611,38 +605,38 @@ class QtranslateSlug {
         return $classes;
     }
 
-		/**
+    /**
      * Finds the translated slug of the given post 
      * based on: https://wordpress.org/support/topic/permalink-for-other-languages 
      * @param int $id the post id
      * @param string $lang which language to look for
-		 * @return string the slug or empty if not found
+     * @return string the slug or empty if not found
      * @author vbkun
      * @since 1.1.13
      */ 
-		public function get_slug($id, $lang){
-			$slugArray = get_post_meta( $id, '_qts_slug_'.$lang );
-			return !empty($slugArray) ? $slugArray[0] : "";
-		}
+    public function get_slug($id, $lang){
+      $slugArray = get_post_meta( $id, '_qts_slug_'.$lang );
+      return !empty($slugArray) ? $slugArray[0] : "";
+    }
 
-	// TODO: properly test this
-	/**
-	 * Get text in $lang, or in the current lang
-	 *
-	 * @package Qtranslate Slug
-	 * @since 1.1.9
-	 * @param string $text the whole text
-	 * @param string $lang (optional) get the text in this language, or if empty, the current
-	 * @return array the text in the required language
-	 */
-	public function qts_quickuse( $text,$lang='' ){
-	    $lang = '' == $lang ? $this->current_lang : $lang;
-	    $parsed_text = call_user_func($this->get_plugin_prefix() . 'getSortedLanguages',$text);
-	    if( !empty($parsed_text[$lang])){
-	      return $parsed_text[$lang];  
-	    }  
-	}
-	
+  // TODO: properly test this
+  /**
+   * Get text in $lang, or in the current lang
+   *
+   * @package Qtranslate Slug
+   * @since 1.1.9
+   * @param string $text the whole text
+   * @param string $lang (optional) get the text in this language, or if empty, the current
+   * @return array the text in the required language
+   */
+  public function qts_quickuse( $text,$lang='' ){
+      $lang = '' == $lang ? $this->current_lang : $lang;
+      $parsed_text = call_user_func($this->get_plugin_prefix() . 'getSortedLanguages',$text);
+      if( !empty($parsed_text[$lang])){
+        return $parsed_text[$lang];  
+      }  
+  }
+  
 
     /**
      * Adds news rules to translate the URL bases, 
@@ -1785,7 +1779,7 @@ class QtranslateSlug {
                         return $terms;
                     }
                     $termname = $term->name;
-					if( isset( $meta[$termname][$lang] ) ) {
+          if( isset( $meta[$termname][$lang] ) ) {
                         $term->name = $meta[$termname][$lang];
                     }
                 };
@@ -2164,15 +2158,12 @@ class QtranslateSlug {
         
         $term_key = $term->name;
 
-        // probably qTranslate-X support is required
-        if (function_exists('qtranxf_split')) {
-        $term_key = qtranxf_split($term->name);
-        // after split we will get array (with language code as a key
         
-        // under default_language you will find required string
-        $term_key = $term_key[$q_config['default_language']];
-        }
-
+        $term_key = call_user_func($this->get_plugin_prefix() . 'split',$term->name);
+        // after split we will get array (with language code as a key )
+        
+        $term_key = $term_key[$this->default_language];
+        
         $lang_name = $q_config['term_name'][$term_key][$lang];
         
         $ajax_name = 'new' . $term->taxonomy;
@@ -2209,7 +2200,7 @@ class QtranslateSlug {
     public function unique_term_slug($slug, $term, $lang) {
       
         global $wpdb;
-		
+    
         $meta_key_name = $this->get_meta_key($lang);
         $query = $wpdb->prepare("SELECT term_id FROM $wpdb->termmeta WHERE meta_key = '%s' AND meta_value = '%s' AND term_id != %d ", $meta_key_name, $slug, $term->term_id);
         $exists_slug = $wpdb->get_results($query);
@@ -2297,132 +2288,132 @@ class QtranslateSlug {
     
     
     /**
-	 * creates and prints the forms and hides the default fields 
-	 * @param object $term the term object 
-	 * @since 1.1.12
-	 * 
-	 * TODO: merge with our own form.
-	 * TODO: move code into js file
-	 *
-	 */
-	public function qts_modify_term_form($term) {
-		echo "<script type=\"text/javascript\">\n// <![CDATA[\r\n";
-		if(is_object($term)&&isset($term->name)) {
-			$termname = $term->name;
-		} else {
-			$termname = "";
-		}
-	    if(isset($_GET['action']) && $_GET['action']=='edit') {
-		   foreach($this->get_enabled_languages() as $language) {
-			   echo $this->qts_insert_term_input('name', __('Name','qts'), $termname, $language,"edit");
-	        }
-	    } else {
-		   foreach($this->get_enabled_languages() as $language) {
-	           echo $this->qts_insert_term_input('tag-name', __('Name','qts'), $termname, $language,"new");   
-	        }
-	    }
-		// hide real category text
-		echo "if (ins != null) ins.style.display='none';\n";
-		echo "// ]]>\n</script>\n";
-	}
+   * creates and prints the forms and hides the default fields 
+   * @param object $term the term object 
+   * @since 1.1.12
+   * 
+   * TODO: merge with our own form.
+   * TODO: move code into js file
+   *
+   */
+  public function qts_modify_term_form($term) {
+    echo "<script type=\"text/javascript\">\n// <![CDATA[\r\n";
+    if(is_object($term)&&isset($term->name)) {
+      $termname = $term->name;
+    } else {
+      $termname = "";
+    }
+      if(isset($_GET['action']) && $_GET['action']=='edit') {
+       foreach($this->get_enabled_languages() as $language) {
+         echo $this->qts_insert_term_input('name', __('Name','qts'), $termname, $language,"edit");
+          }
+      } else {
+       foreach($this->get_enabled_languages() as $language) {
+             echo $this->qts_insert_term_input('tag-name', __('Name','qts'), $termname, $language,"new");   
+          }
+      }
+    // hide real category text
+    echo "if (ins != null) ins.style.display='none';\n";
+    echo "// ]]>\n</script>\n";
+  }
 
-	/**
-	 * Helper for qts_modify_term_form_for
-	 * @param string $id the term id
-	 * @param object #term the term
-	 * @param string $language the term name
-	 * @param string $action the term name
-	 * @return string $html the new input fields
-	 * @since 1.1.12
-	 * TODO: use DocumentFragment
-	 */
-	private function qts_insert_term_input($id,$name, $language,$action){
-		global $q_config; //TODO: q_config  : language_name, term_name
-		$html = "";
-		if( $action === "new") {
-		    $html ="
-	        var il = document.getElementsByTagName('input'),
-	        	 d = document.createElement('div'),
+  /**
+   * Helper for qts_modify_term_form_for
+   * @param string $id the term id
+   * @param object #term the term
+   * @param string $language the term name
+   * @param string $action the term name
+   * @return string $html the new input fields
+   * @since 1.1.12
+   * TODO: use DocumentFragment
+   */
+  private function qts_insert_term_input($id,$name, $language,$action){
+    global $q_config; //TODO: q_config  : language_name, term_name
+    $html = "";
+    if( $action === "new") {
+        $html ="
+          var il = document.getElementsByTagName('input'),
+             d = document.createElement('div'),
                  l = document.createTextNode('".$name." (".$q_config['language_name'][$language].")'),
-	            ll = document.createElement('label'),
-	             i = document.createElement('input'),
-	           ins = null;
-	        for(var j = 0; j < il.length; j++) {
-	            if(il[j].id=='".$id."') {
-	                ins = il[j];
-	                break;
-	            }
-	        }
-	        i.type = 'text';
-	        i.id = i.name = ll.htmlFor ='qtrans_term_".$language."';
-	    ";
-		} elseif ( $action === "edit") {
-		    $html ="
-	        var tr = document.createElement('tr'),
-	            th = document.createElement('th'),
-	            ll = document.createElement('label'),
-	             l = document.createTextNode('".$name." (".$q_config['language_name'][$language].")'),
-	            td = document.createElement('td'),
-	             i = document.createElement('input'),
-	           ins = document.getElementById('".$id."');
-	        i.type = 'text';
-	        i.id = i.name = ll.htmlFor ='qtrans_term_".$language."';
-	    ";
-	    }
-		if(isset($q_config['term_name'][$termname][$language])) {
-  		 $html .="
-		     i.value = '".addslashes(htmlspecialchars_decode($q_config['term_name'][$termname][$language], ENT_QUOTES))."';";
-		     //43LC: applied ENT_QUOTES to both edit and new forms.
-		} else {
-		  $html .="
-			  if (ins != null)
-				  i.value = ins.value;
-			  ";
-		}
-		
-		if($language == $this->default_language) {
-			$html .="
-				i.onchange = function() { 
-					var il = document.getElementsByTagName('input'),
-					   ins = null;
-					for(var j = 0; j < il.length; j++) {
-						if(il[j].id=='".$id."') {
-							ins = il[j];
-							break;
-						}
-					}
-					if (ins != null)
-						ins.value = document.getElementById('qtrans_term_".$language."').value;
-				};
-				";
-		}
-		if( $action === "new") {
-	        $html .="
-	        if (ins != null)
-	            ins = ins.parentNode;
-	        d.className = 'form-field form-required';
-	        ll.appendChild(l);
-	        d.appendChild(ll);
-	        d.appendChild(i);
-	        if (ins != null)
-	            ins.parentNode.insertBefore(d,ins);
-	        ";
-	    } elseif ( $action === "edit") {
-	        $html .="
-	        ins = ins.parentNode.parentNode;
-	        tr.className = 'form-field form-required';
-	        th.scope = 'row';
-	        th.vAlign = 'top';
-	        ll.appendChild(l);
-	        th.appendChild(ll);
-	        tr.appendChild(th);
-	        td.appendChild(i);
-	        tr.appendChild(td);
-	        ins.parentNode.insertBefore(tr,ins);
-	        ";
-	    }
-		return $html;	
-	}
+              ll = document.createElement('label'),
+               i = document.createElement('input'),
+             ins = null;
+          for(var j = 0; j < il.length; j++) {
+              if(il[j].id=='".$id."') {
+                  ins = il[j];
+                  break;
+              }
+          }
+          i.type = 'text';
+          i.id = i.name = ll.htmlFor ='qtrans_term_".$language."';
+      ";
+    } elseif ( $action === "edit") {
+        $html ="
+          var tr = document.createElement('tr'),
+              th = document.createElement('th'),
+              ll = document.createElement('label'),
+               l = document.createTextNode('".$name." (".$q_config['language_name'][$language].")'),
+              td = document.createElement('td'),
+               i = document.createElement('input'),
+             ins = document.getElementById('".$id."');
+          i.type = 'text';
+          i.id = i.name = ll.htmlFor ='qtrans_term_".$language."';
+      ";
+      }
+    if(isset($q_config['term_name'][$name][$language])) {
+       $html .="
+         i.value = '".addslashes(htmlspecialchars_decode($q_config['term_name'][$name][$language], ENT_QUOTES))."';";
+         //43LC: applied ENT_QUOTES to both edit and new forms.
+    } else {
+      $html .="
+        if (ins != null)
+          i.value = ins.value;
+        ";
+    }
+    
+    if($language == $this->default_language) {
+      $html .="
+        i.onchange = function() { 
+          var il = document.getElementsByTagName('input'),
+             ins = null;
+          for(var j = 0; j < il.length; j++) {
+            if(il[j].id=='".$id."') {
+              ins = il[j];
+              break;
+            }
+          }
+          if (ins != null)
+            ins.value = document.getElementById('qtrans_term_".$language."').value;
+        };
+        ";
+    }
+    if( $action === "new") {
+          $html .="
+          if (ins != null)
+              ins = ins.parentNode;
+          d.className = 'form-field form-required';
+          ll.appendChild(l);
+          d.appendChild(ll);
+          d.appendChild(i);
+          if (ins != null)
+              ins.parentNode.insertBefore(d,ins);
+          ";
+      } elseif ( $action === "edit") {
+          $html .="
+          ins = ins.parentNode.parentNode;
+          tr.className = 'form-field form-required';
+          th.scope = 'row';
+          th.vAlign = 'top';
+          ll.appendChild(l);
+          th.appendChild(ll);
+          tr.appendChild(th);
+          td.appendChild(i);
+          tr.appendChild(td);
+          ins.parentNode.insertBefore(tr,ins);
+          ";
+      }
+    return $html; 
+  }
     /**
      * adds support for qtranslate in taxonomies
      *
@@ -2546,9 +2537,9 @@ class QtranslateSlug {
         if( $pagenow != 'nav-menus.php' ) {
             return;
         }
-				//FIXME: fix the nav menu box
-				//        wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , dirname(__FILE__ ) ), 'nav-menu', '1.0' );
-				//        add_meta_box( 'qt-languages', __('Languages', 'qts'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
+        //FIXME: fix the nav menu box
+        //        wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , dirname(__FILE__ ) ), 'nav-menu', '1.0' );
+        //        add_meta_box( 'qt-languages', __('Languages', 'qts'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
     }
     
     
