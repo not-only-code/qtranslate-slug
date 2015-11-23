@@ -2,13 +2,13 @@
 Contributors: carlos_a_sanz, pedroghandi  
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYC46KSLRC4Q8
 Tags: qtranslate, slug, multilanguage, widget
-Requires at least: 3.3
-Tested up to: 4.2.4
-Stable tag: 1.1.17
+Requires at least: 4.0
+Tested up to: 4.4
+Stable tag: 1.1.18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Adds support for permalink translations to QTranslate-X since wordpress 3.0
+Adds support for permalink translations to QTranslate-X since WordPress 3.0
 
 == Description ==
 
@@ -18,8 +18,9 @@ Adds support for permalink translations to QTranslate-X since wordpress 3.0
 
 = Requirements: =
 
-* Wordpress 4.0 (PHP 5.4 and MySQL 5)
-* qtranslate-x ( 3.0.0 )
+* PHP 5.4 and MySQL 5
+* WordPress 4.0
+* qtranslate-x 3.0
 
 = New in 1.1.18 =
 
@@ -134,7 +135,7 @@ Thanks for use this plugin!
 
 
 == Installation ==
-**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) or [mqTranslate](https://wordpress.org/plugins/mqtranslate/) installed previously, if not, it will not activate.**
+**This plugins requires [qTranslate-x](https://wordpress.org/plugins/qtranslate-x/) installed previously, if not, it will not activate.**
 
 1. Upload `qtranslate-slug` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.

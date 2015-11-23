@@ -3,7 +3,7 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.1.17
+Version: 1.1.18
 Author: Carlos Sanz Garcia, Pedro Carvalho 
 Author URI: http://github.com/not-only-code
 */
@@ -178,9 +178,9 @@ function qts_uninstall() {
 	delete_option('qts_version');
 	
 	// dont delete termmeta table as it will be used by wp beginning 4.4
-  if( version_compare($wp_version, "4.4", "<" ) ) {
-  	$wpdb->query("DROP TABLE IF EXISTS $wpdb->termmeta");
-  }
+    if( version_compare($wp_version, "4.4", "<" ) ) {
+        $wpdb->query("DROP TABLE IF EXISTS $wpdb->termmeta");
+    }
 	
 	// delete postmeta data
 	$meta_keys = array();

@@ -2,7 +2,7 @@
 
 ![Qtranslate Slug logo](http://codingsomething.files.wordpress.com/2013/01/qts-logo.png?w=200)
 
-Adds support for permalink translations and fix some QTranslate deficiencies since wordpress 3.0
+Adds support for permalink translations and fix some QTranslate deficiencies since WordPress 3.0
 
 ## Description
 
@@ -13,25 +13,29 @@ Go ahead and update right 1.1.18 for the new cool fixes!
 
 ## Requirements:
 
-* Wordpress 4.0 (PHP 5.4 and MySQL 5)
-* qtranslate-x ( 3.0.0 )
+* PHP 5.4 and MySQL 5
+* WordPress 4.0 
+* qtranslate-x  3.0
 
 ## New in 1.1.18
 
 Let's start with what isn't working :( 
-In QTS slug options you can change the bases for taxonomies and custom post types. 
 
-So, for example, you can change /category/ for /category/ for english and /categoria/ for spanish version.
+In the QTS slug options, you can change the bases for taxonomies and custom post types. 
+
+So, for example, you can change `/category/` for `/category/` for english and `/categoria/` for the spanish version.
 But these won't work:
-* slug with UTF8 charactes in taxonomies bases: example:  /類別/.. instead of /category/.. 
-  utf8 in taxonomies works just fine: /category_zh/魚/
-* slug with UTF8 charactes in custom post type bases : example:  /圖書/.. instead of /books/..
-  utf8 in custom post slugs works just fine: /tushu/彩繪中國經典名著/
-* custom post types archives with custom base name /tushu/ isnt working. but using the default slug is : /中國/
+* slug with UTF8 charactes in taxonomies bases: example:  `/類別/..` instead of `/category/..` 
+  utf8 in taxonomies works just fine: `/category_zh/魚/`
+* slug with UTF8 charactes in custom post type bases : example:  `/圖書/..` instead of `/books/..`
+  utf8 in custom post slugs works just fine: `/tushu/彩繪中國經典名著/`
+* custom post types archives with custom base name with uf8 chars  `/中國/` isn't working. 
+  But using the default slug with them works : `/中國/`
   
  
 example used to create the post custom type:
 
+```php
 add_action( 'init', 'create_post_type' );
 function create_post_type() {
   register_post_type( 'acme_product',
@@ -46,10 +50,11 @@ function create_post_type() {
     )
   );
 }
-
+```
 
 * as you might have guessed by now, custom post custom taxonomy base won't work with uft8 characters. works with default utf8 slug tho.
 
+```php
 function create_book_tax() {
 	register_taxonomy( 'book', array('post',	'acme_product'),
 		array(
@@ -59,6 +64,7 @@ function create_book_tax() {
 		)
 	);
 }
+```
 
 What works since last version:
 
@@ -68,6 +74,7 @@ What works since last version:
 * Code from wp.org is now been merged with the github account
 * Some notices are fixed. Thanks to @rafa-aguilar ( #89 )
 * custom post types are fixed! thanks to @MicheleBertoli ( #102 )
+* custom query variables are now passed. thanks to everyone at the [wp.org forum](https://wordpress.org/support/topic/cant-retrieve-public-query-variables)
 * lots of other stuff has been fixed by me thanks to your awesome bug reports!
 
 Thanks for using, enjoy 1.1.18.
@@ -82,7 +89,7 @@ If anything breaks, let me know!
 Minor fix for the language menu using qtranslate's function
 
 ## New in 1.1.15
-* Fixes the duplicated hreflang links in <head>
+* Fixes the duplicated hreflang links in `<head>`
 
 ## New in 1.1.14
 
@@ -90,20 +97,24 @@ The menu widget didn't allow the visitors to change to the default language if q
 Hope to bring some nice changes that were made in the github repository in the next version. For now, enjoy.
 
 ## New in 1.1.13
-### Thanks to returning @pedro-mendonca for these commits:
+**Thanks to returning @pedro-mendonca for these commits:**
+
 * Cleaned duplicated label in widget
 * Bug fix in "Slug (%s)" string translation
 * Changed text strings with no text-domain and with text-domain 'qtranlate' to text-domain 'qts'
 * pot catalog updated with current strings, including last found is "More information about".
 
-### Thanks to @johnclause for these :
+**Thanks to @johnclause for these:**
+
 * Convenience links in notice_dependences
 * Menu compatibility with qTranslate-X
 * Fixed extra characters in widget
-### Thanks to vbkun for casting the much wanted function to get a slug based on an id and language
+
+**Thanks to vbkun for casting the much wanted function to get a slug based on an id and language**
 
 * Added a global qts_get_slug( $id, $lang)
-### and sadly:
+
+and sadly:
 * removed the menu admin box until better implementation
 
 

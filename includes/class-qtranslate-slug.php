@@ -315,7 +315,7 @@ class QtranslateSlug {
     * @since 1.1.7
     */
     public function register_plugin_styles() {
-    wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', dirname(__FILE__ ) ) );
+        wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.css', dirname(__FILE__ ) ) );
         wp_enqueue_style( 'qts_front_styles' );
     }
     /**
@@ -324,7 +324,7 @@ class QtranslateSlug {
     * @since 1.1.8
     */
     public function register_plugin_styles_min() {
-    wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.min.css', dirname(__FILE__ ) ) );
+        wp_register_style( 'qts_front_styles', plugins_url( '/assets/css/qts-default.min.css', dirname(__FILE__ ) ) );
         wp_enqueue_style( 'qts_front_styles' );
     }
 
@@ -681,13 +681,13 @@ class QtranslateSlug {
         foreach ($this->get_enabled_languages() as $lang):
             
             if ( $base = $this->get_base_slug( $name, $lang) ):
-							  //TODO:: clean up before fixing custom bases
-							  // base is options[_qts_post_type_acme_product][zh]
-							  // and has "acme_zh123%E4%B8%AD%E5%9C%8B"
+                //TODO:: clean up before fixing custom bases
+                // base is options[_qts_post_type_acme_product][zh]
+                // and has "acme_zh123%E4%B8%AD%E5%9C%8B"
                 //	s:2:"zh";s:28:"acme_zh123%E4%B8%AD%E5%9C%8B";
 
                 $struct = $wp_rewrite->extra_permastructs[$name];
-								//  [struct] => /中國/%acme_product%
+                //  [struct] => /中國/%acme_product%
                 
                 if ( is_array( $struct ) ) {
                     if ( count( $struct ) == 2 )
@@ -982,9 +982,9 @@ class QtranslateSlug {
         if ( isset($query['pagename']) || isset($query['page_id']) ):
             
             $page = wp_cache_get('qts_page_request');
-            if (!$page) 
+            if (!$page) {
                 $page = isset($query['page_id']) ? get_post($query['page_id']) : $this->get_page_by_path($query['pagename']);
-            
+            }        
             if (!$page) return $query;
             $id = $page->ID;
             $cache_array = array($page);
@@ -1594,11 +1594,11 @@ class QtranslateSlug {
      * @since 1.0
      */
     private function get_page_uri($page) {
-        
+
         if ( ! is_object($page) ) {
             $page = get_post($page);
         }
-        
+
         $uri = get_post_meta( $page->ID, $this->get_meta_key(), true );
         if (!$uri) {
             $uri =  $page->post_name;
@@ -1616,7 +1616,6 @@ class QtranslateSlug {
             if (!$page_name) {
                 $page_name = $page->post_name;
             }
-            
             $uri = $page_name . "/" . $uri;
         }
 
@@ -2575,9 +2574,9 @@ class QtranslateSlug {
      * @since 1.0
      */
     public function nav_menu_meta_box() {
-    	  //TODO: qtranslate-x is doing a good job with its meta-box. 
-    	  // just need to filter the custom url and toggle the other url when the 
-    	  // Language buttons are clicked
+        //TODO: qtranslate-x is doing a good job with its meta-box. 
+        // just need to filter the custom url and toggle the other url when the 
+        // Language buttons are clicked
         global $q_config; //TODO: q_config  : flag_location, flag, language_name
         echo '<p>';
         foreach($this->enabled_languages as $id => $language) {
