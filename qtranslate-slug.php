@@ -50,7 +50,7 @@ include_once(dirname(__FILE__).'/includes/class-qtranslate-slug.php');
  *
  * @since 1.0
  */
-if (!defined("QTS_VERSION")) 		    define("QTS_VERSION", '1.1.12');
+if (!defined("QTS_VERSION")) 		    define("QTS_VERSION", '1.1.18');
 if (!defined("QTS_PREFIX")) 		    define("QTS_PREFIX", '_qts_');
 if (!defined("QTS_PAGE_BASENAME")) 		define('QTS_PAGE_BASENAME', 'qtranslate-slug-settings');
 if (!defined("QTS_OPTIONS_NAME")) 		define("QTS_OPTIONS_NAME", 'qts_options');
@@ -65,11 +65,6 @@ if (!defined("PHP_EOL"))				define("PHP_EOL", "\r\n");
  *
  * @since 1.0
  */
-if ( is_admin() && !QtranslateSlug::block_activate() ) { // setting options page
-	include_once(dirname(__FILE__).'/includes/qtranslate-slug-settings.php'); 
-}
-
-include_once(dirname(__FILE__).'/includes/termmeta-core.php'); // termmeta install and core functions
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -176,14 +171,16 @@ add_filter( 'plugin_action_links', 'qts_add_settings_link', 10, 2 );
  *
  */
 function qts_uninstall() {
-	global $q_config, $wpdb;
-	
+	global $q_config, $wpdb, $wp_version;
+
 	// options
 	delete_option(QTS_OPTIONS_NAME);
 	delete_option('qts_version');
 	
-	// delete termmeta table
-	$wpdb->query("DROP TABLE IF EXISTS $wpdb->termmeta");
+	// dont delete termmeta table as it will be used by wp beginning 4.4
+  if( version_compare($wp_version, "4.4", "<" ) ) {
+  	$wpdb->query("DROP TABLE IF EXISTS $wpdb->termmeta");
+  }
 	
 	// delete postmeta data
 	$meta_keys = array();

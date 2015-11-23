@@ -14,11 +14,14 @@ function install_term_meta_table() {
 	}
 
 	$sql = "CREATE TABLE IF NOT EXISTS ". $wpdb->prefix . "termmeta" ." (
-		`meta_id` 				bigint(20) NOT NULL AUTO_INCREMENT,
+		  `meta_id` 				bigint(20) NOT NULL AUTO_INCREMENT,
 	  	`term_id` 				bigint(20) NOT NULL DEFAULT '0',
 	  	`meta_key` 				varchar(255) NULL,
 	  	`meta_value` 			longtext NULL,
-	  	PRIMARY KEY id (`meta_id`)) $collate;";
+	  	PRIMARY KEY id (`meta_id`),
+      KEY term_id (term_id),
+      KEY meta_key (meta_key($max_index_length))
+      ) $collate;";
 	$wpdb->query($sql);
 }
 endif;

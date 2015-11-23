@@ -423,7 +423,7 @@ function qts_show_form_field($args = array()) {
 					$value = '';
 				}
 				
-				echo "<span>$item[0]:</span> <input class='$field_class' type='text' id='$id|$item[1]' name='" . QTS_OPTIONS_NAME . "[$id|$item[1]]' value='$value' /><br/>";
+				echo "<span>$item[0]:</span> <input class='$field_class' type='text' id='$id|$item[1]' name='" . QTS_OPTIONS_NAME . "[$id|$item[1]]' value='". urldecode($value) ."' /><br/>";
 			}
 			echo ($desc != '') ? "<span class='description'>$desc</span>" : "";
 		break;
@@ -606,7 +606,6 @@ function qts_show_settings_page() {
  */
 function qts_validate_options($input) {
 	
-	// for enhanced security, create a new empty array
 	$valid_input = array();
 	
 	// collect only the values we expect and fill the new $valid_input array
@@ -615,14 +614,15 @@ function qts_validate_options($input) {
 	// get the settings sections array
 	$settings_output = qts_get_settings();
 		
-    $styleoptions =  $settings_output['qts_page_styles'];
+  $styleoptions =  $settings_output['qts_page_styles'];
     
 	$slugoptions = $settings_output['qts_page_fields'];
 		
-    $options = array_merge($styleoptions,$slugoptions);
+  $options = array_merge($styleoptions,$slugoptions);
 
 	// run a foreach and switch on option type
 	foreach ($options as $option):
+	  
 	
 		switch ( $option['type'] ):
 			case 'text':
@@ -732,15 +732,21 @@ function qts_validate_options($input) {
 				$text_values = array();
 				foreach ($option['choices'] as $k => $v ) {
 					// explode the connective
-					$pieces = explode("|", $v);
-					
-					$text_values[] = $pieces[1];
+					// TODO: remove after fixing custom bases
+					/*choices] => Array (
+            [0] => Slug (English)|en
+            [1] => Slug (Deutsch)|de
+            [2] => Slug (中文)|zh
+        )*/
+					$pieces = explode("|", $v);  // Slug (English)|en
+					$text_values[] = $pieces[1]; // keep en
 				}
 				
 				foreach ($text_values as $v ) {		
 					
 					// Check that the option isn't empty
 					if (!empty($input[$option['id'] . '|' . $v])) {
+						$tax_lang = $option['id'] . '|' . $v;
 						// If it's not null, make sure it's sanitized, add it to an array
 						switch ($option['class']) {
 							// different sanitation actions based on the class create you own cases as you need them
@@ -748,27 +754,26 @@ function qts_validate_options($input) {
 							//for numeric input
 							case 'numeric':
 								//accept the input only if is numberic!
-								$input[$option['id'] . '|' . $v]= trim($input[$option['id'] . '|' . $v]); // trim whitespace
-								$input[$option['id'] . '|' . $v]= (is_numeric($input[$option['id'] . '|' . $v])) ? $input[$option['id'] . '|' . $v] : '';
+								$input[$tax_lang]= trim($input[$tax_lang]); // trim whitespace
+								$input[$tax_lang]= (is_numeric($input[$tax_lang])) ? $input[$tax_lang] : '';
 							break;
 							
 							case 'qts-slug':
 								// strip all html tags and white-space.
-								$exploded_types = explode('_', $option['id']);
-								$type_ = end($exploded_types  );
-								$input[$option['id'] . '|' . $v]= sanitize_title( sanitize_text_field( $input[$option['id'] . '|' . $v] ) );
-								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
+								$input[$tax_lang]= urlencode( $input[$tax_lang] );
+								$input[$tax_lang]= addslashes($input[$tax_lang]);
 							break;
 							
 							// a "cover-all" fall-back when the class argument is not set
 							default:
 								// strip all html tags and white-space.
-								$input[$option['id'] . '|' . $v]= sanitize_text_field($input[$option['id'] . '|' . $v]); // need to add slashes still before sending to the database
-								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
+								$input[$tax_lang]= sanitize_text_field($input[$tax_lang]); 
+								// need to add slashes still before sending to the database
+								$input[$tax_lang]= addslashes($input[$tax_lang]);
 							break;
 						}
 						// pass the sanitized user input to our $textarray array
-						$textarray[$v] = $input[$option['id'] . '|' . $v];
+						$textarray[$v] = $input[$tax_lang];
 					
 					} else {
 						$textarray[$v] = '';
@@ -908,11 +913,9 @@ function qts_validate_options($input) {
 			
 		endswitch;
   
-      	if (!empty($valid_input) && $valid_input[$option['id']] === "qts-slug" ) {
+    if (!empty($valid_input) && $valid_input[$option['id']] === "qts-slug" ) {
         	$valid_input = qts_sanitize_bases($valid_input);
-      	} else {
-		    $valid_input= $valid_input;
-      	}
+    }
   
 	endforeach;    
     

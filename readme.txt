@@ -12,14 +12,72 @@ Adds support for permalink translations to QTranslate-X since wordpress 3.0
 
 == Description ==
 
-[Qtranslate-X](http://wordpress.org/plugins/qtranslate-x/) is a nice plugin for Multilingual Websites. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations.
+**Qtranslate Slug** is an addon to QTranslate-X that adds support for permalinks translations. [Qtranslate-X](http://wordpress.org/plugins/qtranslate-x/) is a must have plugin for Multilingual Websites.
 
 1.1.17 fixes a dangerous Security Exploit. Please update right now!
 
 = Requirements: =
 
-* Wordpress 3.3 (PHP 5.4 and MySQL 5)
-* mQtranslate 2.6.2.4 or Qtranslate 2.5.8 or qtranslate-x ( 2.9.1 )
+* Wordpress 4.0 (PHP 5.4 and MySQL 5)
+* qtranslate-x ( 3.0.0 )
+
+= New in 1.1.18 =
+
+Let's start with what isn't working:
+In QTS slug options you can change the bases for taxonomies and custom post types. 
+
+So, for example, you can change /category/ for /category/ for english and /categoria/ for spanish version.
+But these won't work:
+* slug with UTF8 charactes in taxonomies bases: example:  /類別/.. instead of /category/.. 
+  utf8 in taxonomies works just fine: /category_zh/魚/
+* slug with UTF8 charactes in custom post type bases : example:  /圖書/.. instead of /books/..
+  utf8 in custom post slugs works just fine: /tushu/彩繪中國經典名著/
+* custom post types archives with custom base name /tushu/ isnt working. but using the default slug is : /中國/
+  
+ 
+example used to create the post custom type:
+
+add_action( 'init', 'create_post_type' );
+function create_post_type() {
+  register_post_type( 'acme_product',
+    array(
+      'rewrite' => array( 'slug' => '中國' , 'with_front' => true),
+      'labels' => array(
+        'name' => __( 'Products' ),
+        'singular_name' => __( 'Product' )
+      ),
+      'public' => true,
+      'has_archive' => true,
+    )
+  );
+}
+
+
+* as you might have guessed by now, custom post custom taxonomy base won't work with uft8 characters. works with default utf8 slug tho.
+
+function create_book_tax() {
+	register_taxonomy( 'book', array('post',	'acme_product'),
+		array(
+			'label' => __( 'Genre' ),
+			'rewrite' => array( 'slug' => '中國3' ),
+			'hierarchical' => true,
+		)
+	);
+}
+
+What works since last version:
+
+* widget is now compatible with wp 4.3. thanks to @adnanoner ( #111) and @gitmad (#112)
+* saving taxonomies wont print warning. thanks to @jmarceli ( #113)
+* saving post quick edit wont print warnings. thanks again to jmarceli ( #114 )
+* Code from wp.org is now been merged with the github account
+* Some notices are fixed. Thanks to @rafa-aguilar ( #89 )
+* custom post types are fixed! thanks to @MicheleBertoli ( #102 )
+* lots of other stuff has been fixed by me thanks to your awesome bug reports!
+
+Thanks for using, enjoy 1.1.18.
+
+If anything breaks, let me know!
 
 = New in 1.1.17 =
 * Hability to filter the position of the Metabox

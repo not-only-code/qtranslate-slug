@@ -104,8 +104,8 @@ function qts_options_page_fields() {
 			"id"      => QTS_PREFIX . "post_type_" . $post_type->name,
 			"title"   => $post_type->labels->singular_name,
 			"desc"    => sprintf( __( '<code>http://example.org/<u>%s</u>/some-%s/</code>', 'qts' ), $post_type->name, $post_type->name),
-			'class'	  => 'qts-slug',
 			"type"    => "multi-text",
+			'class'	  => 'qts-slug',
 			"choices" => get_multi_txt_choices( $post_type->name),
 			"std"     => ""
 		);
@@ -170,8 +170,6 @@ function qts_options_page_fields() {
  *
  */
 function qts_options_page_contextual_help() {
-	
-	
 	$text 	= "<h3>" . __('Qtranslate Settings - Contextual Help','qts') . "</h3>";
 	$text 	.= "<p>" . __('Contextual help goes here. You may want to use different html elements to format your text as you want.','qts') . "</p>";
 	
