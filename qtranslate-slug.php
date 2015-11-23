@@ -40,7 +40,7 @@ endif;
  */
 include_once(dirname(__FILE__).'/includes/class-qtranslate-slug-widget.php');
 include_once(dirname(__FILE__).'/includes/class-qtranslate-slug.php');
-include_once(dirname(__FILE__).'/termmeta-core.php'); // termmeta install and core functions
+include_once(dirname(__FILE__).'/includes/termmeta-core.php'); // termmeta install and core functions
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
