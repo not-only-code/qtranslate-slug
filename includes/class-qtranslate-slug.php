@@ -258,7 +258,7 @@ class QtranslateSlug {
                 add_action('admin_notices', array(&$this, 'notice_dependences'));
             }
         }
-        include_once(dirname(__FILE__).'/termmeta-core.php'); // termmeta install and core functions
+  
         if ( function_exists('is_multisite') && is_multisite() ) {
 
             if (isset($_GET['networkwide']) && ($_GET['networkwide'] == 1)) {

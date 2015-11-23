@@ -40,7 +40,7 @@ endif;
  */
 include_once(dirname(__FILE__).'/includes/class-qtranslate-slug-widget.php');
 include_once(dirname(__FILE__).'/includes/class-qtranslate-slug.php');
-
+include_once(dirname(__FILE__).'/termmeta-core.php'); // termmeta install and core functions
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -59,17 +59,6 @@ if (!defined("PHP_EOL"))				define("PHP_EOL", "\r\n");
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-/**
- * Includes
- *
- * @since 1.0
- */
-
-////////////////////////////////////////////////////////////////////////////////////////
-
-
-	
 /**
  * Init the plugin
  *
