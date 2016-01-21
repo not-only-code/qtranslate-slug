@@ -1,22 +1,22 @@
 /*messages*/
 .error {color:#cc0000;}
 
-.form-table th  {
+.settings_page_qtranslate-slug-settings .form-table th  {
 	width: 15%;
 	min-width: 15% !important;
 }
 
-.form-table td > span {
+.settings_page_qtranslate-slug-settings .form-table td > span {
 	display: inline-block;
 	min-width: 100px;
 }
 
-.form-table label {
+.settings_page_qtranslate-slug-settings .form-table label {
 	display: block;
 	margin-bottom: 8px;
 }
 
-.qts-slug {
+.settings_page_qtranslate-slug-settings .qts-slug {
 	width: 35%;
 }
 
@@ -40,3 +40,14 @@ div.updated.success{
 .ko {
 	color: #c00;
 }
+/* v1.1.18 */
+#edittag #qts_term_slugs { display: none; }
+.term-slug-wrap .qts_term_block input {
+	width: 86.5%; 
+}
+
+.qts_term_block label {
+  display: inline-block;
+  min-width: 120px;
+}
+ 

@@ -1,84 +1,43 @@
 === Qtranslate Slug ===
 Contributors: carlos_a_sanz, pedroghandi  
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYC46KSLRC4Q8
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=GYS2L7627B4F8&lc=GB&item_name=Qtranslate%2dSlug%20Improvement%20Fund&item_number=qts%2dpaypal&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted
 Tags: qtranslate, slug, multilanguage, widget
 Requires at least: 4.0
-Tested up to: 4.4
+Tested up to: 4.5
 Stable tag: 1.1.18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Adds support for permalink translations to QTranslate-X since WordPress 3.0
+Adds support for permalink translations to QTranslate-X
 
 == Description ==
 
-**Qtranslate Slug** is an addon to QTranslate-X that adds support for permalinks translations. [Qtranslate-X](http://wordpress.org/plugins/qtranslate-x/) is a must have plugin for Multilingual Websites.
+[Qtranslate-X](http://wordpress.org/plugins/qtranslate-x/) is a nice plugin for Multilingual Websites. **Qtranslate Slug** is an addon to QTranslate, which adds support for permalinks translations.
+
+
+
+
 
 1.1.17 fixes a dangerous Security Exploit. Please update right now!
 
 = Requirements: =
 
-* PHP 5.4 and MySQL 5
-* WordPress 4.0
-* qtranslate-x 3.0
+* Wordpress 4.0 (PHP 5.4 and MySQL 5)
+* mQtranslate 2.6.2.4 or Qtranslate 2.5.8 or qtranslate-x ( 2.9.1 )
 
 = New in 1.1.18 =
 
-Let's start with what isn't working:
-In QTS slug options you can change the bases for taxonomies and custom post types. 
-
-So, for example, you can change /category/ for /category/ for english and /categoria/ for spanish version.
-But these won't work:
-* slug with UTF8 charactes in taxonomies bases: example:  /類別/.. instead of /category/.. 
-  utf8 in taxonomies works just fine: /category_zh/魚/
-* slug with UTF8 charactes in custom post type bases : example:  /圖書/.. instead of /books/..
-  utf8 in custom post slugs works just fine: /tushu/彩繪中國經典名著/
-* custom post types archives with custom base name /tushu/ isnt working. but using the default slug is : /中國/
-  
- 
-example used to create the post custom type:
-
-add_action( 'init', 'create_post_type' );
-function create_post_type() {
-  register_post_type( 'acme_product',
-    array(
-      'rewrite' => array( 'slug' => '中國' , 'with_front' => true),
-      'labels' => array(
-        'name' => __( 'Products' ),
-        'singular_name' => __( 'Product' )
-      ),
-      'public' => true,
-      'has_archive' => true,
-    )
-  );
-}
-
-
-* as you might have guessed by now, custom post custom taxonomy base won't work with uft8 characters. works with default utf8 slug tho.
-
-function create_book_tax() {
-	register_taxonomy( 'book', array('post',	'acme_product'),
-		array(
-			'label' => __( 'Genre' ),
-			'rewrite' => array( 'slug' => '中國3' ),
-			'hierarchical' => true,
-		)
-	);
-}
-
-What works since last version:
-
+* works with upcomming wp 4.5! thats new for a change! 
 * widget is now compatible with wp 4.3. thanks to @adnanoner ( #111) and @gitmad (#112)
 * saving taxonomies wont print warning. thanks to @jmarceli ( #113)
 * saving post quick edit wont print warnings. thanks again to jmarceli ( #114 )
 * Code from wp.org is now been merged with the github account
 * Some notices are fixed. Thanks to @rafa-aguilar ( #89 )
 * custom post types are fixed! thanks to @MicheleBertoli ( #102 )
-* lots of other stuff has been fixed by me thanks to your awesome bug reports!
-
-Thanks for using, enjoy 1.1.18.
-
-If anything breaks, let me know!
+* slug box now shows the utf8 chars instead of the enconded ones.
+* you can now toggle the default slug box, in case you want to edit it.
+* edit term has been re-worked, so no more errors and notices! ( hopefully!)
+* couple of other stuff has been fixed by me thanks to your awesome bug reports!
 
 = New in 1.1.17 =
 * Hability to filter the position of the Metabox
@@ -135,7 +94,7 @@ Thanks for use this plugin!
 
 
 == Installation ==
-**This plugins requires [qTranslate-x](https://wordpress.org/plugins/qtranslate-x/) installed previously, if not, it will not activate.**
+**This plugins requires [Qtranslate](http://wordpress.org/extend/plugins/qtranslate/) or [mqTranslate](https://wordpress.org/plugins/mqtranslate/) installed previously, if not, it will not activate.**
 
 1. Upload `qtranslate-slug` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.

@@ -296,12 +296,15 @@ function qts_settings_scripts() {
 	wp_enqueue_style('qts_theme_settings_css', plugins_url( 'assets/css/qts-settings.css' , dirname(__FILE__)  ) );
 	wp_enqueue_script( 'qts_theme_settings_js', plugins_url( 'assets/js/qts-settings.js' , dirname(__FILE__)  ), array('jquery'));
 	
+	/**
+	 * @deprecated 
+	 */ 
 	if ($qtranslate_slug->check_old_data()) {
 		wp_enqueue_script('qts_theme_settings_upgrade_js', plugins_url( 'assets/js/qts-settings-upgrade.js' , dirname(__FILE__) ), array('jquery') );
 	}
 }
 
-
+add_action( 'admin_head', 'qts_settings_scripts' );
 
 /**
  * The Admin menu page
@@ -320,15 +323,6 @@ function qts_add_menu() {
 	
 	// Display Settings Page link under the "Appearance" Admin Menu
 	$qts_settings_page = add_options_page(__('Qtranslate Slug options', 'qts'), __('Slug options', 'qts'), 'manage_options', QTS_PAGE_BASENAME, 'qts_show_settings_page');
-		// contextual help
-		/*
-		if ($qts_settings_page) {
-			$current_screen = get_current_screen();
-			//$current_screen->add_help_tab( array( $qts_settings_page, $qts_contextual_help ));
-		}
-		*/
-		// css & js
-		add_action( 'load-'. $qts_settings_page, 'qts_settings_scripts' );	
 }
 add_action( 'admin_menu', 'qts_add_menu' );
 
@@ -422,8 +416,9 @@ function qts_show_form_field($args = array()) {
 				} else {
 					$value = '';
 				}
-				
-				echo "<span>$item[0]:</span> <input class='$field_class' type='text' id='$id|$item[1]' name='" . QTS_OPTIONS_NAME . "[$id|$item[1]]' value='". urldecode($value) ."' /><br/>";
+				echo "<span>" . $item[0] . ":</span> " .
+				 		 "<input class='$field_class' type='text' id='$id|${item[1]}' name='" . QTS_OPTIONS_NAME . "[$id|${item[1]}]' value='". urldecode($value) ."' /><br/>";
+				//echo "<span>$item[0]:</span> <input class='$field_class' type='text' id='$id|$item[1]' name='" . QTS_OPTIONS_NAME . "[$id|$item[1]]' value='$value' /><br/>";
 			}
 			echo ($desc != '') ? "<span class='description'>$desc</span>" : "";
 		break;
@@ -578,7 +573,7 @@ function qts_show_settings_page() {
 			// rewrite rules
 			flush_rewrite_rules();
 			?>
-	  <?php $css_path = plugin_dir_url(dirname(__FILE__)).'/assets/css/qts-default.css';
+	  <?php $css_path = plugin_dir_url(dirname(__FILE__)).'assets/css/qts-default.css';
             $file_styles = file_get_contents($css_path);
             
              
@@ -606,6 +601,7 @@ function qts_show_settings_page() {
  */
 function qts_validate_options($input) {
 	
+	// for enhanced security, create a new empty array
 	$valid_input = array();
 	
 	// collect only the values we expect and fill the new $valid_input array
@@ -614,15 +610,14 @@ function qts_validate_options($input) {
 	// get the settings sections array
 	$settings_output = qts_get_settings();
 		
-  $styleoptions =  $settings_output['qts_page_styles'];
+    $styleoptions =  $settings_output['qts_page_styles'];
     
 	$slugoptions = $settings_output['qts_page_fields'];
 		
-  $options = array_merge($styleoptions,$slugoptions);
+    $options = array_merge($styleoptions,$slugoptions);
 
 	// run a foreach and switch on option type
 	foreach ($options as $option):
-	  
 	
 		switch ( $option['type'] ):
 			case 'text':
@@ -732,21 +727,15 @@ function qts_validate_options($input) {
 				$text_values = array();
 				foreach ($option['choices'] as $k => $v ) {
 					// explode the connective
-					// TODO: remove after fixing custom bases
-					/*choices] => Array (
-            [0] => Slug (English)|en
-            [1] => Slug (Deutsch)|de
-            [2] => Slug (中文)|zh
-        )*/
-					$pieces = explode("|", $v);  // Slug (English)|en
-					$text_values[] = $pieces[1]; // keep en
+					$pieces = explode("|", $v);
+					
+					$text_values[] = $pieces[1];
 				}
 				
 				foreach ($text_values as $v ) {		
 					
 					// Check that the option isn't empty
 					if (!empty($input[$option['id'] . '|' . $v])) {
-						$tax_lang = $option['id'] . '|' . $v;
 						// If it's not null, make sure it's sanitized, add it to an array
 						switch ($option['class']) {
 							// different sanitation actions based on the class create you own cases as you need them
@@ -754,26 +743,27 @@ function qts_validate_options($input) {
 							//for numeric input
 							case 'numeric':
 								//accept the input only if is numberic!
-								$input[$tax_lang]= trim($input[$tax_lang]); // trim whitespace
-								$input[$tax_lang]= (is_numeric($input[$tax_lang])) ? $input[$tax_lang] : '';
+								$input[$option['id'] . '|' . $v]= trim($input[$option['id'] . '|' . $v]); // trim whitespace
+								$input[$option['id'] . '|' . $v]= (is_numeric($input[$option['id'] . '|' . $v])) ? $input[$option['id'] . '|' . $v] : '';
 							break;
 							
 							case 'qts-slug':
 								// strip all html tags and white-space.
-								$input[$tax_lang]= urlencode( $input[$tax_lang] );
-								$input[$tax_lang]= addslashes($input[$tax_lang]);
+								$exploded_types = explode('_', $option['id']);
+								$type_ = end($exploded_types  );
+								$input[$option['id'] . '|' . $v]= sanitize_title( sanitize_text_field( $input[$option['id'] . '|' . $v] ) );
+								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
 							break;
 							
 							// a "cover-all" fall-back when the class argument is not set
 							default:
 								// strip all html tags and white-space.
-								$input[$tax_lang]= sanitize_text_field($input[$tax_lang]); 
-								// need to add slashes still before sending to the database
-								$input[$tax_lang]= addslashes($input[$tax_lang]);
+								$input[$option['id'] . '|' . $v]= sanitize_text_field($input[$option['id'] . '|' . $v]); // need to add slashes still before sending to the database
+								$input[$option['id'] . '|' . $v]= addslashes($input[$option['id'] . '|' . $v]);
 							break;
 						}
 						// pass the sanitized user input to our $textarray array
-						$textarray[$v] = $input[$tax_lang];
+						$textarray[$v] = $input[$option['id'] . '|' . $v];
 					
 					} else {
 						$textarray[$v] = '';
@@ -913,9 +903,11 @@ function qts_validate_options($input) {
 			
 		endswitch;
   
-    if (!empty($valid_input) && $valid_input[$option['id']] === "qts-slug" ) {
+      	if (!empty($valid_input) && $valid_input[$option['id']] === "qts-slug" ) {
         	$valid_input = qts_sanitize_bases($valid_input);
-    }
+      	} else {
+		    $valid_input= $valid_input;
+      	}
   
 	endforeach;    
     

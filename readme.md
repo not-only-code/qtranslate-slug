@@ -2,8 +2,7 @@
 
 ![Qtranslate Slug logo](http://codingsomething.files.wordpress.com/2013/01/qts-logo.png?w=200)
 
-Adds support for permalink translations and fix some QTranslate deficiencies since WordPress 3.0
-
+Adds support for permalink ( slug / url ) translations for QTranslate-X
 ## Description
 
 **Qtranslate Slug** is an addon to QTranslate-X that adds support for permalinks translations. [Qtranslate-X](http://wordpress.org/plugins/qtranslate-x/) is a must have plugin for Multilingual Websites.
@@ -17,68 +16,39 @@ Go ahead and update right 1.1.18 for the new cool fixes!
 * WordPress 4.0 
 * qtranslate-x  3.0
 
-## New in 1.1.18
+## New in 1.1.18 =
 
-Let's start with what isn't working :( 
-
-In the QTS slug options, you can change the bases for taxonomies and custom post types. 
-
-So, for example, you can change `/category/` for `/category/` for english and `/categoria/` for the spanish version.
-But these won't work:
-* slug with UTF8 charactes in taxonomies bases: example:  `/類別/..` instead of `/category/..` 
-  utf8 in taxonomies works just fine: `/category_zh/魚/`
-* slug with UTF8 charactes in custom post type bases : example:  `/圖書/..` instead of `/books/..`
-  utf8 in custom post slugs works just fine: `/tushu/彩繪中國經典名著/`
-* custom post types archives with custom base name with uf8 chars  `/中國/` isn't working. 
-  But using the default slug with them works : `/中國/`
-  
- 
-example used to create the post custom type:
-
-```php
-add_action( 'init', 'create_post_type' );
-function create_post_type() {
-  register_post_type( 'acme_product',
-    array(
-      'rewrite' => array( 'slug' => '中國' , 'with_front' => true),
-      'labels' => array(
-        'name' => __( 'Products' ),
-        'singular_name' => __( 'Product' )
-      ),
-      'public' => true,
-      'has_archive' => true,
-    )
-  );
-}
-```
-
-* as you might have guessed by now, custom post custom taxonomy base won't work with uft8 characters. works with default utf8 slug tho.
-
-```php
-function create_book_tax() {
-	register_taxonomy( 'book', array('post',	'acme_product'),
-		array(
-			'label' => __( 'Genre' ),
-			'rewrite' => array( 'slug' => '中國3' ),
-			'hierarchical' => true,
-		)
-	);
-}
-```
-
-What works since last version:
-
+* works with upcomming wp 4.5! thats new for a change! 
 * widget is now compatible with wp 4.3. thanks to @adnanoner ( #111) and @gitmad (#112)
 * saving taxonomies wont print warning. thanks to @jmarceli ( #113)
 * saving post quick edit wont print warnings. thanks again to jmarceli ( #114 )
 * Code from wp.org is now been merged with the github account
 * Some notices are fixed. Thanks to @rafa-aguilar ( #89 )
 * custom post types are fixed! thanks to @MicheleBertoli ( #102 )
-* custom query variables are now passed. thanks to everyone at the [wp.org forum](https://wordpress.org/support/topic/cant-retrieve-public-query-variables)
-* lots of other stuff has been fixed by me thanks to your awesome bug reports!
+* slug box now shows the utf8 chars instead of the enconded ones.
+* you can now toggle the default slug box, in case you want to edit it.
+* edit term has been re-worked, so no more errors and notices! ( hopefully!)
+* couple of other stuff has been fixed by me thanks to your awesome bug reports!
+* some cosmetic code changes
+
+and now, what isn't working:
+
+In QTS slug options you can change the bases for taxonomies and custom post types. 
+
+So, for example, you can change /category/ for /category/ for english and /categoria/ for spanish version.
+But these won't work:
+
+* slug with UTF8 charactes in taxonomies bases: example:  /類別/.. instead of /category/..
+  utf8 in taxonomies works just fine: /category_zh/魚/
+
+* slug with UTF8 charactes in custom post type bases : example:  /圖書/.. instead of /books/..
+  utf8 in custom post slugs works just fine: /tushu/彩繪中國經典名著/
+
+* translating custom post types archives with custom base name /tushu/ isnt working. but using utf8 in the the default slug, as expected : /中國/
+
+
 
 Thanks for using, enjoy 1.1.18.
-
 If anything breaks, let me know!
 
 ## New in 1.1.17
