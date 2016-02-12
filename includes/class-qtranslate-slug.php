@@ -6,45 +6,52 @@
  * @since 1.0
  */
 class QtranslateSlug {
-
+    
+    
     /**
      * array with old data system
      * @var bool
      * @since 1.0
      */
     private $old_data = null;
-
+    
+    
+    
     /**
      * stores permalink_structure option, for save queries to db
      * @var string
      * @since 1.0
      */
     private $permalink_structure;
-
+    
+    
+    
     /**
      * Stores options slugs from database
      * @var array
      * @since 1.0
      */
     protected $options;
-
+    
+    
+    
     /**
      * Variable used to override the language
      * @var string
      * @since 1.0
      */
     private $lang = false;
-
+	
 		/**
 	 	 * variable for current language
 	 	 */
     private $current_lang = false;
-
+    
     /**
 	 	 * variable for default language
 	 	 */
     private $default_language = false;
-
+    
 		/**
      * Array of enabled languages
      * @var array
@@ -79,7 +86,7 @@ class QtranslateSlug {
      * @since ?
      */
     private $plugin_prefix = "";
-
+	
     /**
      * return the current / temp language
      * @since 1.0
@@ -114,7 +121,7 @@ class QtranslateSlug {
     private function get_url_path_mode() {
         return $this->url_path_mode;
     }
-
+    
     /**
      * getter: options
      * @since 1.0
@@ -131,10 +138,13 @@ class QtranslateSlug {
      * @return string the function name prefix for translation functions from other plugins
      * @since 1.1.9
      */
+
     private function get_plugin_prefix(){
+        
         return $this->plugin_prefix;
     }
-
+    
+    
     /**
      * setter: options | permalink_structure
      *
@@ -149,12 +159,12 @@ class QtranslateSlug {
         if (!$this->options) {
             add_option(QTS_OPTIONS_NAME, array());
         }
-
+        
         if (is_null($this->permalink_structure)) {
             $this->permalink_structure = get_option('permalink_structure');
         }
     }
-
+    
     /**
 	 * Sets the prefix for the active fork. See get_plugin_prefix
 	 * @since 1.1.9
@@ -174,6 +184,7 @@ class QtranslateSlug {
      * Sets the url path mode based on the qtranslate or fork settings.
      *
      */
+
     private function set_url_path_mode(){
         if ('' === $this->url_path_mode){
              if (is_plugin_active('qtranslate-x/qtranslate.php') || defined( 'QTRANSLATE_FILE' ) ){
@@ -193,26 +204,35 @@ class QtranslateSlug {
         if (!$new_options || empty($new_options)) {
             return;
         }
+        
         if (count($this->options) != count($new_options)) {
             return;
         }
+        
         update_option(QTS_OPTIONS_NAME, $new_options);
         $this->options = $new_options;
     }
-
+    
+    
+    
     /**
      * getter: meta key
      *
      * @since 1.0
      */
     public function get_meta_key( $force_lang = false ) {
+        
         $lang = $this->get_lang();
+        
         if ($force_lang) {
             $lang = $force_lang;
         }
+       
         return sprintf($this->meta_key, $lang); // returns: _qts_slug_en
     }
-
+    
+    
+    
     /**
      * check dependences for activation
      *
@@ -230,7 +250,10 @@ class QtranslateSlug {
                  is_plugin_active('qtranslate-x/qtranslate.php')) )
         );
     }
-
+    
+    
+	
+    
     /**
      * check if exists qtranslate and do the installation, support multisite
      *
@@ -238,13 +261,13 @@ class QtranslateSlug {
      */
     public function install() {
         global $wpdb;
-
+        
         if ( self::block_activate() ) {
             if (is_admin()) {
                 add_action('admin_notices', array(&$this, 'notice_dependences'));
             }
         }
-
+        
         if ( function_exists('is_multisite') && is_multisite() ) {
 
             if (isset($_GET['networkwide']) && ($_GET['networkwide'] == 1)) {
@@ -259,10 +282,12 @@ class QtranslateSlug {
                 return;
             }
         }
-
+        
         $this->activate();
     }
-
+    
+    
+    
     /**
      * activates and do the installation
      *
@@ -272,26 +297,26 @@ class QtranslateSlug {
         global $wp_rewrite;
 
         $this->set_options();
-
+        
         $qts_version = get_option('qts_version');
-
+        
         // checks version and do the installation
         if ( !$qts_version || $qts_version != QTS_VERSION ) {
-
+            
             // install termmeta table using functions from Simple-Term-Meta 
             // ( http://wordpress.org/extend/plugins/simple-term-meta/ )
             install_term_meta_table();
-
+            
             // update installed option  
             update_option('qts_version', QTS_VERSION);
         }
-
+    
         // regenerate rewrite rules in db
         add_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
         flush_rewrite_rules();
     }
-
-
+  
+    
 
     /**
     * register front end styles and enqueue
@@ -334,6 +359,8 @@ class QtranslateSlug {
         $css .="</style>\n";
         echo $css;
     }
+  
+    
 
     /**
      * actions when deactivating the plugin
@@ -342,11 +369,13 @@ class QtranslateSlug {
      */
     public function deactivate() {
         global $wp_rewrite;
-
+        
         // regenerate rewrite rules in db
         remove_action( 'generate_rewrite_rules', array(&$this, 'modify_rewrite_rules') );
         $wp_rewrite->flush_rules();
     }
+    
+
 
     /**
      * admin notice: update your old data 
@@ -355,23 +384,26 @@ class QtranslateSlug {
      */
     function notice_update(){
         global $current_screen;
-
+        
         if ($current_screen->id != 'settings_page_qtranslate-slug-settings') {
-
+        
             echo "<div class=\"updated\">" . PHP_EOL;
             echo "<p><strong>Qtranslate Slug:</strong></p>" . PHP_EOL;
             printf("<p>%s <a href=\"%s\" class=\"button\">%s</a></p>", __('Please update your old data to the new system.', 'qts'), add_query_arg(array('page' => 'qtranslate-slug-settings'), 'options-general.php'), __('upgrade now', 'qts')) . PHP_EOL;
             echo "</div>" . PHP_EOL;
         }
     }
-
+    
+    
+    
     /**
      * admin notice: update your old data 
+     *
      * @since 1.0
      */
     function notice_dependences(){
 
-				$ornewer=__('or newer','qts');
+		$ornewer=__('or newer','qts');
         $info_url=admin_url('plugin-install.php?tab=plugin-information');
         echo '<div class="error">' . PHP_EOL;
         echo '<p><strong>Qtranslate Slug:</strong></p>' . PHP_EOL;
@@ -384,7 +416,9 @@ class QtranslateSlug {
         echo '</p>' . PHP_EOL;
         echo '</div>' . PHP_EOL; 
     }
-
+    
+    
+    
     /**
      * checks if old table 'qtranslate_slug' exists and is not empty
      * 
@@ -400,28 +434,33 @@ class QtranslateSlug {
         }
 
         $table_name = $wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}qtranslate_slug'");
-
+            
         if (!empty($table_name)) {
             $this->old_data = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}qtranslate_slug");
         }
-
+        
         if ( empty($table_name) || empty($this->old_data) ) {
             $this->old_data = false;
         }
-
+        
         return $this->old_data;
     }
-
+    
+    
+    
     /**
      * actions when deactivating the plugin
      *
      * @since 1.0
      */
     private function check_old_versions() {
+        
         if ( $this->check_old_data() ) {
             add_action('admin_notices', array(&$this, 'notice_update'));
         }
     }
+    
+    
     
     /**
      * Initialise the Class with all hooks
@@ -429,9 +468,9 @@ class QtranslateSlug {
      * @since 1.0
      */
     function init() {
-
-      load_plugin_textdomain( 'qts', false, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages' );
-
+      
+			load_plugin_textdomain( 'qts', false, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages' );
+        
     	// checking plugin activate
 			if ( self::block_activate() ) {
             if (is_admin()) {
@@ -447,7 +486,7 @@ class QtranslateSlug {
         
 			global $q_config;
 		
-			// until we get  a proper function, this will make up for it.
+			// until we get  a proper function, this will make it for it.
 			$this->current_lang = $q_config['language'];
 	    $this->enabled_languages = $q_config['enabled_languages'];
 			$this->default_language  = $q_config['default_language'];
@@ -917,71 +956,80 @@ class QtranslateSlug {
      *
      * @since 1.0
      */
-    function filter_request( $query ) {
-        global $wp_query, $wp;
-				// FIXME: why is this here? it breaks custom variables getter
-        // https://wordpress.org/support/topic/cant-retrieve-public-query-variables
-        if ((isset($wp->matched_query) || empty($query))  && ! isset($query['s']) ) {
-            $query = wp_parse_args($wp->matched_query);
-        }
-        
-        foreach (get_post_types() as $post_type) {
-            if ( array_key_exists($post_type, $query) && !in_array($post_type, array('post', 'page')) ) {
-                $query['post_type'] = $post_type;
-            }
-        }
-        
-        $page_foundit = false;
-        
-        // -> page
-        if ( isset($query['pagename']) || isset($query['page_id']) ):
-            
-            $page = wp_cache_get('qts_page_request');
-            if (!$page) {
-                $page = isset($query['page_id']) ? get_post($query['page_id']) : $this->get_page_by_path($query['pagename']);
-            }
+	function filter_request( $query ) {
+		global $wp_query, $wp;
 
-            if (!$page) {
-            	return $query;
-            }
-            
-            $id = $page->ID;
-            $cache_array = array($page);
-            update_post_caches($cache_array, 'page'); // caching query :)
-            wp_cache_delete('qts_page_request');
-            $query['pagename'] = get_page_uri($page);
-            $function = 'get_page_link';
-        
-        // -> custom post type
-        elseif ( isset($query['post_type']) ):
-            if (count($query) == 1) {
-              $function = 'get_post_type_archive_link';
-              $id = $query['post_type'];
-            } else {
-	            $page_slug = ( isset($query['name']) && !empty($query['name']) ) ? $query['name'] : $query[$query['post_type']];
-	            $page = $this->get_page_by_path($page_slug, OBJECT, $query['post_type']);
-	            if (!$page) return $query;
-	            $id = $page->ID;
-	            $cache_array = array($page);
-	            update_post_caches($cache_array, $query['post_type']); // caching query :)
-	            $query['name'] = $query[$query['post_type']] = get_page_uri($page); 
-	            $function = 'get_post_permalink';
-						}
-        // -> post
-        elseif ( isset($query['name']) || isset($query['p']) ):
-            
-            $post = isset($query['p']) ? get_post($query['p']) : $this->get_page_by_path($query['name'], OBJECT, 'post');
-            if (!$post) {
-                return $query;
-            }
-            $query['name'] = $post->post_name;
-            $id = $post->ID;
-            $cache_array = array($post);
-            update_post_caches($cache_array);
-            $function = 'get_permalink';
-            
+		$save_query = $query;
+
+		if( isset($wp->matched_query) || empty($query) ) {
+
+			$query = wp_parse_args($wp->matched_query, $save_query);
+		}
+
+		foreach (get_post_types() as $post_type) {
+			if ( array_key_exists($post_type, $query) && !in_array($post_type, array('post', 'page') ) ) {
+				$query['post_type'] = $post_type;
+			}
+		}
+
+		$page_foundit = false;
+
+
+		// -> page
+		if ( isset($query['pagename']) || isset($query['page_id']) ):
+			$page = wp_cache_get('qts_page_request');
+			if (!$page) {
+				$page = isset($query['page_id']) ? get_post($query['page_id']) : $this->get_page_by_path($query['pagename']);
+			}
+
+			if (!$page) {
+				return $query;
+			}
+
+			$id = $page->ID;
+			$cache_array = array($page);
+			update_post_caches($cache_array, 'page'); // caching query :)
+			wp_cache_delete('qts_page_request');
+			$query['pagename'] = get_page_uri($page);
+			$function = 'get_page_link';
+
+		// -> custom post type
+		elseif ( isset($query['post_type']) ):
+			if (count($query) == 1) {
+				//TODO: fix rewrite when "Hide URL language information for default language" is set for terms
+				$function = 'get_post_type_archive_link';
+				$id = $query['post_type'];
+			} else {
+				if( isset($query['name']) && !empty($query['name']) ) {
+					$page_slug = $query['name'];
+				} elseif( isset($query[$query['post_type']] ) ){
+					$page_slug = $query[$query['post_type']];
+				}
+				$page = $this->get_page_by_path($page_slug, OBJECT, $query['post_type']);
+				if (!$page) { return $query; }
+				$id = $page->ID;
+				$cache_array = array($page);
+				update_post_caches($cache_array, $query['post_type']); // caching query :)
+				$query['name'] = $query[$query['post_type']] = get_page_uri($page); 
+				$function = 'get_post_permalink';
+			}
+		// -> post
+		elseif ( isset($query['name']) || isset($query['p']) ):
+
+			$post = isset($query['p']) ? get_post($query['p']) : $this->get_page_by_path($query['name'], OBJECT, 'post');
+
+			if (!$post) {
+				return $query;
+			}
+			$query['name'] = $post->post_name;
+			$id = $post->ID;
+			$cache_array = array($post);
+			update_post_caches($cache_array);
+			$function = 'get_permalink';
+
         // -> category
         elseif ( ( isset($query['category_name']) || isset($query['cat'])) ):
+			//TODO: fix rewrite when "Hide URL language information for default language" is set
             if ( isset($query['category_name']) ) {
                 $term_slug = $this->get_last_slash( $query['category_name'] );
             }
@@ -1014,20 +1062,20 @@ class QtranslateSlug {
         // -> taxonomy
         $taxonomies = get_taxonomies( array( 'public' => true, '_builtin' => false )  );
         foreach ($taxonomies as $term_name):
-        if ( isset($query[$term_name]) ) {
-            
-            $term_slug = $this->get_last_slash( $query[$term_name] );
-            $term = $this->get_term_by('slug', $term_slug, $term_name);
-            if (!$term) {
-                return $query;
-            }
-            $cache_array = array($term);
-            update_term_cache($cache_array, $term_name); // caching query :)
-            $id = $term;
-            $query[$term_name] = $term->slug;
-            $function = 'get_term_link';
-            
-        }
+	        if ( isset($query[$term_name]) ) {
+
+	            $term_slug = $this->get_last_slash( $query[$term_name] );
+	            $term = $this->get_term_by('slug', $term_slug, $term_name);
+	            if (!$term) {
+	                return $query;
+	            }
+	            $cache_array = array($term);
+	            update_term_cache($cache_array, $term_name); // caching query :)
+	            $id = $term;
+	            $query[$term_name] = $term->slug;
+	            $function = 'get_term_link';
+
+	        }
         endforeach;
 
         // -> home url
@@ -1057,7 +1105,6 @@ class QtranslateSlug {
 
             $this->lang = false;
         }
-        
         return $query;
     }
     
@@ -1105,74 +1152,66 @@ class QtranslateSlug {
 
 
 
-    /**
-     * Retrieves a page id given its path.
-     *
-     * @param string $page_path Page path
-     * @param string $output Optional. Output type. OBJECT, ARRAY_N, or ARRAY_A. Default OBJECT.
-     * @param string $post_type Optional. Post type. Default page.
-     * @return mixed Null when complete.
-     *
-     * @since 1.0
-     */
-    private function get_page_id_by_path($page_path, $output = OBJECT, $post_type = 'page') {
-        global $wpdb;
+	/**
+	 * Retrieves a page id given its path.
+	 *
+	 * @param string $page_path Page path
+	 * @param string $output Optional. Output type. OBJECT, ARRAY_N, or ARRAY_A. Default OBJECT.
+	 * @param string $post_type Optional. Post type. Default page.
+	 * @return mixed Null when complete.
+	 *
+	 * @since 1.0
+	*/
+	private function get_page_id_by_path($page_path, $output = OBJECT, $post_type = 'page') {
+		global $wpdb;
+	
+		$page_path = rawurlencode(urldecode($page_path));
+		$page_path = str_replace('%2F', '/', $page_path);
+		$page_path = str_replace('%20', ' ', $page_path);
+		$parts = explode( '/', trim( $page_path, '/' ) );
+		$parts = array_map( 'esc_sql', $parts );
+		$parts = array_map( 'sanitize_title_for_query', $parts );
+		$in_string = "'". implode( "','", $parts ) . "'";
+		$meta_key = $this->get_meta_key();
+		$meta_key_force = $this->get_meta_key($this->default_language);
+		$post_type_sql = $post_type;
+		$wpdb->escape_by_ref( $post_type_sql );
+		$pages = $wpdb->get_results( "SELECT $wpdb->posts.ID, $wpdb->posts.post_parent, $wpdb->postmeta.meta_value FROM $wpdb->posts,$wpdb->postmeta WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id AND ( $wpdb->postmeta.meta_key = '$meta_key' OR $wpdb->postmeta.meta_key = '$meta_key_force' ) AND $wpdb->postmeta.meta_value IN ($in_string) AND ($wpdb->posts.post_type = '$post_type_sql' OR $wpdb->posts.post_type = 'attachment')", OBJECT_K );
+	
+		$revparts = array_reverse( $parts );
+	
+		$foundid = 0;
+		foreach ( (array) $pages as $page ) {
+			if ( $page->meta_value == $revparts[0] ) {
+				$count = 0;
+				$p = $page;
+				while ( $p->post_parent != 0 && isset( $pages[ $p->post_parent ] ) ) {
+					$count++;
+					$parent = $pages[ $p->post_parent ];
+					if ( ! isset( $revparts[ $count ] ) || $parent->meta_value != $revparts[ $count ] ) {
+						break;
+					}
+					$p = $parent;
+				}
+				if ( $p->post_parent == 0 && $count+1 == count( $revparts ) && $p->meta_value == $revparts[ $count ] ) {
+					$foundid = $page->ID;
+					break;
+				}
+			}
+		}
+	
+		if ( $foundid ) {
+			return $foundid;
+		} else {
+			$last_part = array_pop($parts);
+			$page_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '$last_part' AND (post_type = '$post_type_sql' OR post_type = 'attachment')" );
+			if ( $page_id ) {
+				return $page_id;
+			}
+		}
 
-        $page_path = rawurlencode(urldecode($page_path));
-        $page_path = str_replace('%2F', '/', $page_path);
-        $page_path = str_replace('%20', ' ', $page_path);
-        $parts = explode( '/', trim( $page_path, '/' ) );
-        $parts = array_map( 'esc_sql', $parts );
-        $parts = array_map( 'sanitize_title_for_query', $parts );
-        $in_string = "'". implode( "','", $parts ) . "'";
-        $meta_key = $this->get_meta_key();
-        $post_type_sql = $post_type;
-        $wpdb->escape_by_ref( $post_type_sql );
-        
-        $pages = $wpdb->get_results( "SELECT $wpdb->posts.ID, $wpdb->posts.post_parent, $wpdb->postmeta.meta_value FROM $wpdb->posts,$wpdb->postmeta WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '$meta_key' AND $wpdb->postmeta.meta_value IN ($in_string) AND ($wpdb->posts.post_type = '$post_type_sql' OR $wpdb->posts.post_type = 'attachment')", OBJECT_K );
-
-        $revparts = array_reverse( $parts );
-
-        $foundid = 0;
-        foreach ( (array) $pages as $page ) {
-            if ( $page->meta_value == $revparts[0] ) {
-                $count = 0;
-                $p = $page;
-                while ( $p->post_parent != 0 && isset( $pages[ $p->post_parent ] ) ) {
-                    $count++;
-                    $parent = $pages[ $p->post_parent ];
-                    if ( ! isset( $revparts[ $count ] ) || $parent->meta_value != $revparts[ $count ] ) {
-                        break;
-                    }
-                    $p = $parent;
-                }
-
-                if ( $p->post_parent == 0 && $count+1 == count( $revparts ) && $p->meta_value == $revparts[ $count ] ) {
-                    $foundid = $page->ID;
-                    break;
-                }
-            }
-        }
-        
-        if ( $foundid ) {
-            return $foundid;
-            
-        } else {
-            
-            $last_part = array_pop($parts);
-            $page_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_name = '$last_part' AND (post_type = '$post_type_sql' OR post_type = 'attachment')" );
-            
-            if ( $page_id ) {
-                return $page_id;
-            }
-        }
-
-        return null;
-    }
-    
-    
-    
-    
+		return null;
+	}
     /**
      * Retrieves a page given its path.
      *
