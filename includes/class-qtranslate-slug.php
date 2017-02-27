@@ -1350,7 +1350,7 @@ class QtranslateSlug {
             if ( strpos($permalink, '%category%') !== false ) {
                 $cats = get_the_category($post->ID);
                 if ( $cats ) {
-                    usort($cats, '_usort_terms_by_ID'); // order by ID
+                    usort($cats, array($this, 'usort_terms_by_ID' ) ); // order by ID
 
                     $category = get_term_meta($cats[0]->term_id, $this->get_meta_key(), true );
                     if (!$category) $category = $cats[0]->slug;
@@ -2570,5 +2570,25 @@ class QtranslateSlug {
                 break;
         }
 
+    }
+    /**
+     * Sort categories by ID.
+     *
+     * Notice how it doesn't check the arguments are terms.
+     * Copied from wp core since 4.7.0, as it become deprecated
+     *
+     * @param object $a
+     * @param object $b
+     * @return int
+     */
+
+    private function usort_terms_by_ID( $a, $b ) {
+        if ( $a->term_id > $b->term_id ) {
+            return 1;
+        } elseif ( $a->term_id < $b->term_id ) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }
