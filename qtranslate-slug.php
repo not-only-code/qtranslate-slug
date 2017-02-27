@@ -8,7 +8,6 @@ Author: Carlos Sanz Garcia, Pedro Carvalho
 Author URI: http://github.com/not-only-code
 */
 
-
 ////////////////////////////////////////////////////////////////////////////////////////
 
 if ( ! function_exists( '_debug' ) ) :
@@ -31,8 +30,6 @@ endif;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
-
 /**
  * Includes
  *
@@ -43,8 +40,6 @@ include_once( dirname( __FILE__ ) . '/includes/class-qtranslate-slug.php' );
 include_once( dirname( __FILE__ ) . '/includes/termmeta-core.php' );
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 /**
  * Define Constants
@@ -58,10 +53,6 @@ if ( ! defined( 'QTS_OPTIONS_NAME' ) ) {  define( 'QTS_OPTIONS_NAME', 'qts_optio
 if ( ! defined( 'PHP_EOL' ) ) {           define( 'PHP_EOL', '\r\n' ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 /**
  * Init the plugin
@@ -111,7 +102,6 @@ function qts_get_slug( $id, $lang ) {
 	return $qtranslate_slug->get_slug( $id, $lang );
 }
 
-
 /**
  * Adds support for old plugin function
  *
@@ -154,7 +144,6 @@ function qts_add_settings_link( $links, $file ) {
 	return $links;
 }
 add_filter( 'plugin_action_links', 'qts_add_settings_link', 10, 2 );
-
 
 
 /**
