@@ -573,7 +573,7 @@ class QtranslateSlug {
      * @param array $classes list of classes
      */
     public function qts_body_class( $classes ) {
-        $classes[] = call_user_func($this->get_plugin_prefix() . 'getLanguage');
+        $classes[] = 'qts_' . esc_attr( call_user_func($this->get_plugin_prefix() . 'getLanguage') );
         return $classes;
     }
 
