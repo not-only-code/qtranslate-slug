@@ -1,3 +1,9 @@
+
+= New in 1.1.19 =
+
+* quick update to fix warnings about deprecated functions
+* spacing.
+
 = New in 1.1.18 =
 
 Let's start with what has been fixed:
@@ -14,7 +20,7 @@ Let's start with what has been fixed:
 
 
 and now, what isn't working:
-In QTS slug options you can change the bases for taxonomies and custom post types. 
+In QTS slug options you can change the bases for taxonomies and custom post types.
 
 So, for example, you can change /category/ for /category/ for english and /categoria/ for spanish version.
 But these won't work:
@@ -24,8 +30,8 @@ But these won't work:
   utf8 in custom post slugs works just fine: /tushu/彩繪中國經典名著/
 * translating custom post types archives with custom base name /tushu/ isnt working. but using utf8 in the the default slug, as expected : /中國/
 
-  
- 
+
+
 
 
 
@@ -45,7 +51,7 @@ Minor fix for the language menu using qtranslate's function
 
 = New in 1.1.14 =
 
-The menu widget didn't allow the visitors to change to the default language if qtranslate-x was being used. So, adjusted the Language Menu widget to play nice with qtranslate-x. 
+The menu widget didn't allow the visitors to change to the default language if qtranslate-x was being used. So, adjusted the Language Menu widget to play nice with qtranslate-x.
 Hope to bring some nice changes that were made in the github repository in the next version. For now, enjoy.
 
 = 1.1.13 =
@@ -84,8 +90,8 @@ Lots of bug fixes! Thanks again to everyone that contributed to this project, wi
 * Fixed taxonomies slugs ( thanks to [eirikv's bug report](https://wordpress.org/support/topic/categories-slug-dont-work) )
 * Fixed many warnings ( thanks piffpaffpuff, issue #78 and to [pedrodu1](https://wordpress.org/support/topic/warnings-qtranslate-slugphp) )
 * Changed the behaviour of "Quick Edit", from the wp forums [1](https://wordpress.org/support/topic/categories-tags-and-quick-edit-dont-show-in-admin) [2](https://wordpress.org/support/topic/quick-edit-inhibited-by-qtranslate-slug-with-wp-41-mqtranslate) ( thanks everyone!! )
-* Fixed the menus! Now you can properly use one menu for every language. Use the dropdown section "Languages", and for each item, change the "Navigation Label" and "Title Attribute". Select "All languages", to make sure everything is awesome! All these features were a consequence of fixing all the warnings based on [Gery's bug report](https://wordpress.org/support/topic/qtranslate-slug-conflicting-with-ubermenu). 
-* Minor fixes, etc. 
+* Fixed the menus! Now you can properly use one menu for every language. Use the dropdown section "Languages", and for each item, change the "Navigation Label" and "Title Attribute". Select "All languages", to make sure everything is awesome! All these features were a consequence of fixing all the warnings based on [Gery's bug report](https://wordpress.org/support/topic/qtranslate-slug-conflicting-with-ubermenu).
+* Minor fixes, etc.
 
 See you next Version!
 
@@ -100,15 +106,15 @@ Many thanks to everyone that contributed to this update, both for their commits 
 * Settings php errors, syntax indent and fixed settings assets url
 * Change titles when there is a click on pagination on show all pages tab ( thanks juanfran-granados )
 * Formatted dependency notice message ( thanks arildm )
-* Updated the deprecated jquery 'live' function and solve php strict standards error ( thanks rafitaFCB )  
-* Fixed error showing if PHP was newer than 5.3 ( thanks rafitaFCB )  
+* Updated the deprecated jquery 'live' function and solve php strict standards error ( thanks rafitaFCB )
+* Fixed error showing if PHP was newer than 5.3 ( thanks rafitaFCB )
 * Strict standard advise prevented ( thanks rafitaFCB )
 * php notices are prevented in post edit, when using adding new translated tags  ( thanks rafitaFCB )
 * fixed the hreflang issue! 'bout time!
 * As discussed in issue #25, the flags are now img tags, intead of background-url.
 * Added another option to include the css style in a minified file. ( and also showing in the option screen the styles we would use.)
 
-= 1.1.7 = 
+= 1.1.7 =
 * removed styles from html elements and added options to use .css file or print inline styles
 * fixed tag creation on post edit.
 * fixed earlier bad post slug introduced in 1.1.6
@@ -117,13 +123,13 @@ Many thanks to everyone that contributed to this update, both for their commits 
 * compatible with mqtranslate
 * php5.4+ compatible
 
-= 1.1.5 = 
+= 1.1.5 =
 * bugfixes
 
-= 1.1 = 
+= 1.1 =
 * added multisite support
 * fixed some parse url bugs
-* fixed slug bases validation 
+* fixed slug bases validation
 
 = 1.0 =
 * new branch, the plugin has been rewrited: now the code is commented and wrapped inside a class, also all code has change and the performance has been increased.
@@ -157,6 +163,6 @@ Many thanks to everyone that contributed to this update, both for their commits 
 * added support por Custom Post Types
 
 = 0.7 ( enhanced by Zapo (http://www.qianqin.de/qtranslate/forum/viewtopic.php?f=4&t=1049&start=50#p7499) ) =
-* added suport for qTranslate TLD domain mode (en: domain.com | fr: domain.fr) visit 
+* added suport for qTranslate TLD domain mode (en: domain.com | fr: domain.fr) visit
 
 = 0.5 and 0.6 enhanched by Marco Del Percio =
