@@ -1009,26 +1009,27 @@ class QtranslateSlug {
             $query['tag'] = $term->slug;
             $function = 'get_tag_link';
 
-        endif;
+        else :
 
-        // -> taxonomy
-        $taxonomies = get_taxonomies( array( 'public' => true, '_builtin' => false )  );
-        foreach ($taxonomies as $term_name):
-            if ( isset($query[$term_name]) ) {
+            // -> taxonomy
+            $taxonomies = get_taxonomies( array( 'public' => true, '_builtin' => false )  );
+            foreach ($taxonomies as $term_name):
+                if ( isset($query[$term_name]) ) {
 
-                $term_slug = $this->get_last_slash( $query[$term_name] );
-                $term = $this->get_term_by('slug', $term_slug, $term_name);
-                if (!$term) {
-                    return $query;
+                    $term_slug = $this->get_last_slash( $query[$term_name] );
+                    $term = $this->get_term_by('slug', $term_slug, $term_name);
+                    if (!$term) {
+                        return $query;
+                    }
+                    $cache_array = array($term);
+                    update_term_cache($cache_array, $term_name); // caching query :)
+                    $id = $term;
+                    $query[$term_name] = $term->slug;
+                    $function = 'get_term_link';
+
                 }
-                $cache_array = array($term);
-                update_term_cache($cache_array, $term_name); // caching query :)
-                $id = $term;
-                $query[$term_name] = $term->slug;
-                $function = 'get_term_link';
-
-            }
-        endforeach;
+            endforeach;
+        endif;
 
         // -> home url
         if ( empty($query) ) {
@@ -1297,15 +1298,52 @@ class QtranslateSlug {
 
         if ( !empty($post_link) && ( !$draft_or_pending || $sample ) ) {
             if ( ! $leavename ) {
-                if ( $post_type->hierarchical )
+                if ( $post_type->hierarchical ) {
                     $slug = $this->get_page_uri($post->ID);
+                }
+
                 $post_link = str_replace("%$post->post_type%", $slug, $post_link);
+
+                // custom woocommerce taxonomy.
+                // TODO: make this more generic
+
+                if ( strpos($post_link, "%product_cat%" ) ){
+                    // Get the custom taxonomy terms in use by this post.
+                    $terms = get_the_terms( $post->ID, 'product_cat' );
+
+                    if ( ! empty( $terms ) ) {
+                        if ( function_exists( 'wp_list_sort' ) ) {
+                            $terms = wp_list_sort( $terms, 'term_id', 'ASC' );
+                        } else {
+                            usort( $terms, array($this, 'usort_terms_by_ID' ) ); // order by ID
+                        }
+                        $category_object = apply_filters( 'wc_product_post_type_link_product_cat', $terms[0], $terms, $post );
+                        $category_object = get_term( $category_object, 'product_cat' );
+                        $product_cat_woo  = $category_object->slug;
+                        $product_cat_id   = $category_object->term_id;
+                        $product_cat = get_term_meta( $product_cat_id, $this->get_meta_key(), true );
+                        if ( ! $product_cat ) {
+                            $product_cat = $product_cat_woo;
+                        }
+
+                        if ( $category_object->parent ) {
+                            $ancestors = get_ancestors( $category_object->term_id, 'product_cat' );
+                            foreach ( $ancestors as $ancestor ) {
+                                $ancestor_object = get_term( $ancestor, 'product_cat' );
+                                $product_cat_woo = $ancestor_object->slug . '/' . $product_cat;
+
+                                $product_cat = $this->get_category_parents( $category_object->parent, false, '/', true) . $product_cat;
+                            }
+                        }
+                    } else {
+                        // If no terms are assigned to this post, use a string instead (can't leave the placeholder there)
+                        $product_cat = _x( 'uncategorized', 'slug', 'wordpress' );
+                    }
+                    $post_link = str_replace( "%product_cat%", $product_cat, $post_link );
+                }
             }
-
             $post_link = home_url( user_trailingslashit($post_link) );
-
         } else {
-
             if ( $post_type->query_var && ( isset($post->post_status) && !$draft_or_pending ) ) {
                 $post_link = add_query_arg($post_type->query_var, $slug, '');
             } else {
