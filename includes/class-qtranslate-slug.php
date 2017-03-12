@@ -2487,7 +2487,7 @@ class QtranslateSlug {
             return;
         }
         //FIXME: fix the nav menu box
-        //        wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu-min.js' , dirname(__FILE__ ) ), 'nav-menu', '1.0' );
+        //        wp_enqueue_script( 'nav-menu-query',  plugins_url( 'assets/js/qts-nav-menu.min.js' , dirname(__FILE__ ) ), 'nav-menu', '1.0' );
         //        add_meta_box( 'qt-languages', __('Languages', 'qts'), array(&$this, 'nav_menu_meta_box'), 'nav-menus', 'side', 'default' );
     }
 
