@@ -454,7 +454,13 @@ class QtranslateSlug {
 		global $q_config;
 
 		// until we get a proper function, this will make it for it.
-		$this->current_lang = $q_config['language'];
+		if ( isset( $q_config['language'] ) ) {
+			$this->current_lang = $q_config['language'];
+		} else {
+			add_action( 'admin_notices', array( &$this, 'notice_dependences' ) );
+			return;
+		}
+
 		$this->enabled_languages = $q_config['enabled_languages'];
 		$this->default_language  = $q_config['default_language'];
 		$this->set_plugin_prefix();
