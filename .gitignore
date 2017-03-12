@@ -27,3 +27,5 @@ nbproject
 deploy.sh
 *.psd
 .idea
+node_modules
+vendor
