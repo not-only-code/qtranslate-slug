@@ -81,6 +81,7 @@ module.exports = function(grunt) {
 			test_phpunit: {
 				files: [
 					'tests/test-*php',
+					'**/*php'
 				],
 				tasks: ['phpunit']
 			}
