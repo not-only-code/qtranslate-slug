@@ -363,9 +363,9 @@ class QtranslateSlug {
 
 		if ( 'settings_page_qtranslate-slug-settings' != $current_screen->id ) {
 
-			echo '<div class=\"updated\">' . PHP_EOL;
+			echo '<div class="updated">' . PHP_EOL;
 			echo '<p><strong>Qtranslate Slug:</strong></p>' . PHP_EOL;
-			printf( '<p>%s <a href=\"%s\" class=\"button\">%s</a></p>', __( 'Please update your old data to the new system.', 'qts' ), add_query_arg( array( 'page' => 'qtranslate-slug-settings' ), 'options-general.php' ), __( 'upgrade now', 'qts' ) ) . PHP_EOL;
+			printf( '<p>%s <a href="%s" class="button">%s</a></p>', __( 'Please update your old data to the new system.', 'qts' ), add_query_arg( array( 'page' => 'qtranslate-slug-settings' ), 'options-general.php' ), __( 'upgrade now', 'qts' ) ) . PHP_EOL;
 			echo '</div>' . PHP_EOL;
 		}
 	}
@@ -1903,10 +1903,10 @@ class QtranslateSlug {
 			$priority = apply_filters( 'qts_admin_meta_box_priority', 'high' );
 
 			add_meta_box( 'qts_sectionid', __( 'Slug QTS', 'qts' ), array( &$this, 'draw_meta_box' ), 'post', $context, $priority );
-			add_meta_box( 'qts_sectionid', __( 'Slug  QTS', 'qts' ), array( &$this, 'draw_meta_box' ), 'page', $context, $priority );
+			add_meta_box( 'qts_sectionid', __( 'Slug QTS', 'qts' ), array( &$this, 'draw_meta_box' ), 'page', $context, $priority );
 
 			foreach ( get_post_types( array( '_builtin' => false ) ) as $ptype ) {
-				add_meta_box( 'qts_sectionid', __( 'Slug  QTS', 'qts' ), array( &$this, 'draw_meta_box' ), $ptype, $context, $priority );
+				add_meta_box( 'qts_sectionid', __( 'Slug QTS', 'qts' ), array( &$this, 'draw_meta_box' ), $ptype, $context, $priority );
 			}
 		}
 	}
@@ -1922,8 +1922,8 @@ class QtranslateSlug {
 		global $q_config; // //TODO: q_config  : language_name
 
 		// Use nonce for verification
-		echo '<table style=\"width:100%\">' . PHP_EOL;
-		echo '<input type=\"hidden\" name=\"qts_nonce\" id=\"qts_nonce\" value=\"' . wp_create_nonce( 'qts_nonce' ) . '\" />' . PHP_EOL;
+		echo '<table style="width:100%">' . PHP_EOL;
+		echo '<input type="hidden" name="qts_nonce" id="qts_nonce" value="' . wp_create_nonce( 'qts_nonce' ) . '" />' . PHP_EOL;
 
 		foreach ( $this->enabled_languages as $lang ) :
 
@@ -1931,9 +1931,19 @@ class QtranslateSlug {
 
 			$value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
 
+			$name_slug = esc_attr( 'qts_' . $lang . '_slug' );
+
 			echo '<tr>' . PHP_EOL;
-			echo '<th style=\"text-align:left; width:10%; color:#555 \"><label for=\"qts_{$lang}_slug\">' . __( $q_config['language_name'][ $lang ], 'qtranslate' ) . '</label></th>' . PHP_EOL;
-			echo '<td><input type=\"text\" id=\"qts_{$lang}_slug\" name=\"qts_{$lang}_slug\" value=\"' . urldecode( $value ) . '\" style=\"width:90%; margin-left:10%; color:#777\" /></td>' . PHP_EOL;
+			printf(
+				'<th style="text-align:left; width:10%%; color:#555"><label for="%1$s">%2$s</label></th>' . PHP_EOL,
+				$name_slug,
+				esc_attr( __( $q_config['language_name'][ $lang ], 'qtranslate' ) )
+			);
+			printf( '<td><input type="text" id="qts" name="%1$s" value="%2$s" style="width:90%%; margin-left:10%%; color:#777" /></td>' . PHP_EOL,
+				$name_slug,
+				urldecode( $value )
+			);
+
 			echo '</tr>' . PHP_EOL;
 
 		endforeach;
@@ -2100,8 +2110,8 @@ class QtranslateSlug {
 		// prints the fields in edit page
 		if ( isset( $_GET['action'] ) && 'edit' == $_GET['action'] ) :
 
-			echo '<table class=\"form-table\">' . PHP_EOL;
-			echo '<input type=\"hidden\" name=\"qts_nonce\" id=\"qts_nonce\" value=\"' . wp_create_nonce( 'qts_nonce' ) . '\" />' . PHP_EOL;
+			echo '<table class="form-table">' . PHP_EOL;
+			echo '<input type="hidden" name="qts_nonce" id="qts_nonce" value="' . wp_create_nonce( 'qts_nonce' ) . '" />' . PHP_EOL;
 
 			foreach ( $this->enabled_languages as $lang ) {
 
@@ -2109,9 +2119,19 @@ class QtranslateSlug {
 
 				$value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
 
-				echo '<tr class=\"form-field form-required\">' . PHP_EOL;
-				echo '<th scope=\"row\" valig=\"top\"><label for=\"qts_{$lang}_slug\">' . sprintf( __( 'Slug (%s )', 'qts' ), $q_config['language_name'][ $lang ] ) . '</label></th>' . PHP_EOL;
-				echo '<td><input type=\"text\" name=\"qts_{$lang}_slug\" value=\"' . urldecode( $value ) . '\" /></td></tr>' . PHP_EOL;
+				echo '<tr class="form-field form-required">' . PHP_EOL;
+
+				printf(
+					'<th scope="row" valig="top"><label for="qts_%1$s_slug">%2$s</label></th>' . PHP_EOL,
+					$lang,
+					sprintf( __( 'Slug (%s )', 'qts' ), $q_config['language_name'][ $lang ] )
+				);
+
+				prinf(
+					'<td><input type="text" name="qts_%1$s_slug" value="%2$s" /></td></tr>' . PHP_EOL,
+					$lang,
+					urldecode( $value )
+				);
 
 			}
 
@@ -2119,18 +2139,25 @@ class QtranslateSlug {
 
 			// prints the fields in new page
 		else :
-			echo '<input type=\"hidden\" name=\"qts_nonce\" id=\"qts_nonce\" value=\"' . wp_create_nonce( 'qts_nonce' ) . '\" />' . PHP_EOL;
-			echo '<div id=\"qts_term_slugs\"><div class=\"qts_term_block\">' . PHP_EOL;
+			echo '<input type="hidden" name="qts_nonce" id="qts_nonce" value="' . wp_create_nonce( 'qts_nonce' ) . '" />' . PHP_EOL;
+			echo '<div id="qts_term_slugs"><div class="qts_term_block">' . PHP_EOL;
 			foreach ( $this->enabled_languages as $lang ) {
 
-				echo '<div class=\"form-field\">' . PHP_EOL;
+				echo '<div class="form-field">' . PHP_EOL;
 
 				$slug = ( is_object( $term ) ) ? get_term_meta( $term->term_id, $this->get_meta_key( $lang ), true ) : '';
 
 				$value = ( $slug ) ? htmlspecialchars( $slug , ENT_QUOTES ) : '';
-
-				echo '<label for=\"qts_{$lang}_slug\">' . sprintf( __( 'Slug (%s )', 'qts' ), $q_config['language_name'][ $lang ] ) . '</label>' . PHP_EOL;
-				echo '<input type=\"text\" name=\"qts_{$lang}_slug\" value=\"' . urldecode( $value ) . '\" aria-required=\"true\">' . PHP_EOL;
+				printf(
+					'<label for="qts_%1$s_slug">%2$s</label>' . PHP_EOL,
+					$lang,
+					sprintf( __( 'Slug ( %s )', 'qts' ), $q_config['language_name'][ $lang ] )
+				);
+				printf(
+					'<input type="text" name="qts_%1$s_slug" value="%2$s" aria-required="true">' . PHP_EOL,
+					$lang,
+					urldecode( $value )
+				);
 				echo '</div>';
 			}
 			echo '</div></div>';
