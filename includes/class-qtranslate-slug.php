@@ -2037,31 +2037,41 @@ class QtranslateSlug {
 
 		$meta_key = $this->get_meta_key( $lang );
 		if ( 'attachment' == $post_type ) {
+			/**
+			* NOTE: changes from original WP code:
+			* - $post_ID -> $post_id
+			* - add // WPCS: unprepared SQL OK.
+			*/
 			// Attachment slugs must be unique across all types.
 			$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND ID != %d LIMIT 1";
 			$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_id ) ); // WPCS: unprepared SQL OK.
 
-			if ( $post_name_check || in_array( $slug, $feeds ) || apply_filters( 'wp_unique_post_slug_is_bad_attachment_slug', false, $slug ) ) {
+			if ( $post_name_check || in_array( $slug, $feeds ) || 'embed' === $slug || apply_filters( 'wp_unique_post_slug_is_bad_attachment_slug', false, $slug ) ) {
 				$suffix = 2;
 				do {
-					// TODO: update unique_slug :: differs from current wp func ( 4.3.1 )
-					$alt_post_name = substr( $slug, 0, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
+					$alt_post_name = _truncate_post_slug( $slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
 					$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $alt_post_name, $post_id ) ); // WPCS: unprepared SQL OK.
 					$suffix++;
 				} while ( $post_name_check );
 				$slug = $alt_post_name;
 			}
 		} else {
+
 			// TODO: update unique_slug :: missing hieararchical from current wp func ( 4.3.1 )
 			// Post slugs must be unique across all posts.
-			$check_sql = "SELECT $wpdb->postmeta.meta_value FROM $wpdb->posts,$wpdb->postmeta WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '%s' AND $wpdb->postmeta.meta_value = '%s' AND $wpdb->posts.post_type = %s AND ID != %d LIMIT 1";
-			$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $slug, $post_type, $post_id ) ); // WPCS: unprepared SQL OK.
+			$check_sql = "SELECT pm.meta_value
+				FROM $wpdb->posts as p, $wpdb->postmeta as pm
+				WHERE p.ID = pm.post_id
+				AND pm.meta_key = '%s'
+				AND pm.meta_value = '%s'
+				AND p.post_type = %s
+				AND ID != %d
+				LIMIT 1";
 
-			// TODO: update unique_slug :: missing check for conflict with dates archive from current wp func ( 4.3.1 )
+			$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $slug, $post_type, $post_id ) ); // WPCS: unprepared SQL OK.
 			if ( $post_name_check || in_array( $slug, $feeds ) || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
 				$suffix = 2;
 				do {
-					// TODO: update unique_slug :: same as above: differs from current wp func ( 4.3.1 )
 					$alt_post_name = substr( $slug, 0, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
 					$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $alt_post_name, $post_type, $post_id ) ); // WPCS: unprepared SQL OK.
 					$suffix++;
@@ -2069,7 +2079,6 @@ class QtranslateSlug {
 				$slug = $alt_post_name;
 			}
 		}
-
 		return $slug;
 	}
 
