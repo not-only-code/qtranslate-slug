@@ -2141,6 +2141,7 @@ class QtranslateSlug {
 				$slug = $alt_post_name;
 			}
 		} else {
+			$meta_key = $this->get_meta_key( $lang );
 			// Post slugs must be unique across all posts.
 			$check_sql = "SELECT pm.meta_value
 				FROM $wpdb->posts as p, $wpdb->postmeta as pm
@@ -2152,10 +2153,33 @@ class QtranslateSlug {
 				LIMIT 1";
 
 			$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $slug, $post_type, $post_id ) ); // WPCS: unprepared SQL OK.
-			if ( $post_name_check || in_array( $slug, $feeds ) || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
+
+			// Prevent new post slugs that could result in URLs that conflict with date archives.
+			$post = get_post( $post_id );
+			$conflicts_with_date_archive = false;
+			if ( 'post' === $post_type && ( ! $post || $post->post_name !== $slug ) && preg_match( '/^[0-9]+$/', $slug ) && $slug_num = intval( $slug ) ) {
+				$permastructs   = array_values( array_filter( explode( '/', get_option( 'permalink_structure' ) ) ) );
+				$postname_index = array_search( '%postname%', $permastructs );
+
+				/*
+				* Potential date clashes are as follows:
+				*
+				* - Any integer in the first permastruct position could be a year.
+				* - An integer between 1 and 12 that follows 'year' conflicts with 'monthnum'.
+				* - An integer between 1 and 31 that follows 'monthnum' conflicts with 'day'.
+				*/
+				if ( 0 === $postname_index ||
+					( $postname_index && '%year%' === $permastructs[ $postname_index - 1 ] && 13 > $slug_num ) ||
+					( $postname_index && '%monthnum%' === $permastructs[ $postname_index - 1 ] && 32 > $slug_num )
+				) {
+					$conflicts_with_date_archive = true;
+				}
+			}
+
+			if ( $post_name_check || in_array( $slug, $feeds ) || 'embed' === $slug || $conflicts_with_date_archive || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
 				$suffix = 2;
 				do {
-					$alt_post_name = substr( $slug, 0, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
+					$alt_post_name = _truncate_post_slug( $slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
 					$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $alt_post_name, $post_type, $post_id ) ); // WPCS: unprepared SQL OK.
 					$suffix++;
 				} while ( $post_name_check );
