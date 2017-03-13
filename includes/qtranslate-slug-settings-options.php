@@ -5,17 +5,18 @@
  * @package Qtranslate Slug
  * @subpackage Settings
  * @version 1.0
- * 
+ *
  * @return array key=$id, array value=$title in: add_settings_section( $id, $title, $callback, $page );
  */
 function qts_options_page_sections() {
-	
+
 	$sections = array();
 	$sections['post_types'] = __('Post types', 'qts');
 	$sections['taxonomies'] = __('Taxonomies', 'qts');
 	$sections['styles']     = __('Styles', 'qts');
-	
-	return $sections;	
+	$sections['sluglogic']  = __( 'Slug Logic', 'qts' );
+
+	return $sections;
 }
 
 
@@ -31,15 +32,15 @@ function qts_options_page_sections() {
  */
 function get_multi_txt_choices($name = false) {
 	global $q_config;
-	
+
 	if (!$name) return array();
-	
+
 	$choices = array();
 	foreach( $q_config['enabled_languages'] as $key => $lang) {
 		$label = sprintf( __('Slug (%s)', 'qts'), $q_config['language_name'][$lang] );
 		$choices[] =  "$label|$lang"; // prints: 'Slug (English)|en' ( $name = books )
 	}
-	
+
 	return $choices;
 }
 
@@ -55,8 +56,8 @@ function get_multi_txt_choices($name = false) {
  * @return array
  */
 function qts_options_page_styles() {
-  
-	  
+
+
     $options[] = array(
 	    "section" => "styles",
 	    "id"      => QTS_PREFIX . "styles",
@@ -77,14 +78,105 @@ function qts_options_page_styles() {
 	    	),
 	    "std"     => "file"
   	);
-  
-	return $options;  
+
+	return $options;
+}
+
+/**
+ * Define our form fields (settings) for displaying the Slug Logic
+ *
+ * @package Qtranslate Slug
+ * @subpackage Settings
+ * @version 1.1.7
+ *
+ * @return array
+ */
+function qts_options_page_slug_logic() {
+
+
+	$options[] = array(
+		'section' => 'sluglogic',
+		'id'      => QTS_PREFIX . 'sluglogic_build',
+		'title'   => __( 'Create slug from:', 'qts' ),
+		'desc'    => array(
+			__( 'title ( default behaviour )', 'qts' ),
+			__( 'WP slug', 'qts' ),
+		),
+		'type'    => 'multi-radio',
+		'class'   => 'qts-sluglogic-build',
+		'choices' => array(
+			__( 'title', 'qts' ),
+			__( 'slug', 'qts' ),
+		),
+		'std'     => 'title',
+	);
+
+	$options[] = array(
+		'section' => 'sluglogic',
+		'id'      => QTS_PREFIX . 'sluglogic_primary',
+		'title'   => __( 'Use for primary language:', 'qts' ),
+		'desc'    => __( 'use WordPress slug for primary language ( this will override the option above )', 'qts' ),
+		'type'    => 'checkbox',
+		'class'   => 'qts-sluglogic-primary',
+		'std'     => false,
+	);
+
+	$options[] = array(
+		'section' => 'sluglogic',
+		'id'      => QTS_PREFIX . 'sluglogic_keep_title',
+		'title'   => __( '(WIP) Keep language name in title :', 'qts' ),
+		'desc'    => __( 'When the title is empty for a language, keep the primary language in slug? Ex. for a spanish slug: "english-post-1"', 'qts' ),
+		'type'    => 'checkbox',
+		'class'   => 'qts-sluglogic-primary',
+		'std'     => true,
+	);
+
+	$options[] = array(
+		'section' => 'sluglogic',
+		'id'      => QTS_PREFIX . 'sluglogic_uniqueness',
+		'title'   => __( 'Solve uniqueness:', 'qts' ),
+		'desc'    => array(
+			__( 'append number ( default behaviour )', 'qts' ),
+			__( 'append language ( short name )', 'qts' ),
+			__( 'append language ( long name )', 'qts' ),
+		),
+		'type'    => 'multi-radio',
+		'class'   => 'qts-sluglogic-uniqueness',
+		'choices' => array(
+			__( 'number', 'qts' ),
+			__( 'short language', 'qts' ),
+			__( 'long language', 'qts' ),
+		),
+		'std'     => 'number',
+	);
+
+	$options[] = array(
+		'section' => 'sluglogic',
+		'id'      => QTS_PREFIX . 'sluglogic_primary_suffix',
+		'title'   => __( 'Suffix for primary language:', 'qts' ),
+		'desc'    => __( 'Don\'t append any suffix for primary language', 'qts' ),
+		'type'    => 'checkbox',
+		'class'   => 'qts-sluglogic-primary-suffix',
+		'std'     => false,
+	);
+
+	$options[] = array(
+		'section' => 'sluglogic',
+		'id'      => QTS_PREFIX . 'sluglogic_uniqueness_hierarchy',
+		'title'   => __( 'Hierarchy:', 'qts' ),
+		'desc'    => __( 'Use hierarchy to check for uniqueness', 'qts' ),
+		'type'    => 'checkbox',
+		'class'   => 'qts-sluglogic-primary-hierarchy',
+		'std'     => true,
+	);
+
+	return $options;
 }
 
 
 
 /**
- * Define our form fields (settings) 
+ * Define our form fields (settings)
  *
  * @package Qtranslate Slug
  * @subpackage Settings
@@ -93,12 +185,12 @@ function qts_options_page_styles() {
  * @return array
  */
 function qts_options_page_fields() {
-	
+
 	$post_types = get_post_types( array('_builtin' => false, 'public' => true ), 'objects');
-	
+
 	// each post type
 	foreach ($post_types as $post_type):
-		
+
 		$options[] = array(
 			"section" => "post_types",
 			"id"      => QTS_PREFIX . "post_type_" . $post_type->name,
@@ -109,10 +201,10 @@ function qts_options_page_fields() {
 			"choices" => get_multi_txt_choices( $post_type->name),
 			"std"     => ""
 		);
-		
+
 	endforeach;
 	// end each post type
-	
+
 	$options[] = array(
 		"section" => "taxonomies",
 		"id"      => QTS_PREFIX . "taxonomy_category",
@@ -123,7 +215,7 @@ function qts_options_page_fields() {
 		"choices" => get_multi_txt_choices('category'),
 		"std"     => ""
 	);
-	
+
 	$options[] = array(
 		"section" => "taxonomies",
 		"id"      => QTS_PREFIX . "taxonomy_post_tag",
@@ -134,13 +226,13 @@ function qts_options_page_fields() {
 		"choices" => get_multi_txt_choices('post_tag'),
 		"std"     => ""
 	);
-	
 
-	$taxonomies = get_taxonomies( array( 'public' => true, 'show_ui' => true, '_builtin' => false ), 'object' ); 
-	
+
+	$taxonomies = get_taxonomies( array( 'public' => true, 'show_ui' => true, '_builtin' => false ), 'object' );
+
 	// each extra taxonomy
 	foreach ($taxonomies as $taxonomy):
-		
+
 		$options[] = array(
 			"section" => "taxonomies",
 			"id"      => QTS_PREFIX . "taxonomy_" . $taxonomy->name,
@@ -151,12 +243,12 @@ function qts_options_page_fields() {
 			"choices" => get_multi_txt_choices( $taxonomy->name),
 			"std"     => ""
 		);
-		
+
 	endforeach;
 	// end each extra taxonomy
-	
-	
-	return $options;	
+
+
+	return $options;
 }
 
 
@@ -170,10 +262,10 @@ function qts_options_page_fields() {
  *
  */
 function qts_options_page_contextual_help() {
-	
-	
+
+
 	$text 	= "<h3>" . __('Qtranslate Settings - Contextual Help','qts') . "</h3>";
 	$text 	.= "<p>" . __('Contextual help goes here. You may want to use different html elements to format your text as you want.','qts') . "</p>";
-	
+
 	return $text;
 }
