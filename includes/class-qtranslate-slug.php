@@ -1970,20 +1970,32 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	public function validate_post_slug( $slug, $post, $lang ) {
-
-		$post_title = trim( call_user_func( $this->get_plugin_prefix() . 'use',$lang, $_POST['post_title'] ) );
-		$post_name = get_post_meta( $post->ID, $this->get_meta_key( $lang ), true );
-		if ( ! $post_name ) {
-			$post_name = $post->post_name;
-		}
-
-		//TODO: if has a slug, test and use it
-		//TODO: and then replace the default slug with the dafault language slug
-		$name = ( '' == $post_title || 0 == strlen( $post_title ) ) ? $post_name : $post_title;
-
 		$slug = trim( $slug );
+		if ( empty( $slug ) ) {
 
-		$slug = ( empty( $slug ) ) ? sanitize_title( $name ) : sanitize_title( $slug );
+			$slug_logic_primary = $this->get_option( 'sluglogic_primary' );
+			$slug_logic_build = $this->get_option( 'sluglogic_build' );
+
+			// build the slug
+			if ( ( $slug_logic_primary && $this->default_language === $lang ) || 'slug' == $slug_logic_build ) {
+				// from slug:
+				$slug = $post->post_name;
+			} else {
+				// from title
+				if ( isset( $_POST['post_title'] ) ) {
+					$post_title = $_POST['post_title'];
+				} else {
+					$post_title = $post->post_title;
+				}
+				$post_title = trim( call_user_func( $this->get_plugin_prefix() . 'use', $lang, $post_title ) );
+
+				$post_name = get_post_meta( $post->ID, $this->get_meta_key( $lang ), true );
+				if ( ! $post_name ) {
+					$post_name = $post->post_name;
+				}
+				$slug = ( '' == $post_title || 0 == strlen( $post_title ) ) ? $post_name : $post_title;
+			}
+
 
 		return htmlspecialchars( $slug , ENT_QUOTES );
 	}
