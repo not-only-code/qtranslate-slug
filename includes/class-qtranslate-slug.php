@@ -117,6 +117,16 @@ class QtranslateSlug {
 
 	/**
 	 * getter: options
+	 * @since 1.2.0
+	 */
+	public function get_option( $name ) {
+		if ( isset( $this->options[ QTS_PREFIX . $name ] ) ) {
+			return $this->options[ QTS_PREFIX . $name ];
+		}
+		return null;
+	}
+	/**
+	 * getter: options
 	 * @since 1.0
 	 */
 	public function get_options() {

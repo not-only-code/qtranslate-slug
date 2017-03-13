@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=GYS2L
 Tags: qtranslate, slug, multilanguage, widget
 Requires at least: 4.0
 Tested up to: 4.7.2
-Stable tag: 1.1.19
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,9 @@ Adds support for permalink translations to QTranslate-X
 * qtranslate-x ( 3.0 )
 
 
-## New in 1.1.19
+= New in 1.2.0 =
+
+= New in 1.1.19 =
 
 * quick update to fix warnings about deprecated functions
 * spacing.

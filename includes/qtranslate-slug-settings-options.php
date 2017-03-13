@@ -87,7 +87,7 @@ function qts_options_page_styles() {
  *
  * @package Qtranslate Slug
  * @subpackage Settings
- * @version 1.1.7
+ * @since 1.2.0
  *
  * @return array
  */

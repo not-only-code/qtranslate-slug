@@ -16,6 +16,8 @@ Go ahead and update right 1.1.19 for the new cool fixes!
 * WordPress 4.0
 * qtranslate-x 3.0
 
+## New in 1.2.0
+
 ## New in 1.1.19
 
 * quick update to fix warnings about deprecated functions

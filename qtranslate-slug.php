@@ -3,7 +3,7 @@
 Plugin Name: qTranslate slug
 Plugin URI: http://not-only-code.github.com/qtranslate-slug/
 Description: Allows to define a slug for each language and some qTranslate bug fixes
-Version: 1.1.19
+Version: 1.2.0
 Author: Carlos Sanz Garcia, Pedro Carvalho
 Author URI: http://github.com/not-only-code
 */
@@ -11,9 +11,11 @@ Author URI: http://github.com/not-only-code
 ////////////////////////////////////////////////////////////////////////////////////////
 
 if ( ! function_exists( '_debug' ) ) :
-	function _debug( $message ) {
+	function _debug( $message, $note ) {
 
 		if ( WP_DEBUG === true ) :
+
+			error_log( "\n\n$note : \n\n" );
 
 			if ( is_array( $message ) || is_object( $message ) ) {
 
@@ -27,7 +29,15 @@ if ( ! function_exists( '_debug' ) ) :
 		endif;
 	}
 endif;
-
+/*
+ * Custom Print object
+ */
+function lcd( $object = null, $message = '', $show_on_admin = 'show' ) {
+	if ( is_admin() && 'show' !== $show_on_admin ) { return; }
+	if ( 0 === func_num_args() ) { echo '<hr><hr>'; return;}
+	$message = '' === $message ? gettype( $object ) : $message;
+	echo "\n$message :"; var_dump( $object );
+}
 ////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -46,7 +56,7 @@ include_once( dirname( __FILE__ ) . '/includes/termmeta-core.php' );
  *
  * @since 1.0
  */
-if ( ! defined( 'QTS_VERSION' ) ) {       define( 'QTS_VERSION', '1.1.18' ); }
+if ( ! defined( 'QTS_VERSION' ) ) {       define( 'QTS_VERSION', '1.2.0' ); }
 if ( ! defined( 'QTS_PREFIX' ) ) {        define( 'QTS_PREFIX', '_qts_' ); }
 if ( ! defined( 'QTS_PAGE_BASENAME' ) ) { define( 'QTS_PAGE_BASENAME', 'qtranslate-slug-settings' ); }
 if ( ! defined( 'QTS_OPTIONS_NAME' ) ) {  define( 'QTS_OPTIONS_NAME', 'qts_options' ); }
