@@ -2081,7 +2081,8 @@ class QtranslateSlug {
 			$feeds = array();
 		}
 
-		$meta_key = $this->get_meta_key( $lang );
+		$sluglogic_uniqueness_hierarchy = $this->get_option( 'sluglogic_uniqueness_hierarchy' );
+
 		if ( 'attachment' == $post_type ) {
 
 			// Attachment slugs must be unique across all types.
@@ -2097,9 +2098,49 @@ class QtranslateSlug {
 				} while ( $post_name_check );
 				$slug = $alt_post_name;
 			}
-		} else {
+		} elseif ( $sluglogic_uniqueness_hierarchy && is_post_type_hierarchical( $post_type ) ) {
+			if ( 'nav_menu_item' == $post_type ) {
+				return $slug;
+			}
 
-			// TODO: update unique_slug :: missing hieararchical from current wp func ( 4.3.1 )
+			$meta_key = $this->get_meta_key( $lang );
+			/*
+			* Page slugs must be unique within their own trees. Pages are in a separate
+			* namespace than posts so page slugs are allowed to overlap post slugs.
+			*/
+
+			$check_sql = "SELECT pm.meta_value
+				FROM $wpdb->posts as p, $wpdb->postmeta as pm
+				WHERE p.ID = pm.post_id
+				AND pm.meta_key = '%s'
+				AND pm.meta_value = '%s'
+				AND p.post_type IN ( %s, 'attachment' )
+				AND p.ID != %d
+				AND p.post_parent = %d
+				LIMIT 1";
+
+			$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $slug, $post_type, $post_id, $post_parent ) );  // WPCS: unprepared SQL OK.
+
+			/**
+			* Filters whether the post slug would make a bad hierarchical post slug.
+			*
+			* @since 3.1.0
+			*
+			* @param bool   $bad_slug    Whether the post slug would be bad in a hierarchical post context.
+			* @param string $slug        The post slug.
+			* @param string $post_type   Post type.
+			* @param int    $post_parent Post parent ID.
+			*/
+			if ( $post_name_check || in_array( $slug, $feeds ) || 'embed' === $slug || preg_match( "@^($wp_rewrite->pagination_base)?\d+$@", $slug ) || apply_filters( 'wp_unique_post_slug_is_bad_hierarchical_slug', false, $slug, $post_type, $post_parent ) ) {
+				$suffix = 2;
+				do {
+					$alt_post_name = _truncate_post_slug( $slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
+					$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $meta_key, $alt_post_name, $post_type, $post_id, $post_parent ) ); // WPCS: unprepared SQL OK.
+					$suffix++;
+				} while ( $post_name_check );
+				$slug = $alt_post_name;
+			}
+		} else {
 			// Post slugs must be unique across all posts.
 			$check_sql = "SELECT pm.meta_value
 				FROM $wpdb->posts as p, $wpdb->postmeta as pm
