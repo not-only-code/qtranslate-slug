@@ -2026,6 +2026,13 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	public function wp_unique_post_slug( $slug, $post_id, $post_status, $post_type, $post_parent, $lang ) {
+		/**
+		* NOTE: changes from original WP code:
+		* - $post_ID -> $post_id
+		* - add // WPCS: unprepared SQL OK.
+		* - replace query sql and add new parameter: meta_key
+		* - removed filter comments
+		*/
 		if ( in_array( $post_status, array( 'draft', 'pending', 'auto-draft' ) ) ) {
 			return $slug;
 		}
@@ -2039,11 +2046,7 @@ class QtranslateSlug {
 
 		$meta_key = $this->get_meta_key( $lang );
 		if ( 'attachment' == $post_type ) {
-			/**
-			* NOTE: changes from original WP code:
-			* - $post_ID -> $post_id
-			* - add // WPCS: unprepared SQL OK.
-			*/
+
 			// Attachment slugs must be unique across all types.
 			$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND ID != %d LIMIT 1";
 			$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_id ) ); // WPCS: unprepared SQL OK.
