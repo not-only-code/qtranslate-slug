@@ -1996,6 +1996,31 @@ class QtranslateSlug {
 				$slug = ( '' == $post_title || 0 == strlen( $post_title ) ) ? $post_name : $post_title;
 			}
 
+			// suffix
+			$slug_logic_suffix = $this->get_option( 'sluglogic_suffix' );
+			$slug_logic_suffix_primary = $this->get_option( 'sluglogic_primary_suffix' );
+
+			// build the slug
+			if ( ! ( $slug_logic_suffix_primary && $this->default_language === $lang ) ) {
+				switch ( $slug_logic_suffix ) {
+					case 'short':
+						$suffix = '-' . $lang;
+						break;
+					case 'long':
+						if ( function_exists( 'qtranxf_getLanguageNameNative' ) ) {
+							$suffix = '-' . qtranxf_getLanguageNameNative( $lang );
+						} else {
+							global $q_config;
+							$suffix = '-' . $q_config['language_name'][ $lang ];
+						}
+						break;
+					default:
+						$suffix = '';
+				}
+				$slug .= $suffix;
+			}
+		}
+		$slug = sanitize_title( $slug );
 
 		return htmlspecialchars( $slug , ENT_QUOTES );
 	}
