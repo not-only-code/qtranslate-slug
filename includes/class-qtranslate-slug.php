@@ -1136,15 +1136,14 @@ class QtranslateSlug {
 		$wpdb->escape_by_ref( $post_type_sql );
 		$pages = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT $wpdb->posts.ID, $wpdb->posts.post_parent, $wpdb->postmeta.meta_value
-				FROM $wpdb->posts,$wpdb->postmeta
-				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-				AND ( $wpdb->postmeta.meta_key = %s
-				OR $wpdb->postmeta.meta_key = %s )
-				AND $wpdb->postmeta.meta_value IN ( %s )
-				AND ( $wpdb->posts.post_type = %s
-				OR $wpdb->posts.post_type = 'attachment' )",
-				$meta_key, $meta_key_force, $in_string, $post_type_sql
+				"SELECT p.ID, p.post_parent, pm.meta_value
+				FROM $wpdb->posts as p,$wpdb->postmeta as pm
+				WHERE p.ID = pm.post_id
+				AND pm.meta_key = '%s'
+				AND pm.meta_value IN ($in_string)
+				AND (p.post_type = '%s'
+				OR p.post_type = 'attachment')",
+				$meta_key, $post_type_sql
 			), OBJECT_K
 		);
 		$revparts = array_reverse( $parts );
@@ -1565,18 +1564,19 @@ class QtranslateSlug {
 			$link = str_replace( '%pagename%', $this->get_page_uri( $id ), $link );
 
 			$link = trim( $link, '/' ); // hack
-			$link = home_url( '/$link/' ); // hack
+			$link = home_url( "/$link/" ); // hack
 
 			if ( 1 != $q_config['url_mode'] ) {
 				$link = user_trailingslashit( $link, 'page' );
 			}
 		} else {
 
-			$link = home_url( '?page_id=$id' );
+			$link = home_url( "?page_id=$id" );
 		}
 
 		return $link;
 	}
+
 
 	/**
 	 * Builds URI for a page.
@@ -1736,8 +1736,8 @@ class QtranslateSlug {
 
 		$term = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT t.*, tt.* FROM $wpdb->terms AS t, $wpdb->term_taxonomy AS tt, $wpdb->termmeta AS m WHERE t.term_id = tt.term_id AND tt.term_id = m.term_id AND tt.taxonomy = %s AND %s = %s LIMIT 1",
-				$taxonomy, $field, $value
+				"SELECT t.*, tt.* FROM $wpdb->terms AS t, $wpdb->term_taxonomy AS tt, $wpdb->termmeta AS m WHERE t.term_id = tt.term_id AND tt.term_id = m.term_id AND tt.taxonomy = %s AND $field = %s LIMIT 1",
+				$taxonomy, $value
 			)
 		);
 
@@ -1745,8 +1745,8 @@ class QtranslateSlug {
 			$field = 't.slug';
 			$term = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT t.*, tt.* FROM $wpdb->terms AS t INNER JOIN $wpdb->term_taxonomy AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy = %s AND %s = %s LIMIT 1",
-					$taxonomy, $field, $value
+					"SELECT t.*, tt.* FROM $wpdb->terms AS t INNER JOIN $wpdb->term_taxonomy AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy = %s AND $field = %s LIMIT 1",
+					$taxonomy, $value
 				)
 			);
 		}
@@ -1882,14 +1882,6 @@ class QtranslateSlug {
 				echo '  });' . PHP_EOL;
 				echo '</script>' . PHP_EOL;
 				break;
-			/*
-			case 'post.php':
-
-				echo "<!-- QTS remove slug box -->" . PHP_EOL;
-				echo "<style type=\"text/css\" media=\"screen\">" . PHP_EOL;
-				echo "  #slugdiv2 { display: none ! important}" . PHP_EOL;
-				echo "</style>" . PHP_EOL;
-				break;*/
 		endswitch;
 	}
 	/**
@@ -1973,7 +1965,7 @@ class QtranslateSlug {
 	 * @param $post (object ) the post object
 	 * @param $slug (string ) the slug name
 	 * @param $lang (string ) the language
-	 * @return the slug validated
+	 * @return the slug sanitized
 	 *
 	 * @since 1.0
 	 */
