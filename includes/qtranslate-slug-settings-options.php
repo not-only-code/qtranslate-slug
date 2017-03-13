@@ -133,21 +133,21 @@ function qts_options_page_slug_logic() {
 
 	$options[] = array(
 		'section' => 'sluglogic',
-		'id'      => QTS_PREFIX . 'sluglogic_uniqueness',
-		'title'   => __( 'Solve uniqueness:', 'qts' ),
+		'id'      => QTS_PREFIX . 'sluglogic_suffix',
+		'title'   => __( 'Add Suffix:', 'qts' ),
 		'desc'    => array(
-			__( 'append number ( default behaviour )', 'qts' ),
-			__( 'append language ( short name )', 'qts' ),
-			__( 'append language ( long name )', 'qts' ),
+			__( 'none ( default behaviour )', 'qts' ),
+			__( 'append language ( short name ) ex.: "post-1-fr"', 'qts' ),
+			__( 'append language ( long name ) ex.: "post-1-francais"', 'qts' ),
 		),
 		'type'    => 'multi-radio',
-		'class'   => 'qts-sluglogic-uniqueness',
+		'class'   => 'qts-sluglogic-suffix',
 		'choices' => array(
-			__( 'number', 'qts' ),
-			__( 'short language', 'qts' ),
-			__( 'long language', 'qts' ),
+			__( 'none', 'qts' ),
+			__( 'short', 'qts' ),
+			__( 'long', 'qts' ),
 		),
-		'std'     => 'number',
+		'std'     => 'none',
 	);
 
 	$options[] = array(
