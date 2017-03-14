@@ -43,11 +43,36 @@ div.updated.success{
 /* v1.1.18 */
 #edittag #qts_term_slugs { display: none; }
 .term-slug-wrap .qts_term_block input {
-	width: 86.5%; 
+	width: 86.5%;
 }
-
+/* v.1.2.0 */
 .qts_term_block label {
   display: inline-block;
   min-width: 120px;
 }
- 
+#qts-rebuildlist {
+	overflow: auto;
+	height: 400px;
+	margin-left: 0;
+	padding: 1em 1.2em;
+	background: #fff;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+.qts_warning {
+	background-color: rgb(226, 137, 137);
+	padding: 5px 10px;
+	color: rgb(0, 0, 0);
+}
+.qts_info { border: 1px solid rgb(114,167,207); border-left: 12px solid rgb(114,167,207); padding: 5px 10px; }
+.qts_warning a { color: rgb(255,255,255); }
+#qts-rebuildlist .updated p { margin: 0; }
+.ui-progressbar { height:2em; text-align: left; }
+.ui-progressbar .ui-progressbar-value {margin: -1px; height:100%; }
+.ui-progressbar .ui-widget-header {
+	background-color: #83B4D8;
+	background-image: linear-gradient(bottom, rgb(114,167,207) 0%, rgb(144,197,238) 100%);
+}
+.ui-progressbar {
+	background-color: rgb(226, 137, 137);
+}
+.ui-progressbar .ui-progressbar-value { margin:0; }
