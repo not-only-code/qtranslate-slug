@@ -13,8 +13,8 @@ function qts_options_page_sections() {
 	$sections = array();
 	$sections['post_types'] = __('Post types', 'qts');
 	$sections['taxonomies'] = __('Taxonomies', 'qts');
-	$sections['styles']     = __('Styles', 'qts');
 	$sections['sluglogic']  = __( 'Slug Logic', 'qts' );
+	$sections['styles']     = __('Styles', 'qts');
 
 	return $sections;
 }
@@ -251,8 +251,6 @@ function qts_options_page_fields() {
 	return $options;
 }
 
-
-
 /**
  * Contextual Help
  *
@@ -269,3 +267,5 @@ function qts_options_page_contextual_help() {
 
 	return $text;
 }
+
+

@@ -182,8 +182,8 @@ function qts_get_settings() {
 	$output['qts_page_title'] 		= __('Qtranslate Slug options', 'qts'); // the settings page title
 	$output['qts_page_sections'] 	= qts_options_page_sections(); // the settings sections
 	$output['qts_page_fields'] 		= qts_options_page_fields(); // the settings fields
+	$output['qts_page_sluglogic']   = qts_options_page_slug_logic(); // the settings for slug logic
 	$output['qts_page_styles'] 		= qts_options_page_styles(); // the settings for style
-	$output['qts_page_sluglogic']   = qts_options_page_slug_logic(); // the settings for style
 
 
 	$output['qts_contextual_help'] = qts_options_page_contextual_help(); // the contextual help
@@ -271,18 +271,18 @@ function qts_register_settings(){
 			qts_create_settings_field($option);
 		}
 	}
-	//style
-	if(!empty($settings_output['qts_page_styles'])){
-		// call the "add_settings_field" for each
-		foreach ($settings_output['qts_page_styles'] as $styleoption) {
-			qts_create_settings_field($styleoption);
-		}
-	}
 	//slug_logic
 	if ( ! empty( $settings_output['qts_page_sluglogic'] ) ) {
 		// call the "add_settings_field" for each
 		foreach ( $settings_output['qts_page_sluglogic'] as $slug_logic_option ) {
 			qts_create_settings_field( $slug_logic_option );
+		}
+	}
+	//style
+	if(!empty($settings_output['qts_page_styles'])){
+		// call the "add_settings_field" for each
+		foreach ($settings_output['qts_page_styles'] as $styleoption) {
+			qts_create_settings_field($styleoption);
 		}
 	}
 }
