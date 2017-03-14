@@ -2,6 +2,7 @@
 
 // page settings sections & fields as well as the contextual help text.
 include_once('qtranslate-slug-settings-options.php');
+include_once('class-qtranslate-slug-autobuilder.php');
 
 
 /**
@@ -571,7 +572,12 @@ function qts_show_settings_page() {
 		<div class="icon32" id="icon-options-general"></div>
 		<h2><?php echo $settings_output['qts_page_title']; ?></h2>
 
-		<p><?php  _e('If you activated previously the <a href="options-permalink.php">pretty permalinks</a>, in this section you can translate the <abbr title="en inglés, Universal Resource Locator">URLs</abbr> <strong>bases</strong> for <a href="http://codex.wordpress.org/Function_Reference/register_post_type#Arguments">public</a> post_types, categories, tags and taxonomies.', 'qts'); ?> </p>
+		<p class="qts_info"><?php printf(
+			__( 'To rebuild the slugs for all posts, pages and post_types. Visit <a href="%s">QTS Rebuild Slug</a>', 'qts'),
+			'/wp-admin/tools.php?page=qts-rebuild-meta-slug'
+		); ?> </p>
+
+		<p><?php _e('If you activated previously the <a href="options-permalink.php">pretty permalinks</a>, in this section you can translate the <abbr title="en inglés, Universal Resource Locator">URLs</abbr> <strong>bases</strong> for <a href="http://codex.wordpress.org/Function_Reference/register_post_type#Arguments">public</a> post_types, categories, tags and taxonomies.', 'qts'); ?> </p>
 
 		<form action="options.php" method="post">
 			<?php
