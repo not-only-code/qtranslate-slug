@@ -113,10 +113,13 @@ class QTS_RebuildMetaSlug {
 			check_admin_referer( 'qts-rebuild-meta-slug' );
 
 			global $q_config;
-			$languages = array();
 			if ( ! isset( $q_config['enabled_languages'] ) || ! is_array( $q_config['enabled_languages'] ) ) {
 				wp_die( __( 'Can\' find enabled languages', 'qts_rebuild_meta_slug' ) );
 			}
+
+			$posts_per_batch = ! empty( $_POST['qts_autob_settings']['posts_per_batch'] ) ? $_POST['qts_autob_settings']['posts_per_batch'] : '10';
+			$pause_time = ! empty( $_POST['qts_autob_settings']['pause_time'] ) ? $_POST['qts_autob_settings']['pause_time'] : '300';
+
 			$languages = $q_config['enabled_languages'];
 
 			$test_run = isset( $_POST['qts_autob_settings']['qts_checkbox_field_0'] ) ? true : false;
@@ -172,7 +175,9 @@ class QTS_RebuildMetaSlug {
 	<p>
 		<?php printf( __( 'Total: %s', 'qts-rebuild-meta-slug' ), $count ); ?><br />
 		<?php printf( __( 'Success: %s', 'qts-rebuild-meta-slug' ), '<span id="qts-rebuild-debug-successcount">0</span>' ); ?><br />
-		<?php printf( __( 'Failure: %s', 'qts-rebuild-meta-slug' ), '<span id="qts-rebuild-debug-failurecount">0</span>' ); ?>
+		<?php printf( __( 'Failure: %s', 'qts-rebuild-meta-slug' ), '<span id="qts-rebuild-debug-failurecount">0</span>' ); ?><br />
+		<?php printf( __( 'Position in batch: %s', 'qts-rebuild-meta-slug' ), '<span id="qts-rebuild-debug-position">0</span>' ); ?><br />
+		<?php printf( __( 'Batch number: %s', 'qts-rebuild-meta-slug' ), '<span id="qts-rebuild-debug-batch">0</span>' ); ?><br />
 	</p>
 
 	<ol id="qts-rebuildlist">
@@ -186,6 +191,11 @@ class QTS_RebuildMetaSlug {
 			var rt_posts = [<?php echo $ids; ?>];
 			var languages = <?php echo json_encode( $languages ); ?>;
 			var test_run = <?php echo json_encode( $test_run ); ?>;
+			var time_to_pause = false;
+			var position = 1;
+			var batch = 1;
+			var posts_per_batch = <?php echo json_encode( $posts_per_batch ); ?>;
+			var pause_time = <?php echo json_encode( $pause_time ); ?>;
 			var rt_total = rt_posts.length;
 			var rt_count = 1;
 			var rt_successes = 0;
@@ -214,7 +224,18 @@ class QTS_RebuildMetaSlug {
 			function qts_rebuildUpdateStatus(id, success, response ) {
 				$( "#qts-rebuild-bar" ).progressbar( "value", (rt_count / rt_total ) * 100);
 				$( "#qts-rebuild-bar-percent" ).html(Math.round((rt_count / rt_total ) * 1000) / 10 + "%" );
+				$( "#qts-rebuild-debug-position" ).html( position );
+				$( "#qts-rebuild-debug-batch" ).html( batch );
 				rt_count = rt_count + 1;
+
+				if( position == posts_per_batch ){
+					position = 1;
+					batch += 1;
+					time_to_pause = true;
+				} else {
+					position += 1;
+				}
+
 
 				if (success ) {
 					rt_successes = rt_successes + 1;
@@ -275,7 +296,14 @@ class QTS_RebuildMetaSlug {
 						}
 
 						if (rt_posts.length && rt_continue) {
-							qts_rebuild(rt_posts.shift() );
+							if( time_to_pause ) {
+								time_to_pause = false;
+								setTimeout(function(){
+									qts_rebuild(rt_posts.shift() );
+								}, pause_time );
+							} else {
+								qts_rebuild(rt_posts.shift() );
+							}
 						} else {
 							qts_rebuildFinishUp();
 						}
@@ -323,12 +351,20 @@ class QTS_RebuildMetaSlug {
 				$checked = true;
 			} ?>
 			<table class="form-table">
-				<tbody><tr><th scope="row">
-					<label for="qts_checkbox_field_0">Test Run?</label></th><td><input type="checkbox" name="qts_autob_settings[qts_checkbox_field_0]" id="qts_checkbox_field_0" checked="checked" value="1">
-					<p><em><?php _e( 'Test the automated process, without doing any changes. It will compare the existing slug the generated slug, for each enabled language.', 'qts-rebuild-meta-slug' ); ?></em></p>
-					<p><em><?php _e( 'It will also mention if its a new slug, ie., if it was empty.' ); ?></em></p>
-					<p><em><?php _e( 'Uncheck this to actually change the slugs.' ); ?></em></p>
-				</td></tr></tbody>
+				<tbody>
+					<tr><th scope="row">
+						<label for="qts_checkbox_field_0">Test Run?</label></th><td><input type="checkbox" name="qts_autob_settings[qts_checkbox_field_0]" id="qts_checkbox_field_0" checked="checked" value="1">
+						<p><em><?php _e( 'Test the automated process, without doing any changes. It will compare the existing slug the generated slug, for each enabled language.', 'qts-rebuild-meta-slug' ); ?></em></p>
+						<p><em><?php _e( 'It will also mention if its a new slug, ie., if it was empty.' ); ?></em></p>
+						<p><em><?php _e( 'Uncheck this to actually change the slugs.' ); ?></em></p>
+					</td></tr>
+					<tr><th scope="row">
+						<label for="qts_posts_per_batch">Posts per batch</label></th><td><input type="text" name="qts_autob_settings[posts_per_batch]" id="qts_posts_per_batch" value="10"><br>
+					</td></tr>
+					<tr><th scope="row">
+						<label for="qts_pause_time">Pause between batchs ( in miliseconds ) </label></th><td><input type="text" name="qts_autob_settings[pause_time]" id="qts_pause_time" value="300">
+					</td></tr>
+				</tbody>
 			</table>
 			<input type="submit" class="button-primary hide-if-no-js" name="qts-rebuild-meta-slug" id="qts-rebuild-meta-slug" value="<?php _e( 'Rebuild All Slugs', 'qts-rebuild-meta-slug' ) ?>" />
 		</p>
@@ -351,9 +387,6 @@ class QTS_RebuildMetaSlug {
 	 * @since 1.2.0
 	 */
 	public function ajax_process_image() {
-
-		// No timeout limit
-		set_time_limit( 0 );
 
 		// Don't break the JSON result
 		error_reporting( 0 );
