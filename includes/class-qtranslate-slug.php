@@ -288,14 +288,16 @@ class QtranslateSlug {
 	 * @since 1.0
 	 */
 	private function activate() {
-		global $wp_rewrite;
+		global $wp_rewrite, $wp_version;
 
 		$this->set_options();
 
 		$qts_version = get_option( 'qts_version' );
 
 		// checks version and do the installation
-		if ( ! $qts_version || QTS_VERSION != $qts_version ) {
+		// don't delete termmeta table as it will be used by wp beginning 4.4
+
+		if ( version_compare( $wp_version, '4.4', '<' ) || ! $qts_version || QTS_VERSION != $qts_version ) {
 
 			// install termmeta table using functions from Simple-Term-Meta
 			// ( http://wordpress.org/extend/plugins/simple-term-meta/ )
@@ -929,10 +931,12 @@ class QtranslateSlug {
 
 		// FIXME: why is this here? it breaks custom variables getter
 		// https://wordpress.org/support/topic/cant-retrieve-public-query-variables
-		if ( ( isset( $wp->matched_query ) || empty( $query ) )  && ! isset( $query['s'] ) ) {
+
+		if ( ( isset( $wp->matched_query ) || empty( $query ) ) && ! isset( $query['s'] ) ) {
 			$query = wp_parse_args( $wp->matched_query );
 		}
 
+		// find if current
 		foreach ( get_post_types() as $post_type ) {
 			if ( array_key_exists( $post_type, $query ) && ! in_array( $post_type, array( 'post', 'page' ) ) ) {
 				$query['post_type'] = $post_type;
@@ -1129,24 +1133,23 @@ class QtranslateSlug {
 		$parts = explode( '/', trim( $page_path, '/' ) );
 		$parts = array_map( 'esc_sql', $parts );
 		$parts = array_map( 'sanitize_title_for_query', $parts );
+		$revparts = array_reverse( $parts );
+
 		$in_string = "'" . implode( "','", $parts ) . "'";
 		$meta_key = $this->get_meta_key();
 		$meta_key_force = $this->get_meta_key( $this->default_language );
 		$post_type_sql = $post_type;
 		$wpdb->escape_by_ref( $post_type_sql );
 		$pages = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT p.ID, p.post_parent, pm.meta_value
-				FROM $wpdb->posts as p,$wpdb->postmeta as pm
-				WHERE p.ID = pm.post_id
-				AND pm.meta_key = '%s'
-				AND pm.meta_value IN ($in_string)
-				AND (p.post_type = '%s'
-				OR p.post_type = 'attachment')",
-				$meta_key, $post_type_sql
-			), OBJECT_K
+			"SELECT p.ID, p.post_parent, pm.meta_value
+			FROM $wpdb->posts as p,$wpdb->postmeta as pm
+			WHERE p.ID = pm.post_id
+			AND pm.meta_key = '$meta_key'
+			AND pm.meta_value IN ($in_string)
+			AND (p.post_type = '$post_type_sql'
+			OR p.post_type = 'attachment')",
+			OBJECT_K
 		);
-		$revparts = array_reverse( $parts );
 
 		$foundid = 0;
 		foreach ( (array) $pages as $page ) {
@@ -2396,7 +2399,7 @@ class QtranslateSlug {
 				$term_slug = $term->slug;
 			} else {
 				// otherwise, its the edit term screen
-				$term_slug = $_POST['qts_{$lang}_slug'];
+				$term_slug = $_POST[ "qts_{$lang}_slug" ];
 			}
 
 			$meta_value = apply_filters( 'qts_validate_term_slug', $term_slug, $term, $lang );

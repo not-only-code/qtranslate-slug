@@ -5,7 +5,7 @@
 if ( !function_exists('install_term_meta_table') ):
 function install_term_meta_table() {
 	global $wpdb;
-
+	$max_index_length = 191;
 	$collate = '';
 	//if($wpdb->supports_collation())//deprecated, was a reason for activation admin notice
 	if($wpdb->has_cap( 'collation' )) {
