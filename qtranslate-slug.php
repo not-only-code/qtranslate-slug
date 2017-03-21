@@ -11,19 +11,17 @@ Author URI: http://github.com/not-only-code
 ////////////////////////////////////////////////////////////////////////////////////////
 
 if ( ! function_exists( '_debug' ) ) :
-	function _debug( $message, $note ) {
+	function _debug( $message, $note = '' ) {
 
 		if ( WP_DEBUG === true ) :
 
-			error_log( "\n\n$note : \n\n" );
-
 			if ( is_array( $message ) || is_object( $message ) ) {
 
-				error_log( print_r( $message, true ) );
+				error_log( "$note : " . print_r( $message, true ) . "\n\n" );
 
 			} else {
 
-				error_log( $message );
+				error_log( "$note : " . $message . "\n\n" );
 			}
 
 		endif;
