@@ -55,6 +55,13 @@ class QtranslateSlug {
 	/**
 	 * Array of enabled languages
 	 * @var array
+	 * @since 1.2.2
+	 */
+	private $locale_languages = array();
+
+	/**
+	 * Array of enabled languages
+	 * @var array
 	 * @since 1.0
 	 */
 	private $url_path_mode = '';
@@ -95,6 +102,15 @@ class QtranslateSlug {
 	 */
 	private function get_currentlang() {
 		return $this->current_lang;
+	}
+
+	/**
+	 * return the enabled languages
+	 * we store and use it all the way!
+	 * @since 1.2.2
+	 */
+	private function get_locale_languages() {
+		return $this->locale_languages;
 	}
 
 	/**
@@ -474,6 +490,7 @@ class QtranslateSlug {
 		}
 
 		$this->enabled_languages = $q_config['enabled_languages'];
+		$this->locale_languages  = $q_config['locale_html'];
 		$this->default_language  = $q_config['default_language'];
 		$this->set_plugin_prefix();
 		$this->set_url_path_mode();
