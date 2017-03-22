@@ -597,9 +597,14 @@ class QtranslateSlug {
 
 		//taken from qtx but see our #341 ticket for clarification
 		echo '<link hreflang="x-default" href="' . esc_url( $this->get_current_url( $this->default_language ) ) . '" rel="alternate" />' . PHP_EOL;
-		foreach ( $this->get_enabled_languages() as $language ) {
 
-			echo '<link hreflang="' . $language . '" href="' . esc_url( $this->get_current_url( $language ) ) . '" rel="alternate" />' . "\n";
+		$frontend_locales = $this->get_locale_languages();
+		foreach ( $this->get_enabled_languages() as $language ) {
+			$href_lang = $language;
+			if ( ! empty( $frontend_locales[ $language ] ) ) {
+				$href_lang = $frontend_locales[ $language ];
+			}
+			echo '<link hreflang="' . $href_lang . '" href="' . esc_url( $this->get_current_url( $language ) ) . '" rel="alternate" />' . "\n";
 		}
 	}
 
