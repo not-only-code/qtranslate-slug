@@ -215,7 +215,7 @@ endif;
  * @return array Meta field values.
  */
 if ( !function_exists('get_term_custom_values') ):
-	function get_term_custom_values( $key = '', $term_id ) {
+	function get_term_custom_values( $key = '', $term_id = '' ) {
 		if ( !$key )
 			return null;
 
@@ -224,3 +224,5 @@ if ( !function_exists('get_term_custom_values') ):
 		return isset($custom[$key]) ? $custom[$key] : null;
 	}
 endif;
+
+?>
