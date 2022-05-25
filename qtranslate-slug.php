@@ -179,5 +179,6 @@ function qts_uninstall() {
 	$meta_keys = array();
 	foreach ($q_config['enabled_languages'] as $lang) $meta_keys[] = sprintf("_qts_slug_%s", $lang);
 	$meta_keys = "'". implode( "','", $meta_keys ) . "'";
-	$wpdb->query("DELETE from $wpdb->postmeta WHERE meta_key IN ($meta_keys)");	
+	$wpdb->query("DELETE from $wpdb->postmeta WHERE meta_key IN ($meta_keys)");
+	$wpdb->query("DELETE from $wpdb->termmeta WHERE meta_key IN ($meta_keys)");
 }
